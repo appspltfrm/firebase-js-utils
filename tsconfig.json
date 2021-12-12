@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "declaration": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "lib": ["dom", "es2015"],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "es2015",
+        "outDir": "dist",
+        "rootDir": "src",
+        "sourceMap": true,
+        "importHelpers": true
+    },
+
+    "exclude": [
+        "dist",
+        "node_modules"
+    ]
+}

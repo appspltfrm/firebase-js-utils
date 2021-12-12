@@ -1,0 +1,7 @@
+import {firestore as admin} from "firebase-admin";
+import * as client from "firebase/firestore";
+import {DocumentData} from "./DocumentData";
+
+export type DocumentSnapshotClient<T = DocumentData> = client.DocumentSnapshot<T>;
+export type DocumentSnapshotAdmin<T = DocumentData> = admin.DocumentSnapshot<T>;
+export type DocumentSnapshot<T = DocumentData> = DocumentSnapshotAdmin<T> | DocumentSnapshotClient<T>;
