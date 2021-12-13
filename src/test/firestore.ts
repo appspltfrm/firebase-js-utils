@@ -1,9 +1,9 @@
 import {deleteApp, getApp, initializeApp} from "firebase/app";
-import {getFirestore} from "firebase/firestore";
 import {getAuth} from "firebase/auth";
+import {getFirestore} from "firebase/firestore";
 import {AuthUser} from "../client-auth";
 import {FirebaseContextClient} from "../FirebaseContext";
-import {DataConverter, getQueryData} from "../firestore";
+import {getData} from "../firestore";
 
 interface SomeType {
     field: string;
@@ -27,10 +27,8 @@ interface SomeType {
             readonly authUser = new AuthUser(getAuth());
         }
 
-        let converter: DataConverter<SomeType>;
-
-        const query = context.firestoreQuery("records").withConverter(converter);
-        console.log(await getQueryData(query));
+        const recordQuery = context.firestoreQuery("records");
+        console.log(await getData(recordQuery));
 
     } catch (error) {
         console.error(error);

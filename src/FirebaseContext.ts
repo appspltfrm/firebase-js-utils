@@ -1,11 +1,13 @@
 import {AuthUser} from "./client-auth";
 import {
+    buildQuery,
+    collectionReference,
     CollectionReference, CollectionReferenceAdmin, CollectionReferenceClient,
-    DocumentData, DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient,
+    DocumentData, documentReference, DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient,
     Firestore,
     FirestoreAdmin,
     FirestoreClient,
-    getCollectionRef, getDocRef, getQuery, Query, QueryAdmin, QueryClient, QueryConstraint
+    Query, QueryAdmin, QueryClient, QueryConstraint
 } from "./firestore";
 
 abstract class UniversalFirebaseContext {
@@ -36,15 +38,15 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
 
     firestoreQuery<T = DocumentData>(pathOrCollection: string | CollectionReferenceClient<T>, ...queryConstraints: QueryConstraint[]): QueryClient<T> {
         const collection: CollectionReference<T> = typeof pathOrCollection === "string" ? this.firestoreCollection(pathOrCollection) : pathOrCollection;
-        return getQuery(collection, ...queryConstraints);
+        return buildQuery(collection, ...queryConstraints);
     }
 
     firestoreCollection<T = DocumentData>(path: string): CollectionReferenceClient<T> {
-        return getCollectionRef(this.firestore, path);
+        return collectionReference(this.firestore, path);
     }
 
     firestoreDoc<T = DocumentData>(path: string): DocumentReferenceClient<T> {
-        return getDocRef(this.firestore, path);
+        return documentReference(this.firestore, path);
     }
 }
 
@@ -57,15 +59,15 @@ export abstract class FirebaseContextAdmin extends UniversalFirebaseContext {
 
     firestoreQuery<T = DocumentData>(pathOrCollection: string | CollectionReferenceAdmin<T>, ...queryConstraints: QueryConstraint[]): QueryAdmin<T> {
         const collection: CollectionReference<T> = typeof pathOrCollection === "string" ? this.firestoreCollection(pathOrCollection) : pathOrCollection;
-        return getQuery(collection, ...queryConstraints);
+        return buildQuery(collection, ...queryConstraints);
     }
 
     firestoreCollection<T = DocumentData>(path: string): CollectionReferenceAdmin<T> {
-        return getCollectionRef(this.firestore, path);
+        return collectionReference(this.firestore, path);
     }
 
     firestoreDoc<T = DocumentData>(path: string): DocumentReferenceAdmin<T> {
-        return getDocRef(this.firestore, path);
+        return documentReference(this.firestore, path);
     }
 }
 

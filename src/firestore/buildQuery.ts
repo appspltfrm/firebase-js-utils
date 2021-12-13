@@ -1,26 +1,16 @@
-import {
-    endAt,
-    endBefore,
-    limit,
-    limitToLast,
-    orderBy,
-    query as queryClient,
-    QueryConstraint as QueryConstraintClient,
-    startAfter,
-    startAt,
-    where
-} from "firebase/firestore";
+import {query as queryClient, QueryConstraint as QueryConstraintClient} from "@firebase/firestore";
+import {endAt, endBefore, limit, limitToLast, orderBy, startAfter, startAt, where} from "firebase/firestore";
 import {DocumentData} from "./DocumentData";
 import {Query, QueryAdmin, QueryClient} from "./Query";
 import {QueryConstraint, QueryConstraintType} from "./QueryConstraint";
 
-export function getQuery<T = DocumentData>(query: QueryClient<T>, ...queryConstraints: QueryConstraint[]): QueryClient<T>;
+export function buildQuery<T = DocumentData>(query: QueryClient<T>, ...queryConstraints: QueryConstraint[]): QueryClient<T>;
 
-export function getQuery<T = DocumentData>(query: QueryAdmin<T>, ...queryConstraints: QueryConstraint[]): QueryAdmin<T>;
+export function buildQuery<T = DocumentData>(query: QueryAdmin<T>, ...queryConstraints: QueryConstraint[]): QueryAdmin<T>;
 
-export function getQuery<T = DocumentData>(query: Query<T>, ...queryConstraints: QueryConstraint[]): Query<T>;
+export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraints: QueryConstraint[]): Query<T>;
 
-export function getQuery<T = DocumentData>(query: Query<T>, ...queryConstraints: QueryConstraint[]): Query<T> {
+export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraints: QueryConstraint[]): Query<T> {
     if (Query.isClient(query)) {
 
         if (queryConstraints) {

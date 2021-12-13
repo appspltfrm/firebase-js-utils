@@ -1,8 +1,8 @@
 import {sleep} from "@co.mmons/js-utils/core";
-import {deleteDoc} from "./deleteDoc";
+import {buildQuery} from "./buildQuery";
+import {deleteDocument} from "./deleteDocument";
 import {DocumentReference} from "./DocumentReference";
-import {getQuery} from "./getQuery";
-import {getQuerySnapshot} from "./getQuerySnapshot";
+import {getSnapshot} from "./getSnapshot";
 import {Query, QueryAdmin, QueryClient} from "./Query";
 import {WriteBatch, writeBatch} from "./WriteBatch";
 
@@ -33,10 +33,10 @@ export async function deleteQuery(query: Query<any>, options?: DeleteOptions & D
     }
 
     if (options.readLimit) {
-        query = getQuery(query, ["limit", options.readLimit]);
+        query = buildQuery(query, ["limit", options.readLimit]);
     }
 
-    const snapshot = await getQuerySnapshot(query);
+    const snapshot = await getSnapshot(query);
 
     let deleteCount = 0;
 
@@ -49,7 +49,7 @@ export async function deleteQuery(query: Query<any>, options?: DeleteOptions & D
 
         if (options.batch === false) {
             try {
-                await deleteDoc(d.ref);
+                await deleteDocument(d.ref);
                 deleteCount++;
 
             } catch (error) {
