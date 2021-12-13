@@ -1,0 +1,12 @@
+import { OrderByDirection, WhereFilterOp } from "@firebase/firestore";
+import { DocumentSnapshot } from "./DocumentSnapshot";
+export declare type QueryConstraintWhere = [constraintType: "where", fieldPath: string, opStr: WhereFilterOp, value: unknown];
+export declare type QueryConstraintLimit = [constraintType: "limit", limit: number];
+export declare type QueryConstraintStartAt = [constraintType: "startAt", snapshot: DocumentSnapshot];
+export declare type QueryConstraintStartAfter = [constraintType: "startAfter", snapshot: DocumentSnapshot];
+export declare type QueryConstraintEndAt = [constraintType: "endAt", snapshot: DocumentSnapshot];
+export declare type QueryConstraintEndBefore = [constraintType: "endBefore", snapshot: DocumentSnapshot];
+export declare type QueryConstraintLimitToLast = [constraintType: "limitToLast", limit: number];
+export declare type QueryConstraintOrderBy = [constraintType: "orderBy", fieldPath: string, directionStr?: OrderByDirection];
+export declare type QueryConstraint = QueryConstraintWhere | QueryConstraintLimit | QueryConstraintLimitToLast | QueryConstraintOrderBy | QueryConstraintStartAt | QueryConstraintStartAfter | QueryConstraintEndAt | QueryConstraintEndBefore;
+export { QueryConstraintType } from "@firebase/firestore";

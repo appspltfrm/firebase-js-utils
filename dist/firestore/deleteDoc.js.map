@@ -1,0 +1,1 @@
+{"version":3,"file":"deleteDoc.js","sourceRoot":"","sources":["../../src/firestore/deleteDoc.ts"],"names":[],"mappings":";;;AACA,kDAAgE;AAChE,2DAAuG;AAQvG,SAAgB,SAAS,CAAC,GAAsB,EAAE,YAAkB;IAEhE,IAAI,qCAAiB,CAAC,QAAQ,CAAC,GAAG,CAAC,EAAE;QACjC,OAAO,IAAA,qBAAe,EAAC,GAAG,CAAC,CAAC;KAC/B;SAAM;QACH,OAAO,GAAG,CAAC,MAAM,CAAC,YAAY,CAAC,CAAC;KACnC;AAEL,CAAC;AARD,8BAQC"}

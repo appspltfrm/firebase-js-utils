@@ -7,6 +7,8 @@ export function getCollectionRef<T = DocumentData>(firestore: FirestoreClient, p
 
 export function getCollectionRef<T = DocumentData>(firestore: FirestoreAdmin, path: string): CollectionReferenceAdmin<T>;
 
+export function getCollectionRef<T = DocumentData>(firestore: Firestore, path: string): CollectionReference<T>;
+
 export function getCollectionRef<T = DocumentData>(firestore: Firestore, path: string): CollectionReference<T> {
 
     if (Firestore.isClient(firestore)) {

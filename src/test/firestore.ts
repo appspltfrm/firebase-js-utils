@@ -1,6 +1,11 @@
 import {deleteApp, getApp, initializeApp} from "firebase/app";
-import {doc, getFirestore} from "firebase/firestore";
-import {getDocData} from "../firestore";
+import {getFirestore} from "firebase/firestore";
+import {FirebaseContextClient} from "../FirebaseContext";
+import {DataConverter, getQueryData} from "../firestore";
+
+interface SomeType {
+    field: string;
+}
 
 (async () => {
 
@@ -15,8 +20,14 @@ import {getDocData} from "../firestore";
             appId: "1:35542723106:web:51ff9a1acd32af35e6387b"
         })
 
-        const docRef = await getDocData(doc(getFirestore(), "records/9VWhWrzmsTS8UCnNlzzQ"));
-        console.log(docRef);
+        const context = new class extends FirebaseContextClient {
+            readonly firestore = getFirestore();
+        }
+
+        let converter: DataConverter<SomeType>;
+
+        const query = context.firestoreQuery("records").withConverter(converter);
+        console.log(await getQueryData(query));
 
     } catch (error) {
         console.error(error);

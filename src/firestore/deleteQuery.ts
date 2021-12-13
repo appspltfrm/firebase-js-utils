@@ -68,9 +68,9 @@ export async function deleteQuery(query: Query<any>, options?: DeleteOptions & D
             const batch = writeBatch(query.firestore);
 
             for (const doc of part) {
-                if (WriteBatch.isClient(query.firestore, batch) && DocumentReference.isClient(doc.ref)) {
+                if (WriteBatch.isClient(batch) && DocumentReference.isClient(doc.ref)) {
                     batch.delete(doc.ref);
-                } else if (WriteBatch.isAdmin(query.firestore, batch) && DocumentReference.isAdmin(doc.ref)) {
+                } else if (WriteBatch.isAdmin(batch) && DocumentReference.isAdmin(doc.ref)) {
                     batch.delete(doc.ref);
                 }
             }

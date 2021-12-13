@@ -7,8 +7,8 @@
   "scripts": {
     "install": "node-utils-npm-install-dist",
     "build": "node-utils-file-system-glob-delete \"dist/**/*\" && npm run build:es2015 && npm run build:esm2015 && node-utils-file-system-glob-copy src dist \"**/package.json\"",
-    "build:es2015": "tsc -p tsconfig.json -m commonjs -t es2015 --outDir dist",
-    "build:esm2015": "tsc -p tsconfig.json -d false -m es2015 -t es2015 --outDir dist/_esm2015"
+    "build:es2015": "tsc -p tsconfig.build.json -m commonjs -t es2015 --outDir dist",
+    "build:esm2015": "tsc -p tsconfig.build.json -d false -m es2015 -t es2015 --outDir dist/_esm2015"
   },
   "dependencies": {
     "@co.mmons/node-utils": "github:co-mmons/node-utils"
