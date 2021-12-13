@@ -1,3 +1,4 @@
+export * from "./AutoWriteBatch";
 export * from "./CollectionReference";
 export * from "./DataConverter";
 export * from "./DocumentData";
@@ -13,7 +14,6 @@ export * from "./Timestamp";
 export * from "./TimestampSerializer";
 export * from "./Transaction";
 export * from "./WriteBatch";
-export * from "./autoWriteBatch";
 export * from "./buildQuery";
 export * from "./deleteDocument";
 export * from "./deleteQuery";

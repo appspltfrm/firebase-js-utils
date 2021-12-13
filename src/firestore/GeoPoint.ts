@@ -4,7 +4,6 @@ import {Firestore} from "./Firestore";
 
 export type GeoPointClient = $GeoPointClient;
 export type GeoPointAdmin = admin.GeoPoint;
-
 export type GeoPoint = GeoPointAdmin | GeoPointClient;
 
 export namespace GeoPoint {
@@ -17,11 +16,15 @@ export namespace GeoPoint {
         return !isClient(gp) && Firestore.adminInitialized() && gp instanceof Firestore.admin().GeoPoint;
     }
 
-    export function create(firestore: Firestore, latitude: number, longitude: number) {
-        if (Firestore.isClient(firestore)) {
-            return new $GeoPointClient(latitude, longitude);
-        } else {
+    export function isInstance(obj: any): obj is GeoPoint {
+        return isClient(obj) || isAdmin(obj);
+    }
+
+    export function create(latitude: number, longitude: number): GeoPoint {
+        if (Firestore.adminInitialized()) {
             return new (Firestore.admin().GeoPoint)(latitude, longitude);
+        } else {
+            return new $GeoPointClient(latitude, longitude);
         }
     }
 }
