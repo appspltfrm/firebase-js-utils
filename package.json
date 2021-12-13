@@ -1,7 +1,7 @@
 {
   "name": "@appspltfrm/firebase-js-utils",
   "version": "4.0.0",
-  "author": "co.mmons",
+  "author": "appspltfrm.com",
   "private": false,
   "license": "MIT",
   "scripts": {
