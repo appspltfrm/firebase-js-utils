@@ -1,5 +1,5 @@
-import {firestore as admin} from "firebase-admin";
-import * as client from "firebase/firestore";
+import type {firestore as admin} from "firebase-admin";
+import type * as client from "firebase/firestore";
 
 export type FirestoreClient = client.Firestore;
 export type FirestoreAdmin = admin.Firestore;

@@ -1,5 +1,5 @@
-import {firestore as admin} from "firebase-admin";
-import * as client from "firebase/firestore";
+import type {firestore as admin} from "firebase-admin";
+import type * as client from "firebase/firestore";
 import {DocumentData} from "./DocumentData";
 import {Firestore} from "./Firestore";
 
