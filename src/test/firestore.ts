@@ -1,5 +1,7 @@
 import {deleteApp, getApp, initializeApp} from "firebase/app";
 import {getFirestore} from "firebase/firestore";
+import {getAuth} from "firebase/auth";
+import {AuthUser} from "../client-auth";
 import {FirebaseContextClient} from "../FirebaseContext";
 import {DataConverter, getQueryData} from "../firestore";
 
@@ -22,6 +24,7 @@ interface SomeType {
 
         const context = new class extends FirebaseContextClient {
             readonly firestore = getFirestore();
+            readonly authUser = new AuthUser(getAuth());
         }
 
         let converter: DataConverter<SomeType>;
