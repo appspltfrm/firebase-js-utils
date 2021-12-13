@@ -13,10 +13,12 @@
   "dependencies": {
     "@co.mmons/node-utils": "github:co-mmons/node-utils"
   },
+  "optionalDependencies": {
+    "rxjs": "^7.4.0"
+  },
   "peerDependencies": {
     "@co.mmons/js-utils": "github:co-mmons/js-utils",
-    "tslib": "^2.3.1",
-    "rxjs": "^7.4.0"
+    "tslib": "^2.3.1"
   },
   "devDependencies": {
     "@co.mmons/js-utils": "github:co-mmons/js-utils",
