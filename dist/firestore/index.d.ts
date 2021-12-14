@@ -25,4 +25,6 @@ export * from "./getSnapshotFromCache";
 export * from "./getSnapshotFromServer";
 export * from "./runTransaction";
 export * from "./serverTimestamp";
+export * from "./setDocument";
+export * from "./updateDocument";
 export { QueryConstraint } from "./QueryConstraint";
