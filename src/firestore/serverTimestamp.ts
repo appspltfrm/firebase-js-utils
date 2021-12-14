@@ -1,19 +1,13 @@
 import {serverTimestamp as serverTimestampClient} from "firebase/firestore";
-import {FieldValue, FieldValueClient} from "./FieldValue";
-import {Firestore, FirestoreAdmin, FirestoreClient} from "./Firestore";
+import {FieldValue} from "./FieldValue";
+import {Firestore} from "./Firestore";
 
-export function serverTimestamp(firestore: FirestoreClient): FieldValueClient;
+export function serverTimestamp(): FieldValue {
 
-export function serverTimestamp(firestore: FirestoreAdmin): FieldValue;
-
-export function serverTimestamp(firestore: Firestore): FieldValue;
-
-export function serverTimestamp(firestore: Firestore): FieldValue {
-
-    if (Firestore.isClient(firestore)) {
-        return serverTimestampClient();
-    } else {
+    if (Firestore.adminInitialized()) {
         Firestore.admin().FieldValue.serverTimestamp();
+    } else {
+        return serverTimestampClient();
     }
 
 }

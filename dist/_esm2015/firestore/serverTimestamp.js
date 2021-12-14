@@ -1,11 +1,11 @@
 import { serverTimestamp as serverTimestampClient } from "firebase/firestore";
 import { Firestore } from "./Firestore";
-export function serverTimestamp(firestore) {
-    if (Firestore.isClient(firestore)) {
-        return serverTimestampClient();
+export function serverTimestamp() {
+    if (Firestore.adminInitialized()) {
+        Firestore.admin().FieldValue.serverTimestamp();
     }
     else {
-        Firestore.admin().FieldValue.serverTimestamp();
+        return serverTimestampClient();
     }
 }
 //# sourceMappingURL=serverTimestamp.js.map

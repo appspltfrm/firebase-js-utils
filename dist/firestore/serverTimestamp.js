@@ -3,12 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.serverTimestamp = void 0;
 const firestore_1 = require("firebase/firestore");
 const Firestore_1 = require("./Firestore");
-function serverTimestamp(firestore) {
-    if (Firestore_1.Firestore.isClient(firestore)) {
-        return (0, firestore_1.serverTimestamp)();
+function serverTimestamp() {
+    if (Firestore_1.Firestore.adminInitialized()) {
+        Firestore_1.Firestore.admin().FieldValue.serverTimestamp();
     }
     else {
-        Firestore_1.Firestore.admin().FieldValue.serverTimestamp();
+        return (0, firestore_1.serverTimestamp)();
     }
 }
 exports.serverTimestamp = serverTimestamp;
