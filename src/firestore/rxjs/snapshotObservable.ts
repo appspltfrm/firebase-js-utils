@@ -28,7 +28,7 @@ export function snapshotObservable<T = DocumentData>(docOrQuery: DocumentReferen
 
         if (Query.isInstance(docOrQuery)) {
             if (Query.isClient(docOrQuery)) {
-                const unsubscribe = onSnapshot(docOrQuery, options, snapshot => subscriber.next(snapshot), error => subscriber.error(error))
+                const unsubscribe = onSnapshot(docOrQuery, options ?? {}, snapshot => subscriber.next(snapshot), error => subscriber.error(error))
                 return () => unsubscribe();
             } else {
                 const unsubscribe = docOrQuery.onSnapshot(snapshot => subscriber.next(snapshot), error => subscriber.error(error));
@@ -37,7 +37,7 @@ export function snapshotObservable<T = DocumentData>(docOrQuery: DocumentReferen
 
         } else if (DocumentReference.isInstance(docOrQuery)) {
             if (DocumentReference.isClient(docOrQuery)) {
-                const unsubscribe = onSnapshot(docOrQuery, options, snapshot => subscriber.next(snapshot as any), error => subscriber.error(error));
+                const unsubscribe = onSnapshot(docOrQuery, options ?? {}, snapshot => subscriber.next(snapshot), error => subscriber.error(error));
                 return () => unsubscribe();
             } else if (DocumentReference.isAdmin(docOrQuery)) {
                 const unsubscribe = docOrQuery.onSnapshot(snapshot => subscriber.next(snapshot), error => subscriber.error(error));

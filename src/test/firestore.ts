@@ -1,9 +1,12 @@
+import {sleep} from "@co.mmons/js-utils/core";
 import {deleteApp, getApp, initializeApp} from "firebase/app";
 import {getAuth} from "firebase/auth";
 import {getFirestore} from "firebase/firestore";
+import {map} from "rxjs";
 import {AuthUser} from "../client-auth";
 import {FirebaseContextClient} from "../FirebaseContext";
 import {getData} from "../firestore";
+import {dataObservable, snapshotObservable} from "../firestore/rxjs";
 
 interface SomeType {
     field: string;
@@ -28,7 +31,9 @@ interface SomeType {
         }
 
         const recordQuery = context.firestoreQuery("records");
-        console.log(await getData(recordQuery));
+        dataObservable(recordQuery).subscribe(aa => console.log(aa));
+
+        await sleep(10000);
 
     } catch (error) {
         console.error(error);
