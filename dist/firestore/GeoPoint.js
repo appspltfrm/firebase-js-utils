@@ -13,12 +13,16 @@ var GeoPoint;
         return !isClient(gp) && Firestore_1.Firestore.adminInitialized() && gp instanceof Firestore_1.Firestore.admin().GeoPoint;
     }
     GeoPoint.isAdmin = isAdmin;
-    function create(firestore, latitude, longitude) {
-        if (Firestore_1.Firestore.isClient(firestore)) {
-            return new firestore_1.GeoPoint(latitude, longitude);
+    function isInstance(obj) {
+        return isClient(obj) || isAdmin(obj);
+    }
+    GeoPoint.isInstance = isInstance;
+    function create(latitude, longitude) {
+        if (Firestore_1.Firestore.adminInitialized()) {
+            return new (Firestore_1.Firestore.admin().GeoPoint)(latitude, longitude);
         }
         else {
-            return new (Firestore_1.Firestore.admin().GeoPoint)(latitude, longitude);
+            return new firestore_1.GeoPoint(latitude, longitude);
         }
     }
     GeoPoint.create = create;

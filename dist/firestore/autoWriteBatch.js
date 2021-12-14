@@ -136,4 +136,4 @@ function autoWriteBatch(firestore) {
     }
 }
 exports.autoWriteBatch = autoWriteBatch;
-//# sourceMappingURL=autoWriteBatch.js.map
+//# sourceMappingURL=AutoWriteBatch.js.map

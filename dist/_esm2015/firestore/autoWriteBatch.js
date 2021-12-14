@@ -129,4 +129,4 @@ export function autoWriteBatch(firestore) {
         return new AutoWriteBatchAdmin(firestore);
     }
 }
-//# sourceMappingURL=autoWriteBatch.js.map
+//# sourceMappingURL=AutoWriteBatch.js.map

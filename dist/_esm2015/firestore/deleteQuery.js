@@ -1,9 +1,9 @@
 import { __awaiter } from "tslib";
 import { sleep } from "@co.mmons/js-utils/core";
-import { deleteDoc } from "./deleteDoc";
+import { buildQuery } from "./buildQuery";
+import { deleteDocument } from "./deleteDocument";
 import { DocumentReference } from "./DocumentReference";
-import { getQuery } from "./getQuery";
-import { getQuerySnapshot } from "./getQuerySnapshot";
+import { getSnapshot } from "./getSnapshot";
 import { Query } from "./Query";
 import { WriteBatch, writeBatch } from "./WriteBatch";
 export function deleteQuery(query, options) {
@@ -12,9 +12,9 @@ export function deleteQuery(query, options) {
             options = {};
         }
         if (options.readLimit) {
-            query = getQuery(query, ["limit", options.readLimit]);
+            query = buildQuery(query, ["limit", options.readLimit]);
         }
-        const snapshot = yield getQuerySnapshot(query);
+        const snapshot = yield getSnapshot(query);
         let deleteCount = 0;
         // when there are no documents left, we are done
         if (snapshot.size === 0) {
@@ -23,7 +23,7 @@ export function deleteQuery(query, options) {
         for (const d of snapshot.docs) {
             if (options.batch === false) {
                 try {
-                    yield deleteDoc(d.ref);
+                    yield deleteDocument(d.ref);
                     deleteCount++;
                 }
                 catch (error) {

@@ -1,10 +1,15 @@
 import type { firestore as admin } from "firebase-admin";
-import type * as client from "firebase/firestore";
+import { DocumentReference as $DocumentReferenceClient } from "firebase/firestore";
 import { DocumentData } from "./DocumentData";
-export declare type DocumentReferenceClient<T = DocumentData> = client.DocumentReference<T>;
+import { Firestore, FirestoreAdmin, FirestoreClient } from "./Firestore";
+export declare type DocumentReferenceClient<T = DocumentData> = $DocumentReferenceClient<T>;
 export declare type DocumentReferenceAdmin<T = DocumentData> = admin.DocumentReference<T>;
 export declare type DocumentReference<T = DocumentData> = DocumentReferenceAdmin<T> | DocumentReferenceClient<T>;
 export declare namespace DocumentReference {
+    function isInstance<T>(obj: any): obj is DocumentReference<T>;
     function isClient<T>(ref: DocumentReference<T>): ref is DocumentReferenceClient<T>;
     function isAdmin<T>(ref: DocumentReference<T>): ref is DocumentReferenceAdmin<T>;
 }
+export declare function documentReference<T = DocumentData>(firestore: FirestoreClient, path: string): DocumentReferenceClient<T>;
+export declare function documentReference<T = DocumentData>(firestore: FirestoreAdmin, path: string): DocumentReferenceAdmin<T>;
+export declare function documentReference<T = DocumentData>(firestore: Firestore, path: string): DocumentReference<T>;

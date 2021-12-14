@@ -1,3 +1,4 @@
+import { collection } from "firebase/firestore";
 import { Firestore } from "./Firestore";
 export var CollectionReference;
 (function (CollectionReference) {
@@ -10,4 +11,12 @@ export var CollectionReference;
     }
     CollectionReference.isAdmin = isAdmin;
 })(CollectionReference || (CollectionReference = {}));
+export function collectionReference(firestore, path) {
+    if (Firestore.isClient(firestore)) {
+        return collection(firestore, path);
+    }
+    else {
+        return firestore.collection(path);
+    }
+}
 //# sourceMappingURL=CollectionReference.js.map

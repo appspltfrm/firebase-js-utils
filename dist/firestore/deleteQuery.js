@@ -3,10 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteQuery = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@co.mmons/js-utils/core");
-const deleteDoc_1 = require("./deleteDoc");
+const buildQuery_1 = require("./buildQuery");
+const deleteDocument_1 = require("./deleteDocument");
 const DocumentReference_1 = require("./DocumentReference");
-const getQuery_1 = require("./getQuery");
-const getQuerySnapshot_1 = require("./getQuerySnapshot");
+const getSnapshot_1 = require("./getSnapshot");
 const Query_1 = require("./Query");
 const WriteBatch_1 = require("./WriteBatch");
 function deleteQuery(query, options) {
@@ -15,9 +15,9 @@ function deleteQuery(query, options) {
             options = {};
         }
         if (options.readLimit) {
-            query = (0, getQuery_1.getQuery)(query, ["limit", options.readLimit]);
+            query = (0, buildQuery_1.buildQuery)(query, ["limit", options.readLimit]);
         }
-        const snapshot = yield (0, getQuerySnapshot_1.getQuerySnapshot)(query);
+        const snapshot = yield (0, getSnapshot_1.getSnapshot)(query);
         let deleteCount = 0;
         // when there are no documents left, we are done
         if (snapshot.size === 0) {
@@ -26,7 +26,7 @@ function deleteQuery(query, options) {
         for (const d of snapshot.docs) {
             if (options.batch === false) {
                 try {
-                    yield (0, deleteDoc_1.deleteDoc)(d.ref);
+                    yield (0, deleteDocument_1.deleteDocument)(d.ref);
                     deleteCount++;
                 }
                 catch (error) {

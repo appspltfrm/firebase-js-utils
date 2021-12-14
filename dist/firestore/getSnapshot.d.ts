@@ -1,0 +1,11 @@
+import { DocumentData } from "./DocumentData";
+import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } from "./DocumentReference";
+import { DocumentSnapshot, DocumentSnapshotAdmin, DocumentSnapshotClient } from "./DocumentSnapshot";
+import { Query, QueryAdmin, QueryClient } from "./Query";
+import { QuerySnapshot, QuerySnapshotAdmin, QuerySnapshotClient } from "./QuerySnapshot";
+export declare function getSnapshot<T = DocumentData>(query: QueryClient<T>): Promise<QuerySnapshotClient<T>>;
+export declare function getSnapshot<T = DocumentData>(query: QueryAdmin<T>): Promise<QuerySnapshotAdmin<T>>;
+export declare function getSnapshot<T = DocumentData>(query: Query<T>): Promise<QuerySnapshot<T>>;
+export declare function getSnapshot<T = DocumentData>(doc: DocumentReferenceClient<T>): Promise<DocumentSnapshotClient<T>>;
+export declare function getSnapshot<T = DocumentData>(doc: DocumentReferenceAdmin<T>): Promise<DocumentSnapshotAdmin<T>>;
+export declare function getSnapshot<T = DocumentData>(doc: DocumentReference<T>): Promise<DocumentSnapshot<T>>;

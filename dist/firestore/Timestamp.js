@@ -13,6 +13,10 @@ var Timestamp;
         return !isClient(timestamp);
     }
     Timestamp.isAdmin = isAdmin;
+    function isInstance(obj) {
+        return obj instanceof firestore_1.Timestamp || (Firestore_1.Firestore.adminInitialized() && obj instanceof Firestore_1.Firestore.admin().Timestamp);
+    }
+    Timestamp.isInstance = isInstance;
     function now(firestore) {
         if (Firestore_1.Firestore.isClient(firestore)) {
             return firestore_1.Timestamp.now();
@@ -22,5 +26,23 @@ var Timestamp;
         }
     }
     Timestamp.now = now;
+    function fromDate(firestore, date) {
+        if (Firestore_1.Firestore.isClient(firestore)) {
+            return firestore_1.Timestamp.fromDate(date);
+        }
+        else {
+            return Firestore_1.Firestore.admin().Timestamp.fromDate(date);
+        }
+    }
+    Timestamp.fromDate = fromDate;
+    function fromMillis(firestore, milliseconds) {
+        if (Firestore_1.Firestore.isClient(firestore)) {
+            return firestore_1.Timestamp.fromMillis(milliseconds);
+        }
+        else {
+            return Firestore_1.Firestore.admin().Timestamp.fromMillis(milliseconds);
+        }
+    }
+    Timestamp.fromMillis = fromMillis;
 })(Timestamp = exports.Timestamp || (exports.Timestamp = {}));
 //# sourceMappingURL=Timestamp.js.map
