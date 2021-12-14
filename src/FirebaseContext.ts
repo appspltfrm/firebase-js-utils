@@ -20,7 +20,7 @@ abstract class UniversalFirebaseContext {
 
     abstract firestoreCollection<T = DocumentData>(path: string): CollectionReference<T>;
 
-    abstract firestoreDoc<T = DocumentData>(path: string): DocumentReference<T>;
+    abstract firestoreDocument<T = DocumentData>(path: string): DocumentReference<T>;
 
     functionUrl?: (name: string) => string;
 
@@ -45,7 +45,7 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
         return collectionReference(this.firestore, path);
     }
 
-    firestoreDoc<T = DocumentData>(path: string): DocumentReferenceClient<T> {
+    firestoreDocument<T = DocumentData>(path: string): DocumentReferenceClient<T> {
         return documentReference(this.firestore, path);
     }
 }
@@ -66,7 +66,7 @@ export abstract class FirebaseContextAdmin extends UniversalFirebaseContext {
         return collectionReference(this.firestore, path);
     }
 
-    firestoreDoc<T = DocumentData>(path: string): DocumentReferenceAdmin<T> {
+    firestoreDocument<T = DocumentData>(path: string): DocumentReferenceAdmin<T> {
         return documentReference(this.firestore, path);
     }
 }

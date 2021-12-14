@@ -9,7 +9,7 @@ export class FirebaseContextClient extends UniversalFirebaseContext {
     firestoreCollection(path) {
         return collectionReference(this.firestore, path);
     }
-    firestoreDoc(path) {
+    firestoreDocument(path) {
         return documentReference(this.firestore, path);
     }
 }
@@ -21,7 +21,7 @@ export class FirebaseContextAdmin extends UniversalFirebaseContext {
     firestoreCollection(path) {
         return collectionReference(this.firestore, path);
     }
-    firestoreDoc(path) {
+    firestoreDocument(path) {
         return documentReference(this.firestore, path);
     }
 }
