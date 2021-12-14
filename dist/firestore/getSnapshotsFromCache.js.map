@@ -1,0 +1,1 @@
+{"version":3,"file":"getSnapshotsFromCache.js","sourceRoot":"","sources":["../../src/firestore/getSnapshotsFromCache.ts"],"names":[],"mappings":";;;;AACA,iEAA4D;AAU5D,SAAsB,qBAAqB,CAAmB,KAAe;;QACzE,OAAO,CAAC,MAAM,IAAA,2CAAoB,EAAC,KAAK,CAAC,CAAC,CAAC,IAAI,CAAC;IACpD,CAAC;CAAA;AAFD,sDAEC"}

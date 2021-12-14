@@ -1,0 +1,1 @@
+{"version":3,"file":"getSnapshotsFromServer.js","sourceRoot":"","sources":["../../src/firestore/getSnapshotsFromServer.ts"],"names":[],"mappings":";;;;AACA,mEAA8D;AAU9D,SAAsB,sBAAsB,CAAmB,KAAe;;QAC1E,OAAO,CAAC,MAAM,IAAA,6CAAqB,EAAC,KAAK,CAAC,CAAC,CAAC,IAAI,CAAC;IACrD,CAAC;CAAA;AAFD,wDAEC"}
