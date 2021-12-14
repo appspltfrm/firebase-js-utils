@@ -22,45 +22,27 @@ export namespace Timestamp {
     }
 
 
-    export function now(firestore: FirestoreClient): TimestampClient;
-
-    export function now(firestore: FirestoreAdmin): TimestampAdmin;
-
-    export function now(firestore: Firestore): Timestamp;
-
-    export function now(firestore: Firestore) {
-        if (Firestore.isClient(firestore)) {
-            return $TimestampClient.now();
-        } else {
+    export function now() {
+        if (Firestore.adminInitialized()) {
             return Firestore.admin().Timestamp.now();
+        } else {
+            return $TimestampClient.now();
         }
     }
 
-    export function fromDate(firestore: FirestoreClient, date: Date): TimestampClient;
-
-    export function fromDate(firestore: FirestoreAdmin, date: Date): TimestampAdmin;
-
-    export function fromDate(firestore: Firestore, date: Date): Timestamp;
-
-    export function fromDate(firestore: Firestore, date: Date) {
-        if (Firestore.isClient(firestore)) {
-            return $TimestampClient.fromDate(date);
-        } else {
+    export function fromDate(date: Date) {
+        if (Firestore.adminInitialized()) {
             return Firestore.admin().Timestamp.fromDate(date);
+        } else {
+            return $TimestampClient.fromDate(date);
         }
     }
 
-    export function fromMillis(firestore: FirestoreClient, milliseconds: number): TimestampClient;
-
-    export function fromMillis(firestore: FirestoreAdmin, milliseconds: number): TimestampAdmin;
-
-    export function fromMillis(firestore: Firestore, milliseconds: number): Timestamp;
-
-    export function fromMillis(firestore: Firestore, milliseconds: number) {
-        if (Firestore.isClient(firestore)) {
-            return $TimestampClient.fromMillis(milliseconds);
-        } else {
+    export function fromMillis(milliseconds: number) {
+        if (Firestore.adminInitialized()) {
             return Firestore.admin().Timestamp.fromMillis(milliseconds);
+        } else {
+            return $TimestampClient.fromMillis(milliseconds);
         }
     }
 }
