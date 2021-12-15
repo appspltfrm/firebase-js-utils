@@ -3,14 +3,22 @@ import {DocumentSnapshot} from "./DocumentSnapshot";
 
 export type QueryConstraintWhere = [constraintType: "where", fieldPath: string, opStr: WhereFilterOp, value: unknown];
 export type QueryConstraintLimit = [constraintType: "limit", limit: number];
-export type QueryConstraintStartAt = [constraintType: "startAt", snapshot: DocumentSnapshot];
-export type QueryConstraintStartAfter = [constraintType: "startAfter", snapshot: DocumentSnapshot];
-export type QueryConstraintEndAt = [constraintType: "endAt", snapshot: DocumentSnapshot];
-export type QueryConstraintEndBefore = [constraintType: "endBefore", snapshot: DocumentSnapshot];
+export type QueryConstraintStartAtSnapshot = [constraintType: "startAt", snapshot: DocumentSnapshot];
+export type QueryConstraintStartAtValues = [constraintType: "startAt", ...values: unknown[]];
+export type QueryConstraintStartAfterSnapshot = [constraintType: "startAfter", snapshot: DocumentSnapshot];
+export type QueryConstraintStartAfterValues = [constraintType: "startAfter", ...values: unknown[]];
+export type QueryConstraintEndAtSnapshot = [constraintType: "endAt", snapshot: DocumentSnapshot];
+export type QueryConstraintEndAtValues = [constraintType: "endAt", ...values: unknown[]];
+export type QueryConstraintEndBeforeSnapshot = [constraintType: "endBefore", snapshot: DocumentSnapshot];
+export type QueryConstraintEndBeforeValues = [constraintType: "endBefore", ...values: unknown[]];
 export type QueryConstraintLimitToLast = [constraintType: "limitToLast", limit: number];
 export type QueryConstraintOrderBy = [constraintType: "orderBy", fieldPath: string, directionStr?: OrderByDirection];
 
-export type QueryConstraint = QueryConstraintWhere | QueryConstraintLimit | QueryConstraintLimitToLast | QueryConstraintOrderBy |
-    QueryConstraintStartAt | QueryConstraintStartAfter | QueryConstraintEndAt | QueryConstraintEndBefore;
+export type QueryConstraint = QueryConstraintWhere | QueryConstraintOrderBy |
+    QueryConstraintLimit | QueryConstraintLimitToLast |
+    QueryConstraintStartAtSnapshot | QueryConstraintStartAtValues |
+    QueryConstraintStartAfterSnapshot | QueryConstraintStartAfterValues |
+    QueryConstraintEndAtSnapshot | QueryConstraintEndAtValues |
+    QueryConstraintEndBeforeSnapshot | QueryConstraintEndBeforeValues;
 
 export {QueryConstraintType} from "@firebase/firestore";
