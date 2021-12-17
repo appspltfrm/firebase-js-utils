@@ -8,14 +8,6 @@ import {WriteBatch, WriteBatchAdmin} from "./WriteBatch";
 
 export abstract class AutoWriteBatch {
 
-    static isClient(batch: AutoWriteBatch): batch is AutoWriteBatchClient {
-        return Firestore.isClient(batch.firestore);
-    }
-
-    static isAdmin(batch: AutoWriteBatch): batch is AutoWriteBatchAdmin {
-        return !Firestore.isClient(batch.firestore);
-    }
-
     protected constructor(readonly firestore: Firestore) {
     }
 
@@ -179,6 +171,18 @@ export class AutoWriteBatchAdmin extends AutoWriteBatch implements AutoWriteBatc
         this.count$++;
         this.adminBatch.create(documentRef, data);
         return this;
+    }
+
+}
+
+export namespace AutoWriteBatch {
+
+    export function isClient(batch: AutoWriteBatch): batch is AutoWriteBatchClient {
+        return Firestore.isClient(batch.firestore);
+    }
+
+    export function isAdmin(batch: AutoWriteBatch): batch is AutoWriteBatchAdmin {
+        return !Firestore.isClient(batch.firestore);
     }
 
 }

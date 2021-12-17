@@ -8,12 +8,6 @@ export class AutoWriteBatch {
         this.count$ = 0;
         this.committedCount$ = 0;
     }
-    static isClient(batch) {
-        return Firestore.isClient(batch.firestore);
-    }
-    static isAdmin(batch) {
-        return !Firestore.isClient(batch.firestore);
-    }
     get batch() {
         if (!this.batch$) {
             if (Firestore.isClient(this.firestore)) {
@@ -121,6 +115,16 @@ export class AutoWriteBatchAdmin extends AutoWriteBatch {
         return this;
     }
 }
+(function (AutoWriteBatch) {
+    function isClient(batch) {
+        return Firestore.isClient(batch.firestore);
+    }
+    AutoWriteBatch.isClient = isClient;
+    function isAdmin(batch) {
+        return !Firestore.isClient(batch.firestore);
+    }
+    AutoWriteBatch.isAdmin = isAdmin;
+})(AutoWriteBatch || (AutoWriteBatch = {}));
 export function autoWriteBatch(firestore) {
     if (Firestore.isClient(firestore)) {
         return new AutoWriteBatchClient(firestore);

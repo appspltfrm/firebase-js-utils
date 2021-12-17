@@ -6,8 +6,6 @@ import { Firestore, FirestoreAdmin, FirestoreClient } from "./Firestore";
 import { WriteBatch } from "./WriteBatch";
 export declare abstract class AutoWriteBatch {
     readonly firestore: Firestore;
-    static isClient(batch: AutoWriteBatch): batch is AutoWriteBatchClient;
-    static isAdmin(batch: AutoWriteBatch): batch is AutoWriteBatchAdmin;
     protected constructor(firestore: Firestore);
     onCommit: (count: number, results?: any) => void;
     protected batch$: WriteBatch;
@@ -63,6 +61,10 @@ export declare class AutoWriteBatchAdmin extends AutoWriteBatch implements AutoW
     constructor(firestore: FirestoreAdmin);
     private get adminBatch();
     create(documentRef: DocumentReferenceAdmin<any>, data: any): this;
+}
+export declare namespace AutoWriteBatch {
+    function isClient(batch: AutoWriteBatch): batch is AutoWriteBatchClient;
+    function isAdmin(batch: AutoWriteBatch): batch is AutoWriteBatchAdmin;
 }
 export declare function autoWriteBatch(firestore: FirestoreAdmin): AutoWriteBatchAdmin;
 export declare function autoWriteBatch(firestore: FirestoreClient): AutoWriteBatchClient;
