@@ -5,7 +5,7 @@ export function buildQuery(query, ...queryConstraints) {
     if (Query.isClient(query)) {
         if (queryConstraints) {
             const constraints = [];
-            for (const constraint of queryConstraints) {
+            for (const constraint of queryConstraints.filter(c => !!c)) {
                 const type = constraint[0];
                 const args = constraint.slice(1);
                 if (type === "where") {
@@ -40,7 +40,7 @@ export function buildQuery(query, ...queryConstraints) {
     else {
         if (queryConstraints) {
             let niu = query;
-            for (const constraint of queryConstraints) {
+            for (const constraint of queryConstraints.filter(c => !!c)) {
                 const type = constraint[0];
                 const args = constraint.slice(1);
                 if (type === "where") {

@@ -16,7 +16,7 @@ export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraint
         if (queryConstraints) {
 
             const constraints: QueryConstraintClient[] = [];
-            for (const constraint of queryConstraints) {
+            for (const constraint of queryConstraints.filter(c => !!c)) {
                 const type = constraint[0] as QueryConstraintType;
                 const args = constraint.slice(1);
                 if (type === "where") {
@@ -47,7 +47,7 @@ export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraint
 
         if (queryConstraints) {
             let niu = query as QueryAdmin<T>;
-            for (const constraint of queryConstraints) {
+            for (const constraint of queryConstraints.filter(c => !!c)) {
                 const type = constraint[0] as QueryConstraintType;
                 const args = constraint.slice(1);
                 if (type === "where") {
