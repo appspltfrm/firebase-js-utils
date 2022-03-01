@@ -41,7 +41,7 @@ class AutoWriteBatch {
         this.committedCount$ = 0;
     }
     autoCommit() {
-        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (this.count$ > this.limit$) {
                 const count = this.count$;
                 const results = yield this.batch.commit();
@@ -62,7 +62,7 @@ class AutoWriteBatch {
         });
     }
     commit() {
-        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (this.count$ > 0) {
                 const count = this.count$;
                 const results = yield this.batch.commit();

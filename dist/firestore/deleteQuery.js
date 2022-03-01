@@ -10,7 +10,7 @@ const getSnapshot_1 = require("./getSnapshot");
 const Query_1 = require("./Query");
 const WriteBatch_1 = require("./WriteBatch");
 function deleteQuery(query, options) {
-    return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         if (!options) {
             options = {};
         }

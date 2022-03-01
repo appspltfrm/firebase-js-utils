@@ -6,7 +6,7 @@ const firestore_1 = require("firebase/firestore");
 const DocumentReference_1 = require("./DocumentReference");
 const Query_1 = require("./Query");
 function getSnapshotFromCache(docOrQuery) {
-    return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         if (Query_1.Query.isInstance(docOrQuery)) {
             if (Query_1.Query.isClient(docOrQuery)) {
                 return yield (0, firestore_1.getDocsFromCache)(docOrQuery);
