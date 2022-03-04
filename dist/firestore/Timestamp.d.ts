@@ -7,7 +7,7 @@ export declare namespace Timestamp {
     function isClient(timestamp: Timestamp): timestamp is TimestampClient;
     function isAdmin(timestamp: Timestamp): timestamp is TimestampAdmin;
     function isInstance(obj: any): obj is Timestamp;
-    function now(): $TimestampClient | admin.Timestamp;
-    function fromDate(date: Date): $TimestampClient | admin.Timestamp;
-    function fromMillis(milliseconds: number): $TimestampClient | admin.Timestamp;
+    function now(): admin.Timestamp | $TimestampClient;
+    function fromDate(date: Date): admin.Timestamp | $TimestampClient;
+    function fromMillis(milliseconds: number): admin.Timestamp | $TimestampClient;
 }

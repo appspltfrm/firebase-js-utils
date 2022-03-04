@@ -1,41 +1,38 @@
+import type { Precondition, SetOptions as SetOptionsAdmin, WriteResult } from "@google-cloud/firestore";
 import type { SetOptions as SetOptionsClient } from "firebase/firestore";
-import type { SetOptions as SetOptionsAdmin, Precondition, WriteResult } from "@google-cloud/firestore";
 import { DocumentData } from "./DocumentData";
 import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } from "./DocumentReference";
 import { Firestore, FirestoreAdmin, FirestoreClient } from "./Firestore";
-import { WriteBatch } from "./WriteBatch";
+interface CommitResult<SuccessResult = any> {
+    successCount: number;
+    successResults: SuccessResult[];
+    errorCount: number;
+    errors: any[];
+}
 export declare abstract class AutoWriteBatch {
     readonly firestore: Firestore;
     protected constructor(firestore: Firestore);
-    onCommit: (count: number, results?: any) => void;
-    protected batch$: WriteBatch;
+    onCommit: (result: CommitResult) => void;
+    protected operations: [method: "set" | "delete" | "update" | "create", args: any[]][];
     protected limit$: number;
-    protected count$: number;
-    protected committedCount$: number;
-    protected get batch(): WriteBatch;
+    protected successCount$: number;
+    protected errorCount$: number;
     get count(): number;
-    get committedCount(): number;
+    get successCount(): number;
+    get errorCount(): number;
     get limit(): number;
     set limit(limit: number);
-    isFull(): boolean;
-    resetCommittedCount(): void;
-    autoCommit(): Promise<{
-        count: number;
-        results?: any;
-    }>;
-    commit(): Promise<{
-        count: number;
-        results?: any;
-    }>;
+    autoCommit(): Promise<CommitResult>;
+    commit(): Promise<CommitResult>;
     delete(documentRef: DocumentReference<any>): this;
     set<T = DocumentData>(documentRef: DocumentReference<T>, data: T, options?: any): this;
     update(documentRef: DocumentReference<any>, data: any): this;
+    private commitImpl;
+    private createBatch;
 }
 interface AutoWriteBatchClientMethods {
     readonly firestore: FirestoreClient;
-    commit(): Promise<{
-        count: number;
-    }>;
+    commit(): Promise<CommitResult>;
     set<T = DocumentData>(documentRef: DocumentReferenceClient<T>, data: T): this;
     set<T = DocumentData>(documentRef: DocumentReferenceClient<T>, data: T, options: SetOptionsClient): this;
     update(documentRef: DocumentReference<any>, data: any): this;
@@ -51,15 +48,12 @@ interface AutoWriteBatchAdminMethods {
     create(documentRef: DocumentReferenceAdmin<any>, data: any): this;
     update(documentRef: DocumentReferenceAdmin<any>, data: any, precondition?: Precondition): this;
     delete(documentRef: DocumentReferenceAdmin<any>, precondition?: Precondition): this;
-    commit(): Promise<{
-        count: number;
-        results?: WriteResult[];
-    }>;
+    autoCommit(): Promise<CommitResult<WriteResult>>;
+    commit(): Promise<CommitResult<WriteResult>>;
 }
 export declare class AutoWriteBatchAdmin extends AutoWriteBatch implements AutoWriteBatchAdminMethods {
     readonly firestore: FirestoreAdmin;
     constructor(firestore: FirestoreAdmin);
-    private get adminBatch();
     create(documentRef: DocumentReferenceAdmin<any>, data: any): this;
 }
 export declare namespace AutoWriteBatch {

@@ -1,44 +1,43 @@
-import {writeBatch} from "firebase/firestore";
+import type {Precondition, SetOptions as SetOptionsAdmin, WriteResult} from "@google-cloud/firestore";
 import type {SetOptions as SetOptionsClient} from "firebase/firestore";
-import type {SetOptions as SetOptionsAdmin, Precondition, WriteResult} from "@google-cloud/firestore";
+import {writeBatch} from "firebase/firestore";
 import {DocumentData} from "./DocumentData";
 import {DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient} from "./DocumentReference";
 import {Firestore, FirestoreAdmin, FirestoreClient} from "./Firestore";
 import {WriteBatch, WriteBatchAdmin} from "./WriteBatch";
+
+interface CommitResult<SuccessResult = any> {
+    successCount: number;
+    successResults: SuccessResult[];
+    errorCount: number;
+    errors: any[];
+}
 
 export abstract class AutoWriteBatch {
 
     protected constructor(readonly firestore: Firestore) {
     }
 
-    onCommit: (count: number, results?: any) => void;
+    onCommit: (result: CommitResult) => void;
 
-    protected batch$: WriteBatch;
+    protected operations: [method: "set" | "delete" | "update" | "create", args: any[]][] = [];
 
     protected limit$: number = 249;
 
-    protected count$: number = 0;
+    protected successCount$: number = 0;
 
-    protected committedCount$: number = 0;
-
-    protected get batch(): WriteBatch {
-        if (!this.batch$) {
-            if (Firestore.isClient(this.firestore)) {
-                this.batch$ = writeBatch(this.firestore);
-            } else {
-                this.batch$ = this.firestore.batch();
-            }
-        }
-
-        return this.batch$;
-    }
+    protected errorCount$: number = 0;
 
     get count(): number {
-        return this.count$;
+        return this.operations.length;
     }
 
-    get committedCount() {
-        return this.committedCount$;
+    get successCount() {
+        return this.successCount$;
+    }
+
+    get errorCount() {
+        return this.errorCount$;
     }
 
     get limit() {
@@ -49,83 +48,110 @@ export abstract class AutoWriteBatch {
         this.limit$ = limit > 0 && limit <= 249 ? limit : 249;
     }
 
-    isFull() {
-        return this.count$ >= this.limit$;
-    }
+    async autoCommit(): Promise<CommitResult> {
 
-    resetCommittedCount() {
-        this.committedCount$ = 0;
-    }
-
-    async autoCommit(): Promise<{count: number, results?: any}> {
-
-        if (this.count$ > this.limit$) {
-            const count = this.count$;
-            const results = await this.batch.commit();
-            this.committedCount$ += count;
-            this.batch$ = undefined;
-            this.count$ = 0;
-
-            if (this.onCommit) {
-                try {
-                    this.onCommit(count, results);
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-
-            return {count, results};
+        if (this.count >= this.limit$) {
+            return this.commitImpl();
         }
 
-        return {count: 0};
+        return {successCount: 0, successResults: [], errors: [], errorCount: 0};
     }
 
-    async commit(): Promise<{count: number, results?: any}> {
-
-        if (this.count$ > 0) {
-            const count = this.count$;
-            const results = await this.batch.commit();
-            this.committedCount$ += count;
-            this.batch$ = undefined;
-            this.count$ = 0;
-
-            if (this.onCommit) {
-                try {
-                    this.onCommit(count, results);
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-
-            return {count, results};
-        }
-
-        return {count: 0};
+    async commit(): Promise<CommitResult> {
+        return this.commitImpl();
     }
 
     delete(documentRef: DocumentReference<any>): this {
-        this.count$++;
-        this.batch.delete(documentRef as any);
+        this.operations.push(["delete", [documentRef]])
         return this;
     }
 
     set<T = DocumentData>(documentRef: DocumentReference<T>, data: T, options?: any): this {
-        this.count$++;
-        this.batch.set.call(this.batch$, ...Array.prototype.slice.call(arguments));
+        this.operations.push(["set", Array.prototype.slice.call(arguments)]);
         return this;
     }
 
     update(documentRef: DocumentReference<any>, data: any): this {
-        this.count$++;
-        this.batch.update.call(this.batch$, ...Array.prototype.slice.call(arguments));
+        this.operations.push(["update", Array.prototype.slice.call(arguments)]);
         return this;
+    }
+
+    private async commitImpl(): Promise<CommitResult> {
+
+        let successCount = 0;
+        let successResults: any[] = [];
+        let errorCount = 0;
+        let errors: any[] = [];
+
+        if (this.count > 0) {
+
+            let batch = this.createBatch();
+            let batchCount = 0;
+
+            const commit = async () => {
+
+                if (batchCount > 0) {
+                    try {
+
+                        const r = await batch.commit();
+                        if (Array.isArray(r)) {
+                            successResults.push(...r);
+                        }
+
+                        successCount += batchCount;
+
+                    } catch (e) {
+                        errorCount += batchCount;
+                        errors.push(e);
+                    }
+                }
+
+                batch = this.createBatch();
+                batchCount = 0;
+            }
+
+            for (let i = 0; i < this.count; i++) {
+                batchCount++;
+
+                const operation = this.operations[i];
+                batch[operation[0]].call(batch, ...operation[1]);
+
+                if (i === this.limit$) {
+                    await commit();
+                }
+            }
+
+            await commit();
+
+            if (this.onCommit) {
+                try {
+                    this.onCommit({successCount, successResults, errorCount, errors});
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+
+        this.operations = [];
+        this.successCount$ += successCount;
+        this.errorCount$ += errorCount;
+
+        return {successCount, successResults, errorCount, errors};
+    }
+
+    private createBatch(): WriteBatch {
+        if (Firestore.isClient(this.firestore)) {
+            return writeBatch(this.firestore);
+        } else {
+            return this.firestore.batch();
+        }
     }
 
 }
 
 interface AutoWriteBatchClientMethods {
     readonly firestore: FirestoreClient;
-    commit(): Promise<{count: number}>;
+    commit(): Promise<CommitResult>;
     set<T = DocumentData>(documentRef: DocumentReferenceClient<T>, data: T): this;
     set<T = DocumentData>(documentRef: DocumentReferenceClient<T>, data: T, options: SetOptionsClient): this;
     update(documentRef: DocumentReference<any>, data: any): this;
@@ -153,7 +179,9 @@ interface AutoWriteBatchAdminMethods {
 
     delete(documentRef: DocumentReferenceAdmin<any>, precondition?: Precondition): this;
 
-    commit(): Promise<{count: number, results?: WriteResult[]}>;
+    autoCommit(): Promise<CommitResult<WriteResult>>;
+
+    commit(): Promise<CommitResult<WriteResult>>;
 
 }
 
@@ -163,13 +191,8 @@ export class AutoWriteBatchAdmin extends AutoWriteBatch implements AutoWriteBatc
         super(firestore);
     }
 
-    private get adminBatch() {
-        return this.batch as WriteBatchAdmin;
-    }
-
     create(documentRef: DocumentReferenceAdmin<any>, data: any) {
-        this.count$++;
-        this.adminBatch.create(documentRef, data);
+        this.operations.push(["create", Array.prototype.slice.call(arguments)]);
         return this;
     }
 
