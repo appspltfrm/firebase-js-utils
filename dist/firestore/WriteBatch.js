@@ -19,7 +19,7 @@ function writeBatch(firestore) {
         return (0, firestore_1.writeBatch)(firestore);
     }
     else {
-        firestore.batch();
+        return firestore.batch();
     }
 }
 exports.writeBatch = writeBatch;

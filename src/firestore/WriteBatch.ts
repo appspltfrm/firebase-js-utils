@@ -27,6 +27,6 @@ export function writeBatch(firestore: Firestore): WriteBatch {
     if (Firestore.isClient(firestore)) {
         return writeBatchClient(firestore);
     } else {
-        firestore.batch();
+        return firestore.batch();
     }
 }

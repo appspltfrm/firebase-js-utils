@@ -16,7 +16,7 @@ export function writeBatch(firestore) {
         return writeBatchClient(firestore);
     }
     else {
-        firestore.batch();
+        return firestore.batch();
     }
 }
 //# sourceMappingURL=WriteBatch.js.map
