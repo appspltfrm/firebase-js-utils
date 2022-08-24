@@ -53,19 +53,19 @@ export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraint
                 if (type === "where") {
                     niu = niu.where.call(niu, ...args);
                 } else if (type === "limit") {
-                    niu.limit.call(niu, ...args);
+                    niu = niu.limit.call(niu, ...args);
                 } else if (type === "endBefore") {
-                    niu.endBefore.call(niu, ...args);
+                    niu = niu.endBefore.call(niu, ...args);
                 } else if (type === "limitToLast") {
-                    niu.limitToLast.call(niu, ...args);
+                    niu = niu.limitToLast.call(niu, ...args);
                 } else if (type === "orderBy") {
-                    niu.orderBy.call(niu, ...args);
+                    niu = niu.orderBy.call(niu, ...args);
                 } else if (type === "startAfter") {
-                    niu.startAfter.call(niu, ...args);
+                    niu = niu.startAfter.call(niu, ...args);
                 } else if (type === "startAt") {
-                    niu.startAt.call(niu, ...args);
+                    niu = niu.startAt.call(niu, ...args);
                 } else if (type === "endAt") {
-                    niu.endAt.call(niu, ...args);
+                    niu = niu.endAt.call(niu, ...args);
                 }
             }
 
