@@ -116,7 +116,7 @@ export abstract class AutoWriteBatch {
                 const operation = this.operations[i];
                 batch[operation[0]].call(batch, ...operation[1]);
 
-                if (i === this.limit$) {
+                if (batchCount === this.limit$) {
                     await commit();
                 }
             }
