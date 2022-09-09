@@ -5,7 +5,7 @@ import {Firestore} from "./Firestore";
 export function serverTimestamp(): FieldValue {
 
     if (Firestore.adminInitialized()) {
-        Firestore.admin().FieldValue.serverTimestamp();
+        return Firestore.admin().FieldValue.serverTimestamp();
     } else {
         return serverTimestampClient();
     }
