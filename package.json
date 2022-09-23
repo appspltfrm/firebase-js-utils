@@ -20,12 +20,12 @@
     "@co.mmons/js-utils": "github:co-mmons/js-utils",
     "tslib": "^2.0.0",
     "firebase": "^9.0.0",
-    "firebase-admin": "^10.0.0"
+    "firebase-admin": "^11.0.0"
   },
   "devDependencies": {
     "@co.mmons/js-utils": "github:co-mmons/js-utils",
     "firebase": "^9.0.0",
-    "firebase-admin": "^10.0.0",
+    "firebase-admin": "^11.0.0",
     "typescript": "^4.6.2",
     "tslib": "^2.0.0",
     "rxjs": "^7.4.0"
