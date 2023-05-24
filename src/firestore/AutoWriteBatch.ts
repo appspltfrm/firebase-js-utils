@@ -4,7 +4,7 @@ import {writeBatch} from "firebase/firestore";
 import {DocumentData} from "./DocumentData";
 import {DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient} from "./DocumentReference";
 import {Firestore, FirestoreAdmin, FirestoreClient} from "./Firestore";
-import {WriteBatch, WriteBatchAdmin} from "./WriteBatch";
+import {WriteBatch} from "./WriteBatch";
 
 interface CommitResult<SuccessResult = any> {
     successCount: number;

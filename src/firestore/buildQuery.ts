@@ -4,19 +4,19 @@ import {DocumentData} from "./DocumentData";
 import {Query, QueryAdmin, QueryClient} from "./Query";
 import {QueryConstraint, QueryConstraintType} from "./QueryConstraint";
 
-export function buildQuery<T = DocumentData>(query: QueryClient<T>, ...queryConstraints: QueryConstraint[]): QueryClient<T>;
+export function buildQuery<T = DocumentData>(query: QueryClient<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
 
-export function buildQuery<T = DocumentData>(query: QueryAdmin<T>, ...queryConstraints: QueryConstraint[]): QueryAdmin<T>;
+export function buildQuery<T = DocumentData>(query: QueryAdmin<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryAdmin<T>;
 
-export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraints: QueryConstraint[]): Query<T>;
+export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;
 
-export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraints: QueryConstraint[]): Query<T> {
+export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T> {
     if (Query.isClient(query)) {
 
         if (queryConstraints) {
 
             const constraints: QueryConstraintClient[] = [];
-            for (const constraint of queryConstraints.filter(c => !!c)) {
+            for (const constraint of queryConstraints.filter(c => !!c) as QueryConstraint[]) {
                 const type = constraint[0] as QueryConstraintType;
                 const args = constraint.slice(1);
                 if (type === "where") {
@@ -47,7 +47,7 @@ export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraint
 
         if (queryConstraints) {
             let niu = query as QueryAdmin<T>;
-            for (const constraint of queryConstraints.filter(c => !!c)) {
+            for (const constraint of queryConstraints.filter(c => !!c) as QueryConstraint[]) {
                 const type = constraint[0] as QueryConstraintType;
                 const args = constraint.slice(1);
                 if (type === "where") {

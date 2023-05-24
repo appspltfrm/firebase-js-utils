@@ -14,7 +14,7 @@ export function updateDocument<T = DocumentData>(doc: DocumentReference<T>, data
     if (DocumentReference.isClient(doc)) {
         return updateDoc(doc, data as any);
     } else {
-        return doc.update(data, precondition);
+        return doc.update(data as any, precondition);
     }
 
 }

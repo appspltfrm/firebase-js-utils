@@ -14,9 +14,9 @@ abstract class UniversalFirebaseContext {
 
     readonly firestore?: Firestore;
 
-    abstract firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: QueryConstraint[]): Query<T>;
+    abstract firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;
 
-    abstract firestoreQuery<T = DocumentData>(collection: CollectionReference<T>, ...queryConstraints: QueryConstraint[]): Query<T>;
+    abstract firestoreQuery<T = DocumentData>(collection: CollectionReference<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;
 
     abstract firestoreCollection<T = DocumentData>(path: string): CollectionReference<T>;
 
@@ -32,11 +32,11 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
     readonly firestore?: FirestoreClient;
     readonly authUser?: AuthUser;
 
-    firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: QueryConstraint[]): QueryClient<T>;
+    firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
 
-    firestoreQuery<T = DocumentData>(collection: CollectionReferenceClient<T>, ...queryConstraints: QueryConstraint[]): QueryClient<T>;
+    firestoreQuery<T = DocumentData>(collection: CollectionReferenceClient<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
 
-    firestoreQuery<T = DocumentData>(pathOrCollection: string | CollectionReferenceClient<T>, ...queryConstraints: QueryConstraint[]): QueryClient<T> {
+    firestoreQuery<T = DocumentData>(pathOrCollection: string | CollectionReferenceClient<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T> {
         const collection: CollectionReference<T> = typeof pathOrCollection === "string" ? this.firestoreCollection(pathOrCollection) : pathOrCollection;
         return buildQuery(collection, ...queryConstraints);
     }
