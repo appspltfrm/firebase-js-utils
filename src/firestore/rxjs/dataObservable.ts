@@ -32,7 +32,7 @@ export function dataObservable<T = DocumentData>(docOrQuery: DocumentReference<T
 
         return snapshotObservable(docOrQuery, SnapshotListenOptions.extract(options))
             .pipe(
-                skipWhile(snapshot => !!options?.skipCache && Query.isClient(docOrQuery) && !!(snapshot as QuerySnapshotClient).docs.find(d => d.metadata.fromCache)),
+                skipWhile(snapshot => !!options?.skipCache && Query.isClient(docOrQuery) && !!(snapshot as QuerySnapshotClient).metadata.fromCache && !!(snapshot as QuerySnapshotClient).docs.find(d => d.metadata.fromCache)),
                 map(snapshot => snapshot.docs.map(d => d.data(SnapshotOptions.extract(options))))
             );
 

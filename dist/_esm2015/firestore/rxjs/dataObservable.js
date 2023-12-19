@@ -10,7 +10,7 @@ export function dataObservable(docOrQuery, options) {
     }
     if (Query.isInstance(docOrQuery)) {
         return snapshotObservable(docOrQuery, SnapshotListenOptions.extract(options))
-            .pipe(skipWhile(snapshot => !!(options === null || options === void 0 ? void 0 : options.skipCache) && Query.isClient(docOrQuery) && !!snapshot.docs.find(d => d.metadata.fromCache)), map(snapshot => snapshot.docs.map(d => d.data(SnapshotOptions.extract(options)))));
+            .pipe(skipWhile(snapshot => !!(options === null || options === void 0 ? void 0 : options.skipCache) && Query.isClient(docOrQuery) && !!snapshot.metadata.fromCache && !!snapshot.docs.find(d => d.metadata.fromCache)), map(snapshot => snapshot.docs.map(d => d.data(SnapshotOptions.extract(options)))));
     }
     else if (DocumentReference.isInstance(docOrQuery)) {
         return snapshotObservable(docOrQuery, SnapshotListenOptions.extract(options))

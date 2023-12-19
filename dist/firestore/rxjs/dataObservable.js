@@ -13,7 +13,7 @@ function dataObservable(docOrQuery, options) {
     }
     if (Query_1.Query.isInstance(docOrQuery)) {
         return (0, snapshotObservable_1.snapshotObservable)(docOrQuery, SnapshotListenOptions_1.SnapshotListenOptions.extract(options))
-            .pipe((0, rxjs_1.skipWhile)(snapshot => !!(options === null || options === void 0 ? void 0 : options.skipCache) && Query_1.Query.isClient(docOrQuery) && !!snapshot.docs.find(d => d.metadata.fromCache)), (0, rxjs_1.map)(snapshot => snapshot.docs.map(d => d.data(SnapshotOptions_1.SnapshotOptions.extract(options)))));
+            .pipe((0, rxjs_1.skipWhile)(snapshot => !!(options === null || options === void 0 ? void 0 : options.skipCache) && Query_1.Query.isClient(docOrQuery) && !!snapshot.metadata.fromCache && !!snapshot.docs.find(d => d.metadata.fromCache)), (0, rxjs_1.map)(snapshot => snapshot.docs.map(d => d.data(SnapshotOptions_1.SnapshotOptions.extract(options)))));
     }
     else if (DocumentReference_1.DocumentReference.isInstance(docOrQuery)) {
         return (0, snapshotObservable_1.snapshotObservable)(docOrQuery, SnapshotListenOptions_1.SnapshotListenOptions.extract(options))
