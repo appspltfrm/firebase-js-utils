@@ -8,6 +8,9 @@ const SnapshotListenOptions_1 = require("../SnapshotListenOptions");
 const SnapshotOptions_1 = require("../SnapshotOptions");
 const snapshotObservable_1 = require("./snapshotObservable");
 function dataObservable(docOrQuery, options) {
+    if (options === null || options === void 0 ? void 0 : options.skipCache) {
+        options.includeMetadataChanges = true;
+    }
     if (Query_1.Query.isInstance(docOrQuery)) {
         return (0, snapshotObservable_1.snapshotObservable)(docOrQuery, SnapshotListenOptions_1.SnapshotListenOptions.extract(options))
             .pipe((0, rxjs_1.skipWhile)(snapshot => !!(options === null || options === void 0 ? void 0 : options.skipCache) && Query_1.Query.isClient(docOrQuery) && !!snapshot.docs.find(d => d.metadata.fromCache)), (0, rxjs_1.map)(snapshot => snapshot.docs.map(d => d.data(SnapshotOptions_1.SnapshotOptions.extract(options)))));

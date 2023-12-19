@@ -5,6 +5,9 @@ import { SnapshotListenOptions } from "../SnapshotListenOptions";
 import { SnapshotOptions } from "../SnapshotOptions";
 import { snapshotObservable } from "./snapshotObservable";
 export function dataObservable(docOrQuery, options) {
+    if (options === null || options === void 0 ? void 0 : options.skipCache) {
+        options.includeMetadataChanges = true;
+    }
     if (Query.isInstance(docOrQuery)) {
         return snapshotObservable(docOrQuery, SnapshotListenOptions.extract(options))
             .pipe(skipWhile(snapshot => !!(options === null || options === void 0 ? void 0 : options.skipCache) && Query.isClient(docOrQuery) && !!snapshot.docs.find(d => d.metadata.fromCache)), map(snapshot => snapshot.docs.map(d => d.data(SnapshotOptions.extract(options)))));

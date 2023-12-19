@@ -24,6 +24,10 @@ export function dataObservable<T = DocumentData>(doc: DocumentReference<T>, opti
 
 export function dataObservable<T = DocumentData>(docOrQuery: DocumentReference<T> | Query<T>, options?: Options): Observable<T | T[]> {
 
+    if (options?.skipCache) {
+        (options as any).includeMetadataChanges = true;
+    }
+
     if (Query.isInstance(docOrQuery)) {
 
         return snapshotObservable(docOrQuery, SnapshotListenOptions.extract(options))
