@@ -13,7 +13,7 @@ export function snapshotObservable(docOrQuery, options) {
             subscriber.next(snapshot);
         };
         const handleError = (error) => {
-            if ((options === null || options === void 0 ? void 0 : options.skipErrors) && hasValue) {
+            if ((options === null || options === void 0 ? void 0 : options.skipErrors) !== false && hasValue) {
                 console.warn(error);
             }
             else {

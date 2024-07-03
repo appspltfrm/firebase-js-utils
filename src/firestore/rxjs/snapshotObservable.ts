@@ -36,7 +36,7 @@ export function snapshotObservable<T = DocumentData>(docOrQuery: DocumentReferen
         }
 
         const handleError = (error: any) => {
-            if (options?.skipErrors && hasValue) {
+            if (options?.skipErrors !== false && hasValue) {
                 console.warn(error);
             } else {
                 subscriber.error(error);
