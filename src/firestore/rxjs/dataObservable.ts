@@ -8,7 +8,10 @@ import {SnapshotListenOptions} from "../SnapshotListenOptions";
 import {SnapshotOptions} from "../SnapshotOptions";
 import {snapshotObservable} from "./snapshotObservable";
 
-type Options = SnapshotOptions & SnapshotListenOptions & {skipCache?: boolean};
+type Options = SnapshotOptions & SnapshotListenOptions & {
+    skipCache?: boolean,
+    skipErrors?: boolean
+}
 
 export function dataObservable<T = DocumentData>(query: QueryClient<T>, options?: Options): Observable<T[]>;
 
@@ -24,13 +27,11 @@ export function dataObservable<T = DocumentData>(doc: DocumentReference<T>, opti
 
 export function dataObservable<T = DocumentData>(docOrQuery: DocumentReference<T> | Query<T>, options?: Options): Observable<T | T[]> {
 
-    if (options?.skipCache) {
-        (options as any).includeMetadataChanges = true;
-    }
+    const snapshotListenOptions = {includeMetadataChanges: !!options?.skipCache, skipErrors: options?.skipErrors} as SnapshotListenOptions;
 
     if (Query.isInstance(docOrQuery)) {
 
-        return snapshotObservable(docOrQuery, SnapshotListenOptions.extract(options))
+        return snapshotObservable(docOrQuery, snapshotListenOptions)
             .pipe(
                 skipWhile(snapshot => !!options?.skipCache && Query.isClient(docOrQuery) && !!(snapshot as QuerySnapshotClient).metadata.fromCache && !!(snapshot as QuerySnapshotClient).docs.find(d => d.metadata.fromCache)),
                 map(snapshot => snapshot.docs.map(d => d.data(SnapshotOptions.extract(options))))
@@ -38,7 +39,7 @@ export function dataObservable<T = DocumentData>(docOrQuery: DocumentReference<T
 
     } else if (DocumentReference.isInstance(docOrQuery)) {
 
-        return snapshotObservable(docOrQuery, SnapshotListenOptions.extract(options))
+        return snapshotObservable(docOrQuery, snapshotListenOptions)
             .pipe(
                 skipWhile(snapshot => !!options?.skipCache && DocumentReference.isClient(docOrQuery) && !!(snapshot as DocumentSnapshotClient).metadata.fromCache),
                 map(snapshot => snapshot.data())
