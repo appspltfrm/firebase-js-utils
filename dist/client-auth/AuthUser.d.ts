@@ -1,5 +1,5 @@
-import { Observable, ReplaySubject } from "rxjs";
 import { Auth, User } from "firebase/auth";
+import { Observable, ReplaySubject } from "rxjs";
 export declare class AuthUser {
     private readonly auth;
     constructor(auth: Auth);
@@ -8,7 +8,7 @@ export declare class AuthUser {
     get user(): User;
     get userId(): string;
     readonly userObservable: ReplaySubject<User>;
-    readonly userIdObservable: ReplaySubject<string>;
+    readonly userIdObservable: Observable<string>;
     get userIdToken(): Promise<string>;
     get userIdTokenObservable(): Observable<string>;
     private userChanged;

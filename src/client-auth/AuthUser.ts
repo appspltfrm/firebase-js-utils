@@ -1,5 +1,5 @@
-import {first, firstValueFrom, map, Observable, of, ReplaySubject, switchMap, throwError} from "rxjs";
 import {Auth, User} from "firebase/auth";
+import {first, firstValueFrom, map, Observable, of, ReplaySubject, switchMap, throwError} from "rxjs";
 
 export class AuthUser {
 
@@ -21,7 +21,7 @@ export class AuthUser {
 
     readonly userObservable: ReplaySubject<User> = new ReplaySubject<User>(1);
 
-    readonly userIdObservable: ReplaySubject<string> = new ReplaySubject<string>(1);
+    readonly userIdObservable = this.userObservable.pipe(map(user => user?.uid || null));
 
     get userIdToken(): Promise<string> {
         return this.auth.currentUser?.getIdToken();
@@ -46,11 +46,9 @@ export class AuthUser {
 
             if (!user) {
                 this.userObservable.next(null);
-                this.userIdObservable.next(null);
 
             } else if (changed) {
                 this.userObservable.next(this._user ? this._user : null);
-                this.userIdObservable.next(this._user ? this._user.uid : null);
             }
 
         } catch (e) {

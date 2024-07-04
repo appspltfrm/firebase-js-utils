@@ -7,7 +7,7 @@ class AuthUser {
         this.auth = auth;
         this.authInitialized = false;
         this.userObservable = new rxjs_1.ReplaySubject(1);
-        this.userIdObservable = new rxjs_1.ReplaySubject(1);
+        this.userIdObservable = this.userObservable.pipe((0, rxjs_1.map)(user => (user === null || user === void 0 ? void 0 : user.uid) || null));
         this.auth.onIdTokenChanged((user) => this.userChanged(user));
     }
     get user() {
@@ -33,11 +33,9 @@ class AuthUser {
         try {
             if (!user) {
                 this.userObservable.next(null);
-                this.userIdObservable.next(null);
             }
             else if (changed) {
                 this.userObservable.next(this._user ? this._user : null);
-                this.userIdObservable.next(this._user ? this._user.uid : null);
             }
         }
         catch (e) {
