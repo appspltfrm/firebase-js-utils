@@ -28,7 +28,6 @@ export class AuthUser {
     }
 
     get userIdTokenObservable(): Observable<string> {
-
         return new Observable<User>(subscriber => {
             let unsubscribe = this.auth.onIdTokenChanged(subscriber);
             return () => unsubscribe();
@@ -37,7 +36,7 @@ export class AuthUser {
 
     private userChanged(user: User) {
 
-        const changed = !this.authInitialized || (!this._user && !!user) || (this._user && !user) || (this._user && user && this._user.uid !== user.uid);
+        const changed = !this.authInitialized;
 
         this._user = user;
         this.authInitialized = true;

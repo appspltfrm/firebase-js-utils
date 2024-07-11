@@ -16,6 +16,7 @@ function snapshotObservable(docOrQuery, options) {
             subscriber.next(snapshot);
         };
         const handleError = (error) => {
+            // console.debug("snapshot error", hasValue ? "skip" : "throw", docOrQuery);
             if ((options === null || options === void 0 ? void 0 : options.skipErrors) !== false && hasValue) {
                 console.warn(error);
             }

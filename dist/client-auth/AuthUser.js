@@ -27,7 +27,7 @@ class AuthUser {
         }).pipe((0, rxjs_1.switchMap)(user => user.getIdToken()));
     }
     userChanged(user) {
-        const changed = !this.authInitialized || (!this._user && !!user) || (this._user && !user) || (this._user && user && this._user.uid !== user.uid);
+        const changed = !this.authInitialized;
         this._user = user;
         this.authInitialized = true;
         try {
