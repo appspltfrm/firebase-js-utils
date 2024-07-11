@@ -27,15 +27,14 @@ class AuthUser {
         }).pipe((0, rxjs_1.switchMap)(user => user.getIdToken()));
     }
     userChanged(user) {
-        const changed = !this.authInitialized;
         this._user = user;
         this.authInitialized = true;
         try {
             if (!user) {
                 this.userObservable.next(null);
             }
-            else if (changed) {
-                this.userObservable.next(this._user ? this._user : null);
+            else {
+                this.userObservable.next(user ? user : null);
             }
         }
         catch (e) {

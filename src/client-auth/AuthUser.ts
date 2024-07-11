@@ -36,8 +36,6 @@ export class AuthUser {
 
     private userChanged(user: User) {
 
-        const changed = !this.authInitialized;
-
         this._user = user;
         this.authInitialized = true;
 
@@ -45,9 +43,8 @@ export class AuthUser {
 
             if (!user) {
                 this.userObservable.next(null);
-
-            } else if (changed) {
-                this.userObservable.next(this._user ? this._user : null);
+            } else {
+                this.userObservable.next(user ? user : null);
             }
 
         } catch (e) {
