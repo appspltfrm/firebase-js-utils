@@ -12,6 +12,7 @@ declare abstract class UniversalFirebaseContext {
 export declare abstract class FirebaseContextClient extends UniversalFirebaseContext {
     readonly firestore?: FirestoreClient;
     readonly authUser?: AuthUser;
+    functionUrl: (name: string) => string;
     firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
     firestoreQuery<T = DocumentData>(collection: CollectionReferenceClient<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
     firestoreCollection<T = DocumentData>(path: string): CollectionReferenceClient<T>;
