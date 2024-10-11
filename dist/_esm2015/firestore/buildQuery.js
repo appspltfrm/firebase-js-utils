@@ -50,7 +50,7 @@ export function buildQuery(query, ...queryConstraints) {
             const Filter = (Firestore.adminInitialized() && Firestore.admin().Filter);
             const buildFilterWhere = (...whereConstraints) => {
                 const where = [];
-                for (const constraint of whereConstraints) {
+                for (const constraint of whereConstraints.filter(c => !!c)) {
                     const type = constraint[0];
                     const args = constraint.slice(1);
                     if (type === "where") {

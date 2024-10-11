@@ -62,7 +62,7 @@ export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraint
 
             const buildFilterWhere = (...whereConstraints: Array<QueryConstraintWhere | QueryConstraintAndOr>) => {
                 const where = [];
-                for (const constraint of whereConstraints) {
+                for (const constraint of whereConstraints.filter(c => !!c)) {
                     const type = constraint[0] as "where" | "and" | "or";
                     const args = constraint.slice(1);
                     if (type === "where") {
