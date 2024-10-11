@@ -54,13 +54,13 @@ export function buildQuery(query, ...queryConstraints) {
                     const type = constraint[0];
                     const args = constraint.slice(1);
                     if (type === "where") {
-                        where.push(Filter.where.call(undefined, ...args));
+                        where.push(Filter.where.call(Filter.where, ...args));
                     }
                     else if (type === "and") {
-                        where.push(Filter.and.call(undefined, ...buildFilterWhere(...args)));
+                        where.push(Filter.and.call(Filter.and, ...buildFilterWhere(...args)));
                     }
                     else if (type === "or") {
-                        where.push(Filter.or.call(undefined, ...buildFilterWhere(...args)));
+                        where.push(Filter.or.call(Filter.or, ...buildFilterWhere(...args)));
                     }
                 }
                 return where;

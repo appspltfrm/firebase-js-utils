@@ -1,9 +1,9 @@
 import type { firestore as admin } from "firebase-admin";
 import { WriteBatch as $WriteBatchClient } from "firebase/firestore";
 import { Firestore, FirestoreAdmin, FirestoreClient } from "./Firestore";
-export declare type WriteBatchClient = $WriteBatchClient;
-export declare type WriteBatchAdmin = admin.WriteBatch;
-export declare type WriteBatch = WriteBatchClient | WriteBatchAdmin;
+export type WriteBatchClient = $WriteBatchClient;
+export type WriteBatchAdmin = admin.WriteBatch;
+export type WriteBatch = WriteBatchClient | WriteBatchAdmin;
 export declare namespace WriteBatch {
     function isClient(batch: WriteBatch): batch is WriteBatchClient;
     function isAdmin(batch: WriteBatch): batch is WriteBatchAdmin;

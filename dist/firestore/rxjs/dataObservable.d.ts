@@ -4,7 +4,7 @@ import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } fr
 import { Query, QueryAdmin, QueryClient } from "../Query";
 import { SnapshotListenOptions } from "../SnapshotListenOptions";
 import { SnapshotOptions } from "../SnapshotOptions";
-declare type Options = SnapshotOptions & SnapshotListenOptions & {
+type Options = SnapshotOptions & SnapshotListenOptions & {
     skipCache?: boolean;
     skipErrors?: boolean;
 };

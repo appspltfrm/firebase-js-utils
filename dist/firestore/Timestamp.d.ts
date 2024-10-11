@@ -1,8 +1,8 @@
 import type { firestore as admin } from "firebase-admin";
 import { Timestamp as $TimestampClient } from "firebase/firestore";
-export declare type TimestampClient = $TimestampClient;
-export declare type TimestampAdmin = admin.Timestamp;
-export declare type Timestamp = TimestampAdmin | TimestampClient;
+export type TimestampClient = $TimestampClient;
+export type TimestampAdmin = admin.Timestamp;
+export type Timestamp = TimestampAdmin | TimestampClient;
 export declare namespace Timestamp {
     function isClient(timestamp: Timestamp): timestamp is TimestampClient;
     function isAdmin(timestamp: Timestamp): timestamp is TimestampAdmin;

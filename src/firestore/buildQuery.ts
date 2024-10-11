@@ -66,11 +66,11 @@ export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraint
                     const type = constraint[0] as "where" | "and" | "or";
                     const args = constraint.slice(1);
                     if (type === "where") {
-                        where.push(Filter.where.call(undefined, ...args));
+                        where.push(Filter.where.call(Filter.where, ...args));
                     } else if (type === "and") {
-                        where.push(Filter.and.call(undefined, ...buildFilterWhere(...args as any)));
+                        where.push(Filter.and.call(Filter.and, ...buildFilterWhere(...args as any)));
                     } else if (type === "or") {
-                        where.push(Filter.or.call(undefined, ...buildFilterWhere(...args as any)));
+                        where.push(Filter.or.call(Filter.or, ...buildFilterWhere(...args as any)));
                     }
                 }
                 return where;
