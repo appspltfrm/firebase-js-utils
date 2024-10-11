@@ -8,15 +8,32 @@ const Query_1 = require("./Query");
 function buildQuery(query, ...queryConstraints) {
     if (Query_1.Query.isClient(query)) {
         if (queryConstraints) {
+            const buildOrAnd = (...whereConstraints) => {
+                const constraints = [];
+                for (const constraint of whereConstraints.filter(c => !!c)) {
+                    const type = constraint[0];
+                    const args = constraint.slice(1);
+                    if (type === "where") {
+                        constraints.push(firestore_2.where.call(firestore_2.where, ...args));
+                    }
+                    else if (type === "and") {
+                        constraints.push(firestore_2.and.call(firestore_2.and, ...buildOrAnd(...args)));
+                    }
+                    else if (type === "or") {
+                        constraints.push(firestore_2.or.call(firestore_2.or, ...buildOrAnd(...args)));
+                    }
+                }
+                return constraints;
+            };
             const constraints = [];
             for (const constraint of queryConstraints.filter(c => !!c)) {
                 const type = constraint[0];
                 const args = constraint.slice(1);
                 if (type === "or") {
-                    constraints.push(firestore_2.or.call(firestore_2.or, ...args));
+                    constraints.push(firestore_2.or.call(firestore_2.or, ...buildOrAnd(...args)));
                 }
                 else if (type === "and") {
-                    constraints.push(firestore_2.and.call(firestore_2.and, ...args));
+                    constraints.push(firestore_2.and.call(firestore_2.and, ...buildOrAnd(...args)));
                 }
                 else if (type === "where") {
                     constraints.push(firestore_2.where.call(firestore_2.where, ...args));

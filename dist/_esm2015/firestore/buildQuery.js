@@ -5,15 +5,32 @@ import { Query } from "./Query";
 export function buildQuery(query, ...queryConstraints) {
     if (Query.isClient(query)) {
         if (queryConstraints) {
+            const buildOrAnd = (...whereConstraints) => {
+                const constraints = [];
+                for (const constraint of whereConstraints.filter(c => !!c)) {
+                    const type = constraint[0];
+                    const args = constraint.slice(1);
+                    if (type === "where") {
+                        constraints.push(where.call(where, ...args));
+                    }
+                    else if (type === "and") {
+                        constraints.push(and.call(and, ...buildOrAnd(...args)));
+                    }
+                    else if (type === "or") {
+                        constraints.push(or.call(or, ...buildOrAnd(...args)));
+                    }
+                }
+                return constraints;
+            };
             const constraints = [];
             for (const constraint of queryConstraints.filter(c => !!c)) {
                 const type = constraint[0];
                 const args = constraint.slice(1);
                 if (type === "or") {
-                    constraints.push(or.call(or, ...args));
+                    constraints.push(or.call(or, ...buildOrAnd(...args)));
                 }
                 else if (type === "and") {
-                    constraints.push(and.call(and, ...args));
+                    constraints.push(and.call(and, ...buildOrAnd(...args)));
                 }
                 else if (type === "where") {
                     constraints.push(where.call(where, ...args));

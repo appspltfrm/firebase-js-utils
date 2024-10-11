@@ -6,7 +6,6 @@ import {Query, QueryAdmin, QueryClient} from "./Query";
 import {
     QueryConstraint,
     QueryConstraintType,
-    QueryCompositeFilterConstraint,
     QueryConstraintWhere, QueryConstraintAndOr
 } from "./QueryConstraint";
 
@@ -21,15 +20,31 @@ export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraint
 
         if (queryConstraints) {
 
+            const buildOrAnd = (...whereConstraints: Array<QueryConstraintWhere | QueryConstraintAndOr>) => {
+                const constraints = [];
+                for (const constraint of whereConstraints.filter(c => !!c)) {
+                    const type = constraint[0] as "where" | "and" | "or";
+                    const args = constraint.slice(1);
+                    if (type === "where") {
+                        constraints.push(where.call(where, ...args));
+                    } else if (type === "and") {
+                        constraints.push(and.call(and, ...buildOrAnd(...args as any)));
+                    } else if (type === "or") {
+                        constraints.push(or.call(or, ...buildOrAnd(...args as any)));
+                    }
+                }
+                return constraints;
+            }
+
             const constraints: QueryConstraintClient[] = [];
             for (const constraint of queryConstraints.filter(c => !!c) as QueryConstraint[]) {
                 const type = constraint[0] as QueryConstraintType | "and" | "or";
                 const args = constraint.slice(1);
 
                 if (type === "or") {
-                    constraints.push(or.call(or, ...args));
+                    constraints.push(or.call(or, ...buildOrAnd(...args as any)));
                 } else if (type === "and") {
-                    constraints.push(and.call(and, ...args));
+                    constraints.push(and.call(and, ...buildOrAnd(...args as any)));
                 } else if (type === "where") {
                     constraints.push(where.call(where, ...args));
                 } else if (type === "limit") {
