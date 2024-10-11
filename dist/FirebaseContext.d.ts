@@ -25,5 +25,5 @@ export declare abstract class FirebaseContextAdmin extends UniversalFirebaseCont
     firestoreCollection<T = DocumentData>(path: string): CollectionReferenceAdmin<T>;
     firestoreDocument<T = DocumentData>(path: string): DocumentReferenceAdmin<T>;
 }
-export declare type FirebaseContext = FirebaseContextClient | FirebaseContextAdmin;
+export type FirebaseContext = FirebaseContextClient | FirebaseContextAdmin;
 export {};

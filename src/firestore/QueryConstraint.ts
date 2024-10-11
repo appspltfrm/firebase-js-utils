@@ -1,6 +1,7 @@
 import {OrderByDirection, WhereFilterOp} from "@firebase/firestore";
 import {DocumentSnapshot} from "./DocumentSnapshot";
 
+export type QueryConstraintAndOr = [constraintType: "or" | "and", ...where: Array<QueryConstraintWhere | [constraintType: "or" | "and", ...where: QueryConstraintWhere[]]>];
 export type QueryConstraintWhere = [constraintType: "where", fieldPath: string, opStr: WhereFilterOp, value: unknown];
 export type QueryConstraintLimit = [constraintType: "limit", limit: number];
 export type QueryConstraintStartAtSnapshot = [constraintType: "startAt", snapshot: DocumentSnapshot];
@@ -14,11 +15,11 @@ export type QueryConstraintEndBeforeValues = [constraintType: "endBefore", ...va
 export type QueryConstraintLimitToLast = [constraintType: "limitToLast", limit: number];
 export type QueryConstraintOrderBy = [constraintType: "orderBy", fieldPath: string, directionStr?: OrderByDirection];
 
-export type QueryConstraint = QueryConstraintWhere | QueryConstraintOrderBy |
+export type QueryConstraint = QueryConstraintAndOr | QueryConstraintWhere | QueryConstraintOrderBy |
     QueryConstraintLimit | QueryConstraintLimitToLast |
     QueryConstraintStartAtSnapshot | QueryConstraintStartAtValues |
     QueryConstraintStartAfterSnapshot | QueryConstraintStartAfterValues |
     QueryConstraintEndAtSnapshot | QueryConstraintEndAtValues |
     QueryConstraintEndBeforeSnapshot | QueryConstraintEndBeforeValues;
 
-export {QueryConstraintType} from "@firebase/firestore";
+export type {QueryConstraintType, QueryCompositeFilterConstraint} from "@firebase/firestore";

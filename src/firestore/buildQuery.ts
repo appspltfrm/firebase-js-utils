@@ -1,8 +1,14 @@
 import {query as queryClient, QueryConstraint as QueryConstraintClient} from "@firebase/firestore";
-import {endAt, endBefore, limit, limitToLast, orderBy, startAfter, startAt, where} from "firebase/firestore";
+import {endAt, endBefore, limit, limitToLast, orderBy, startAfter, startAt, where, or, and} from "firebase/firestore";
 import {DocumentData} from "./DocumentData";
+import {Firestore} from "./Firestore";
 import {Query, QueryAdmin, QueryClient} from "./Query";
-import {QueryConstraint, QueryConstraintType} from "./QueryConstraint";
+import {
+    QueryConstraint,
+    QueryConstraintType,
+    QueryCompositeFilterConstraint,
+    QueryConstraintWhere, QueryConstraintAndOr
+} from "./QueryConstraint";
 
 export function buildQuery<T = DocumentData>(query: QueryClient<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
 
@@ -17,9 +23,14 @@ export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraint
 
             const constraints: QueryConstraintClient[] = [];
             for (const constraint of queryConstraints.filter(c => !!c) as QueryConstraint[]) {
-                const type = constraint[0] as QueryConstraintType;
+                const type = constraint[0] as QueryConstraintType | "and" | "or";
                 const args = constraint.slice(1);
-                if (type === "where") {
+
+                if (type === "or") {
+                    constraints.push(or.call(or, ...args));
+                } else if (type === "and") {
+                    constraints.push(and.call(and, ...args));
+                } else if (type === "where") {
                     constraints.push(where.call(where, ...args));
                 } else if (type === "limit") {
                     constraints.push(limit.call(limit, ...args));
@@ -47,10 +58,32 @@ export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraint
 
         if (queryConstraints) {
             let niu = query as QueryAdmin<T>;
+            const Filter = (Firestore.adminInitialized() && Firestore.admin().Filter);
+
+            const buildFilterWhere = (...whereConstraints: Array<QueryConstraintWhere | QueryConstraintAndOr>) => {
+                const where = [];
+                for (const constraint of whereConstraints) {
+                    const type = constraint[0] as "where" | "and" | "or";
+                    const args = constraint.slice(1);
+                    if (type === "where") {
+                        where.push(Filter.where.call(undefined, ...args));
+                    } else if (type === "and") {
+                        where.push(Filter.and.call(undefined, ...buildFilterWhere(...args as any)));
+                    } else if (type === "or") {
+                        where.push(Filter.or.call(undefined, ...buildFilterWhere(...args as any)));
+                    }
+                }
+                return where;
+            }
+
             for (const constraint of queryConstraints.filter(c => !!c) as QueryConstraint[]) {
-                const type = constraint[0] as QueryConstraintType;
+                const type = constraint[0] as QueryConstraintType | "and" | "or";
                 const args = constraint.slice(1);
-                if (type === "where") {
+                if (type === "or") {
+                    niu = niu.where.call(niu, Filter.or(...buildFilterWhere(...args as any)));
+                } else if (type === "and") {
+                    niu = niu.where.call(niu, Filter.and(...buildFilterWhere(...args as any)));
+                } else if (type === "where") {
                     niu = niu.where.call(niu, ...args);
                 } else if (type === "limit") {
                     niu = niu.limit.call(niu, ...args);

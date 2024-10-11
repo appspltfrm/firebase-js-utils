@@ -1,5 +1,6 @@
 import { query as queryClient } from "@firebase/firestore";
-import { endAt, endBefore, limit, limitToLast, orderBy, startAfter, startAt, where } from "firebase/firestore";
+import { endAt, endBefore, limit, limitToLast, orderBy, startAfter, startAt, where, or, and } from "firebase/firestore";
+import { Firestore } from "./Firestore";
 import { Query } from "./Query";
 export function buildQuery(query, ...queryConstraints) {
     if (Query.isClient(query)) {
@@ -8,7 +9,13 @@ export function buildQuery(query, ...queryConstraints) {
             for (const constraint of queryConstraints.filter(c => !!c)) {
                 const type = constraint[0];
                 const args = constraint.slice(1);
-                if (type === "where") {
+                if (type === "or") {
+                    constraints.push(or.call(or, ...args));
+                }
+                else if (type === "and") {
+                    constraints.push(and.call(and, ...args));
+                }
+                else if (type === "where") {
                     constraints.push(where.call(where, ...args));
                 }
                 else if (type === "limit") {
@@ -40,10 +47,34 @@ export function buildQuery(query, ...queryConstraints) {
     else {
         if (queryConstraints) {
             let niu = query;
+            const Filter = (Firestore.adminInitialized() && Firestore.admin().Filter);
+            const buildFilterWhere = (...whereConstraints) => {
+                const where = [];
+                for (const constraint of whereConstraints) {
+                    const type = constraint[0];
+                    const args = constraint.slice(1);
+                    if (type === "where") {
+                        where.push(Filter.where.call(undefined, ...args));
+                    }
+                    else if (type === "and") {
+                        where.push(Filter.and.call(undefined, ...buildFilterWhere(...args)));
+                    }
+                    else if (type === "or") {
+                        where.push(Filter.or.call(undefined, ...buildFilterWhere(...args)));
+                    }
+                }
+                return where;
+            };
             for (const constraint of queryConstraints.filter(c => !!c)) {
                 const type = constraint[0];
                 const args = constraint.slice(1);
-                if (type === "where") {
+                if (type === "or") {
+                    niu = niu.where.call(niu, Filter.or(...buildFilterWhere(...args)));
+                }
+                else if (type === "and") {
+                    niu = niu.where.call(niu, Filter.and(...buildFilterWhere(...args)));
+                }
+                else if (type === "where") {
                     niu = niu.where.call(niu, ...args);
                 }
                 else if (type === "limit") {
