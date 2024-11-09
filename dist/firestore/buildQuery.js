@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildQuery = void 0;
-const firestore_1 = require("@firebase/firestore");
-const firestore_2 = require("firebase/firestore");
-const Firestore_1 = require("./Firestore");
-const Query_1 = require("./Query");
-function buildQuery(query, ...queryConstraints) {
-    if (Query_1.Query.isClient(query)) {
+import { query as queryClient } from "@firebase/firestore";
+import { endAt, endBefore, limit, limitToLast, orderBy, startAfter, startAt, where, or, and } from "firebase/firestore";
+import { Firestore } from "./Firestore";
+import { Query } from "./Query";
+export function buildQuery(query, ...queryConstraints) {
+    if (Query.isClient(query)) {
         if (queryConstraints) {
             const buildOrAnd = (...whereConstraints) => {
                 const constraints = [];
@@ -14,13 +11,13 @@ function buildQuery(query, ...queryConstraints) {
                     const type = constraint[0];
                     const args = constraint.slice(1);
                     if (type === "where") {
-                        constraints.push(firestore_2.where.call(firestore_2.where, ...args));
+                        constraints.push(where.call(where, ...args));
                     }
                     else if (type === "and") {
-                        constraints.push(firestore_2.and.call(firestore_2.and, ...buildOrAnd(...args)));
+                        constraints.push(and.call(and, ...buildOrAnd(...args)));
                     }
                     else if (type === "or") {
-                        constraints.push(firestore_2.or.call(firestore_2.or, ...buildOrAnd(...args)));
+                        constraints.push(or.call(or, ...buildOrAnd(...args)));
                     }
                 }
                 return constraints;
@@ -30,44 +27,44 @@ function buildQuery(query, ...queryConstraints) {
                 const type = constraint[0];
                 const args = constraint.slice(1);
                 if (type === "or") {
-                    constraints.push(firestore_2.or.call(firestore_2.or, ...buildOrAnd(...args)));
+                    constraints.push(or.call(or, ...buildOrAnd(...args)));
                 }
                 else if (type === "and") {
-                    constraints.push(firestore_2.and.call(firestore_2.and, ...buildOrAnd(...args)));
+                    constraints.push(and.call(and, ...buildOrAnd(...args)));
                 }
                 else if (type === "where") {
-                    constraints.push(firestore_2.where.call(firestore_2.where, ...args));
+                    constraints.push(where.call(where, ...args));
                 }
                 else if (type === "limit") {
-                    constraints.push(firestore_2.limit.call(firestore_2.limit, ...args));
+                    constraints.push(limit.call(limit, ...args));
                 }
                 else if (type === "endBefore") {
-                    constraints.push(firestore_2.endBefore.call(firestore_2.endBefore, ...args));
+                    constraints.push(endBefore.call(endBefore, ...args));
                 }
                 else if (type === "limitToLast") {
-                    constraints.push(firestore_2.limitToLast.call(firestore_2.limitToLast, ...args));
+                    constraints.push(limitToLast.call(limitToLast, ...args));
                 }
                 else if (type === "orderBy") {
-                    constraints.push(firestore_2.orderBy.call(firestore_2.orderBy, ...args));
+                    constraints.push(orderBy.call(orderBy, ...args));
                 }
                 else if (type === "startAfter") {
-                    constraints.push(firestore_2.startAfter.call(firestore_2.startAfter, ...args));
+                    constraints.push(startAfter.call(startAfter, ...args));
                 }
                 else if (type === "startAt") {
-                    constraints.push(firestore_2.startAt.call(firestore_2.startAt, ...args));
+                    constraints.push(startAt.call(startAt, ...args));
                 }
                 else if (type === "endAt") {
-                    constraints.push(firestore_2.endAt.call(firestore_2.endAt, ...args));
+                    constraints.push(endAt.call(endAt, ...args));
                 }
             }
-            return (0, firestore_1.query)(query, ...constraints);
+            return queryClient(query, ...constraints);
         }
         return query;
     }
     else {
         if (queryConstraints) {
             let niu = query;
-            const Filter = (Firestore_1.Firestore.adminInitialized() && Firestore_1.Firestore.admin().Filter);
+            const Filter = (Firestore.adminInitialized() && Firestore.admin().Filter);
             const buildFilterWhere = (...whereConstraints) => {
                 const where = [];
                 for (const constraint of whereConstraints.filter(c => !!c)) {
@@ -124,5 +121,4 @@ function buildQuery(query, ...queryConstraints) {
         return query;
     }
 }
-exports.buildQuery = buildQuery;
 //# sourceMappingURL=buildQuery.js.map

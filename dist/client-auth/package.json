@@ -1,6 +1,0 @@
-{
-  "name": "@appspltfrm/firebase-js-utils/client-auth",
-  "module": "../_esm2015/client-auth/index.js",
-  "esm2015": "../_esm2015/client-auth/index.js",
-  "sideEffects": false
-}

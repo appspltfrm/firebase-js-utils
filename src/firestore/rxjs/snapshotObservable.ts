@@ -1,9 +1,8 @@
-import firebase from "firebase/compat";
-import {Observable, Subscriber} from "rxjs";
+import {onSnapshot, SnapshotListenOptions as FirestoreSnapshotListenOptions} from "firebase/firestore";
+import {Observable} from "rxjs";
 import {DocumentData} from "../DocumentData";
 import {DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient} from "../DocumentReference";
 import {DocumentSnapshot, DocumentSnapshotAdmin, DocumentSnapshotClient} from "../DocumentSnapshot";
-import {onSnapshot, SnapshotListenOptions as FirestoreSnapshotListenOptions} from "firebase/firestore";
 import {Query, QueryAdmin, QueryClient} from "../Query";
 import {QuerySnapshot, QuerySnapshotAdmin, QuerySnapshotClient} from "../QuerySnapshot";
 import {SnapshotListenOptions} from "../SnapshotListenOptions";

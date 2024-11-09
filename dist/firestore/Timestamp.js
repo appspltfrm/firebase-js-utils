@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Timestamp = void 0;
-const firestore_1 = require("firebase/firestore");
-const Firestore_1 = require("./Firestore");
-var Timestamp;
+import { Timestamp as $TimestampClient } from "firebase/firestore";
+import { Firestore } from "./Firestore";
+export var Timestamp;
 (function (Timestamp) {
     function isClient(timestamp) {
-        return timestamp instanceof firestore_1.Timestamp;
+        return timestamp instanceof $TimestampClient;
     }
     Timestamp.isClient = isClient;
     function isAdmin(timestamp) {
@@ -14,35 +11,35 @@ var Timestamp;
     }
     Timestamp.isAdmin = isAdmin;
     function isInstance(obj) {
-        return obj instanceof firestore_1.Timestamp || (Firestore_1.Firestore.adminInitialized() && obj instanceof Firestore_1.Firestore.admin().Timestamp);
+        return obj instanceof $TimestampClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().Timestamp);
     }
     Timestamp.isInstance = isInstance;
     function now() {
-        if (Firestore_1.Firestore.adminInitialized()) {
-            return Firestore_1.Firestore.admin().Timestamp.now();
+        if (Firestore.adminInitialized()) {
+            return Firestore.admin().Timestamp.now();
         }
         else {
-            return firestore_1.Timestamp.now();
+            return $TimestampClient.now();
         }
     }
     Timestamp.now = now;
     function fromDate(date) {
-        if (Firestore_1.Firestore.adminInitialized()) {
-            return Firestore_1.Firestore.admin().Timestamp.fromDate(date);
+        if (Firestore.adminInitialized()) {
+            return Firestore.admin().Timestamp.fromDate(date);
         }
         else {
-            return firestore_1.Timestamp.fromDate(date);
+            return $TimestampClient.fromDate(date);
         }
     }
     Timestamp.fromDate = fromDate;
     function fromMillis(milliseconds) {
-        if (Firestore_1.Firestore.adminInitialized()) {
-            return Firestore_1.Firestore.admin().Timestamp.fromMillis(milliseconds);
+        if (Firestore.adminInitialized()) {
+            return Firestore.admin().Timestamp.fromMillis(milliseconds);
         }
         else {
-            return firestore_1.Timestamp.fromMillis(milliseconds);
+            return $TimestampClient.fromMillis(milliseconds);
         }
     }
     Timestamp.fromMillis = fromMillis;
-})(Timestamp = exports.Timestamp || (exports.Timestamp = {}));
+})(Timestamp || (Timestamp = {}));
 //# sourceMappingURL=Timestamp.js.map

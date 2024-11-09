@@ -1,6 +1,0 @@
-{
-  "name": "@appspltfrm/firebase-js-utils/firestore/rxjs",
-  "module": "../../_esm2015/firestore/rxjs/index.js",
-  "esm2015": "../../_esm2015/firestore/rxjs/index.js",
-  "sideEffects": false
-}

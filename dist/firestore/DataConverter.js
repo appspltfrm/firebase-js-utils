@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataConverter = void 0;
-class DataConverter {
+export class DataConverter {
     /**
      * Called by the Firestore SDK to convert a custom model object of type T
      * into a plain Javascript object (suitable for writing directly to the
@@ -24,5 +21,4 @@ class DataConverter {
         }
     }
 }
-exports.DataConverter = DataConverter;
 //# sourceMappingURL=DataConverter.js.map

@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Firestore = void 0;
-var Firestore;
+export var Firestore;
 (function (Firestore) {
     function isClient(firestore) {
         return ["firestore-lite", "firestore"].includes(firestore.type);
@@ -27,5 +24,5 @@ var Firestore;
         return adminRef;
     }
     Firestore.admin = admin;
-})(Firestore = exports.Firestore || (exports.Firestore = {}));
+})(Firestore || (Firestore = {}));
 //# sourceMappingURL=Firestore.js.map

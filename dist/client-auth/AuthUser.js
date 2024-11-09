@@ -1,30 +1,28 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthUser = void 0;
-const rxjs_1 = require("rxjs");
-class AuthUser {
+import { first, firstValueFrom, map, Observable, of, ReplaySubject, switchMap, throwError } from "rxjs";
+export class AuthUser {
+    auth;
     constructor(auth) {
         this.auth = auth;
-        this.authInitialized = false;
-        this.userObservable = new rxjs_1.ReplaySubject(1);
-        this.userIdObservable = this.userObservable.pipe((0, rxjs_1.map)(user => (user === null || user === void 0 ? void 0 : user.uid) || null));
         this.auth.onIdTokenChanged((user) => this.userChanged(user));
     }
+    authInitialized = false;
+    _user;
     get user() {
         return this._user;
     }
     get userId() {
         return this.user && this.user.uid;
     }
+    userObservable = new ReplaySubject(1);
+    userIdObservable = this.userObservable.pipe(map(user => user?.uid || null));
     get userIdToken() {
-        var _a;
-        return (_a = this.auth.currentUser) === null || _a === void 0 ? void 0 : _a.getIdToken();
+        return this.auth.currentUser?.getIdToken();
     }
     get userIdTokenObservable() {
-        return new rxjs_1.Observable(subscriber => {
+        return new Observable(subscriber => {
             let unsubscribe = this.auth.onIdTokenChanged(subscriber);
             return () => unsubscribe();
-        }).pipe((0, rxjs_1.switchMap)(user => user.getIdToken()));
+        }).pipe(switchMap(user => user.getIdToken()));
     }
     userChanged(user) {
         this._user = user;
@@ -49,15 +47,14 @@ class AuthUser {
             return Promise.resolve(true);
         }
         else {
-            return (0, rxjs_1.firstValueFrom)(this.userIdObservable.pipe((0, rxjs_1.first)(), (0, rxjs_1.map)(id => true)));
+            return firstValueFrom(this.userIdObservable.pipe(first(), map(id => true)));
         }
     }
     userNotSignedError() {
         return new Error("User not signed");
     }
     observeUser(assertSigned) {
-        return this.userObservable.pipe((0, rxjs_1.switchMap)(user => user || !assertSigned ? (0, rxjs_1.of)(user) : (0, rxjs_1.throwError)(() => this.userNotSignedError())));
+        return this.userObservable.pipe(switchMap(user => user || !assertSigned ? of(user) : throwError(() => this.userNotSignedError())));
     }
 }
-exports.AuthUser = AuthUser;
 //# sourceMappingURL=AuthUser.js.map

@@ -1,21 +1,18 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Query = void 0;
-const firestore_1 = require("firebase/firestore");
-const Firestore_1 = require("./Firestore");
-var Query;
+import { Query as $QueryClient } from "firebase/firestore";
+import { Firestore } from "./Firestore";
+export var Query;
 (function (Query) {
     function isInstance(obj) {
-        return obj instanceof firestore_1.Query || (Firestore_1.Firestore.adminInitialized() && obj instanceof Firestore_1.Firestore.admin().Query);
+        return obj instanceof $QueryClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().Query);
     }
     Query.isInstance = isInstance;
     function isClient(query) {
-        return Firestore_1.Firestore.isClient(query.firestore);
+        return Firestore.isClient(query.firestore);
     }
     Query.isClient = isClient;
     function isAdmin(query) {
         return !isClient(query);
     }
     Query.isAdmin = isAdmin;
-})(Query = exports.Query || (exports.Query = {}));
+})(Query || (Query = {}));
 //# sourceMappingURL=Query.js.map

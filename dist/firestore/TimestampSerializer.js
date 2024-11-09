@@ -1,8 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TimestampSerializer = void 0;
-const json_1 = require("@co.mmons/js-utils/json");
-class TimestampSerializer extends json_1.Serializer {
+import { Serializer } from "@co.mmons/js-utils/json";
+export class TimestampSerializer extends Serializer {
+    timestampClass;
     constructor(timestampClass) {
         super();
         this.timestampClass = timestampClass;
@@ -33,5 +31,4 @@ class TimestampSerializer extends json_1.Serializer {
         }
     }
 }
-exports.TimestampSerializer = TimestampSerializer;
 //# sourceMappingURL=TimestampSerializer.js.map

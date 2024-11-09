@@ -1,0 +1,1 @@
+{"version":3,"file":"serverTimestamp.js","sourceRoot":"","sources":["../../../src/firestore/serverTimestamp.ts"],"names":[],"mappings":";;AAIA,0CAQC;AAZD,kDAA4E;AAE5E,2CAAsC;AAEtC,SAAgB,eAAe;IAE3B,IAAI,qBAAS,CAAC,gBAAgB,EAAE,EAAE,CAAC;QAC/B,OAAO,qBAAS,CAAC,KAAK,EAAE,CAAC,UAAU,CAAC,eAAe,EAAE,CAAC;IAC1D,CAAC;SAAM,CAAC;QACJ,OAAO,IAAA,2BAAqB,GAAE,CAAC;IACnC,CAAC;AAEL,CAAC"}
