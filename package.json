@@ -45,7 +45,8 @@
       "types": "./dist/firestore/*/index.d.ts",
       "import": "./dist/firestore/*/index.js",
       "require": "./dist/cjs/firestore/*/index.js"
-    }
+    },
+    "./patches/*": "./patches/*.patch"
   },
   "sideEffects": false
 }
