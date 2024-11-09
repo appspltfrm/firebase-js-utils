@@ -1,4 +1,4 @@
-import { Serializer } from "@co.mmons/js-utils/json";
+import { Serializer } from "@appspltfrm/js-utils/json";
 export class TimestampSerializer extends Serializer {
     timestampClass;
     constructor(timestampClass) {

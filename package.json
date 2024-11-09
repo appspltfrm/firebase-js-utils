@@ -3,47 +3,48 @@
   "version": "4.0.0",
   "author": "Unipla",
   "private": false,
-  "license": "MIT",
   "scripts": {
+    "postinstall": "patch-package",
     "build": "node-utils-file-system-glob-delete \"dist/**/*\" && npm run build:cjs && npm run build:esm",
-    "build:cjs": "tsc -p tsconfig.build.json --declaration false --module commonjs --target esnext --moduleResolution node --outDir dist/cjs",
+    "build:cjs": "tsc -p tsconfig.build.json --declaration false --module nodenext --target esnext --moduleResolution nodenext --outDir dist/cjs",
     "build:esm": "tsc -p tsconfig.build.json --module esnext --target esnext --moduleResolution bundler --outDir dist"
   },
   "dependencies": {
+    "@appspltfrm/js-utils": "github:appspltfrm/js-utils",
     "@appspltfrm/node-utils": "github:appspltfrm/node-utils"
   },
   "optionalDependencies": {
     "rxjs": "^7.4.0"
   },
   "peerDependencies": {
-    "@co.mmons/js-utils": "github:co-mmons/js-utils",
-    "tslib": "^2.8.0",
-    "firebase": "^11.0.0",
-    "firebase-admin": "^12.0.0"
-  },
-  "devDependencies": {
-    "@co.mmons/js-utils": "github:co-mmons/js-utils",
     "firebase": "^11.0.0",
     "firebase-admin": "^12.0.0",
-    "typescript": "^5.6.3",
+    "tslib": "^2.8.0"
+  },
+  "devDependencies": {
+    "@appspltfrm/js-utils": "github:appspltfrm/js-utils",
+    "firebase": "^11.0.0",
+    "firebase-admin": "^12.0.0",
+    "patch-package": "^8.0.0",
+    "rxjs": "^7.4.0",
     "tslib": "^2.8.0",
-    "rxjs": "^7.4.0"
+    "typescript": "^5.6.3"
   },
   "exports": {
     ".": {
-      "types": "dist/index.d.ts",
-      "import": "dist/index.js",
-      "require": "dist/cjs/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/cjs/index.js"
     },
     "./*": {
-      "types": "dist/*/index.d.ts",
-      "import": "dist/*/index.js",
-      "require": "dist/cjs/*/index.js"
+      "types": "./dist/*/index.d.ts",
+      "import": "./dist/*/index.js",
+      "require": "./dist/cjs/*/index.js"
     },
     "./firestore/*": {
-      "types": "dist/firestore/*/index.d.ts",
-      "import": "dist/firestore/*/index.js",
-      "require": "dist/cjs/firestore/*/index.js"
+      "types": "./dist/firestore/*/index.d.ts",
+      "import": "./dist/firestore/*/index.js",
+      "require": "./dist/cjs/firestore/*/index.js"
     }
   },
   "sideEffects": false

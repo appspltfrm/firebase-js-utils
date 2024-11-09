@@ -1,4 +1,4 @@
-import {sleep} from "@co.mmons/js-utils/core";
+import {sleep} from "@appspltfrm/js-utils/core";
 import {deleteApp, getApp, initializeApp} from "firebase/app";
 import {getAuth} from "firebase/auth";
 import {getFirestore} from "firebase/firestore";

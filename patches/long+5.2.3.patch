@@ -1,0 +1,8 @@
+diff --git a/node_modules/long/umd/index.d.ts b/node_modules/long/umd/index.d.ts
+index c623535..f2e1c35 100644
+--- a/node_modules/long/umd/index.d.ts
++++ b/node_modules/long/umd/index.d.ts
+@@ -1,2 +1,3 @@
++// @ts-ignore
+ import Long from "../index.js";
+ export = Long;

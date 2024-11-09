@@ -4,6 +4,7 @@
         "declaration": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
+        "esModuleInterop": true,
         "lib": ["dom", "ESNext"],
         "module": "esnext",
         "moduleResolution": "bundler",

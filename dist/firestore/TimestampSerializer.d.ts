@@ -1,5 +1,5 @@
-import { AssignableType } from "@co.mmons/js-utils/core";
-import { SerializationOptions, Serializer } from "@co.mmons/js-utils/json";
+import { AssignableType } from "@appspltfrm/js-utils/core";
+import { SerializationOptions, Serializer } from "@appspltfrm/js-utils/json";
 export declare class TimestampSerializer extends Serializer {
     private readonly timestampClass;
     constructor(timestampClass: AssignableType);

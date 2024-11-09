@@ -1,4 +1,4 @@
-import {sleep} from "@co.mmons/js-utils/core";
+import {sleep} from "@appspltfrm/js-utils/core";
 import {buildQuery} from "./buildQuery";
 import {deleteDocument} from "./deleteDocument";
 import {DocumentReference} from "./DocumentReference";

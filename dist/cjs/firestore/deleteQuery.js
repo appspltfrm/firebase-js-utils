@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteQuery = deleteQuery;
-const core_1 = require("@co.mmons/js-utils/core");
+const core_1 = require("@appspltfrm/js-utils/core");
 const buildQuery_1 = require("./buildQuery");
 const deleteDocument_1 = require("./deleteDocument");
 const DocumentReference_1 = require("./DocumentReference");
