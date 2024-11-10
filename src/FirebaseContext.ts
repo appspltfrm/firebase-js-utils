@@ -24,7 +24,7 @@ abstract class UniversalFirebaseContext {
 
     functionUrl?(name: string): string;
 
-    readonly projectId: string;
+    abstract get projectId(): string;
 }
 
 export abstract class FirebaseContextClient extends UniversalFirebaseContext {

@@ -7,7 +7,7 @@ declare abstract class UniversalFirebaseContext {
     abstract firestoreCollection<T = DocumentData>(path: string): CollectionReference<T>;
     abstract firestoreDocument<T = DocumentData>(path: string): DocumentReference<T>;
     functionUrl?(name: string): string;
-    readonly projectId: string;
+    abstract get projectId(): string;
 }
 export declare abstract class FirebaseContextClient extends UniversalFirebaseContext {
     abstract get firestore(): FirestoreClient;
