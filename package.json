@@ -3,9 +3,11 @@
   "version": "4.0.0",
   "author": "Unipla",
   "private": false,
+  "type": "module",
   "scripts": {
+    "install": "node-utils-npm-install-dist",
     "postinstall": "patch-package",
-    "build": "node-utils-file-system-glob-delete \"dist/**/*\" && npm run build:cjs && npm run build:esm",
+    "build": "node-utils-file-system-glob-delete \"dist/**/*\" && npm run build:esm",
     "build:cjs": "tsc -p tsconfig.build.json --declaration false --module nodenext --target esnext --moduleResolution nodenext --outDir dist/cjs",
     "build:esm": "tsc -p tsconfig.build.json --module esnext --target esnext --moduleResolution bundler --outDir dist"
   },

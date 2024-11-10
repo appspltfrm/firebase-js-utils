@@ -1,1 +1,0 @@
-{"version":3,"file":"getSnapshots.js","sourceRoot":"","sources":["../../../src/firestore/getSnapshots.ts"],"names":[],"mappings":";;AAWA,oCAEC;AAZD,+CAA0C;AAUnC,KAAK,UAAU,YAAY,CAAmB,KAAe;IAChE,OAAO,CAAC,MAAM,IAAA,yBAAW,EAAC,KAAK,CAAC,CAAC,CAAC,IAAI,CAAC;AAC3C,CAAC"}

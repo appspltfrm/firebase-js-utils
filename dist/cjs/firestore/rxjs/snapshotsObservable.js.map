@@ -1,1 +1,0 @@
-{"version":3,"file":"snapshotsObservable.js","sourceRoot":"","sources":["../../../../src/firestore/rxjs/snapshotsObservable.ts"],"names":[],"mappings":";;AAaA,kDAGC;AAhBD,+BAAqC;AAKrC,6DAAwD;AAQxD,SAAgB,mBAAmB,CAAmB,KAAe,EAAE,OAA+B;IAClG,OAAO,IAAA,uCAAkB,EAAC,KAAK,EAAE,OAAO,CAAC;SACpC,IAAI,CAAC,IAAA,UAAG,EAAC,QAAQ,CAAC,EAAE,CAAC,QAAQ,CAAC,IAAI,CAAC,CAAC,CAAC;AAC9C,CAAC"}

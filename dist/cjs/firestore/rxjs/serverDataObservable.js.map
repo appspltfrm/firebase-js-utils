@@ -1,1 +1,0 @@
-{"version":3,"file":"serverDataObservable.js","sourceRoot":"","sources":["../../../../src/firestore/rxjs/serverDataObservable.ts"],"names":[],"mappings":";;AAsBA,oDAEC;AAlBD,qDAAgD;AAgBhD,SAAgB,oBAAoB,CAAmB,UAA2C,EAAE,OAAiB;IACjH,OAAO,IAAA,+BAAc,EAAC,UAAiB,EAAE,MAAM,CAAC,MAAM,CAAC,EAAC,SAAS,EAAE,IAAI,EAAC,EAAE,OAAO,CAAC,CAAC,CAAC;AACxF,CAAC"}
