@@ -1,2 +1,2 @@
-export * from "./FirebaseContext";
+export { FirebaseContextAdmin, FirebaseContextClient } from "./FirebaseContext";
 //# sourceMappingURL=index.js.map
