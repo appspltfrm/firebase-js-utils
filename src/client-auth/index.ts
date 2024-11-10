@@ -1,1 +1,1 @@
-export {AuthUser} from "./AuthUser";
+export {AuthUser} from "./AuthUser.js";

@@ -1,5 +1,5 @@
-export * from "./dataObservable";
-export * from "./serverDataObservable";
-export * from "./snapshotObservable";
-export * from "./snapshotsObservable";
+export { dataObservable } from "./dataObservable";
+export { serverDataObservable } from "./serverDataObservable";
+export { snapshotObservable } from "./snapshotObservable";
+export { snapshotsObservable } from "./snapshotsObservable";
 //# sourceMappingURL=index.js.map
