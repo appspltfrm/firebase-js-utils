@@ -32,23 +32,5 @@
     "tslib": "^2.8.0",
     "typescript": "^5.6.3"
   },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/cjs/index.js"
-    },
-    "./*": {
-      "types": "./dist/*/index.d.ts",
-      "import": "./dist/*/index.js",
-      "require": "./dist/cjs/*/index.js"
-    },
-    "./firestore/*": {
-      "types": "./dist/firestore/*/index.d.ts",
-      "import": "./dist/firestore/*/index.js",
-      "require": "./dist/cjs/firestore/*/index.js"
-    },
-    "./patches/*": "./patches/*.patch"
-  },
   "sideEffects": false
 }
