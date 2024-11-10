@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FirebaseContextAdmin = exports.FirebaseContextClient = void 0;
 const firestore_1 = require("./firestore");
 class UniversalFirebaseContext {
-    functionUrl;
     projectId;
 }
 class FirebaseContextClient extends UniversalFirebaseContext {

@@ -22,7 +22,7 @@ abstract class UniversalFirebaseContext {
 
     abstract firestoreDocument<T = DocumentData>(path: string): DocumentReference<T>;
 
-    functionUrl?: (name: string) => string;
+    functionUrl?(name: string): string;
 
     readonly projectId: string;
 }
@@ -33,7 +33,7 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
 
     abstract get authUser(): AuthUser;
 
-    declare functionUrl: (name: string) => string;
+    abstract functionUrl(name: string): string;
 
     firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
 

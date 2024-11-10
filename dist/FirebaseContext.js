@@ -1,6 +1,5 @@
 import { buildQuery, collectionReference, documentReference } from "./firestore";
 class UniversalFirebaseContext {
-    functionUrl;
     projectId;
 }
 export class FirebaseContextClient extends UniversalFirebaseContext {
