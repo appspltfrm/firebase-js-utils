@@ -12,7 +12,7 @@ import {
 
 abstract class UniversalFirebaseContext {
 
-    readonly firestore?: Firestore;
+    abstract get firestore(): Firestore;
 
     abstract firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;
 
@@ -29,8 +29,9 @@ abstract class UniversalFirebaseContext {
 
 export abstract class FirebaseContextClient extends UniversalFirebaseContext {
 
-    declare readonly firestore?: FirestoreClient;
-    readonly authUser?: AuthUser;
+    abstract get firestore(): FirestoreClient;
+
+    abstract get authUser(): AuthUser;
 
     declare functionUrl: (name: string) => string;
 
@@ -53,7 +54,7 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
 }
 
 export abstract class FirebaseContextAdmin extends UniversalFirebaseContext {
-    declare readonly firestore?: FirestoreAdmin;
+    abstract get firestore(): FirestoreAdmin;
 
     firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: QueryConstraint[]): QueryAdmin<T>;
 

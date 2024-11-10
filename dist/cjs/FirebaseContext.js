@@ -3,12 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FirebaseContextAdmin = exports.FirebaseContextClient = void 0;
 const firestore_1 = require("./firestore");
 class UniversalFirebaseContext {
-    firestore;
     functionUrl;
     projectId;
 }
 class FirebaseContextClient extends UniversalFirebaseContext {
-    authUser;
     firestoreQuery(pathOrCollection, ...queryConstraints) {
         const collection = typeof pathOrCollection === "string" ? this.firestoreCollection(pathOrCollection) : pathOrCollection;
         return (0, firestore_1.buildQuery)(collection, ...queryConstraints);
