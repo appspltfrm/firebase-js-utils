@@ -3,8 +3,8 @@
   "version": "4.0.0",
   "author": "Unipla",
   "private": false,
-  "type": "module",
   "scripts": {
+    "install": "node-utils-npm-install-dist",
     "postinstall": "patch-package",
     "build": "node-utils-file-system-glob-delete \"dist/**/*\" && npm run build:esm",
     "build:cjs": "tsc -p tsconfig.build.json --declaration false --module nodenext --target esnext --moduleResolution nodenext --outDir dist/cjs",
@@ -33,16 +33,16 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "types": "./index.d.ts",
+      "default": "./index.js"
     },
     "./*": {
-      "types": "./dist/*/index.d.ts",
-      "default": "./dist/*/index.js"
+      "types": "./*/index.d.ts",
+      "default": "./*/index.js"
     },
     "./firestore/*": {
-      "types": "./dist/firestore/*/index.d.ts",
-      "default": "./dist/firestore/*/index.js"
+      "types": "./firestore/*/index.d.ts",
+      "default": "./firestore/*/index.js"
     },
     "./patches/*": "./patches/*.patch"
   },
