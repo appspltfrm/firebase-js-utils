@@ -1,5 +1,5 @@
 import { writeBatch as writeBatchClient, WriteBatch as $WriteBatchClient } from "firebase/firestore";
-import { Firestore } from "./Firestore";
+import { Firestore } from "./Firestore.js";
 export var WriteBatch;
 (function (WriteBatch) {
     function isClient(batch) {

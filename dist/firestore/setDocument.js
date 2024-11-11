@@ -1,5 +1,5 @@
 import { setDoc } from "firebase/firestore";
-import { DocumentReference } from "./DocumentReference";
+import { DocumentReference } from "./DocumentReference.js";
 export function setDocument(doc, data, options) {
     if (DocumentReference.isClient(doc)) {
         return setDoc(doc, data, options);

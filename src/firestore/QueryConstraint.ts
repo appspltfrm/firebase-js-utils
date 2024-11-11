@@ -1,5 +1,5 @@
 import {OrderByDirection, WhereFilterOp} from "@firebase/firestore";
-import {DocumentSnapshot} from "./DocumentSnapshot";
+import {DocumentSnapshot} from "./DocumentSnapshot.js";
 
 export type QueryConstraintAndOr = [constraintType: "or" | "and", ...constraints: Array<QueryConstraintWhere | false | undefined | [constraintType: "or" | "and", ...constraints: Array<QueryConstraintWhere | false | undefined>]>];
 export type QueryConstraintWhere = [constraintType: "where", fieldPath: string, opStr: WhereFilterOp, value: unknown];

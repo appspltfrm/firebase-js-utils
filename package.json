@@ -3,32 +3,27 @@
   "version": "4.0.0",
   "author": "Unipla",
   "private": false,
+  "type": "module",
   "scripts": {
     "install": "node-utils-npm-install-dist",
-    "postinstall": "patch-package",
-    "build": "node-utils-file-system-glob-delete \"dist/**/*\" && npm run build:esm",
-    "build:cjs": "tsc -p tsconfig.build.json --declaration false --module nodenext --target esnext --moduleResolution nodenext --outDir dist/cjs",
-    "build:esm": "tsc -p tsconfig.build.json --module esnext --target esnext --moduleResolution bundler --outDir dist"
+    "build": "node-utils-file-system-glob-delete \"dist/**/*\" && tsc -p tsconfig.build.json"
   },
   "dependencies": {
     "@appspltfrm/js-utils": "github:appspltfrm/js-utils",
-    "@appspltfrm/node-utils": "github:appspltfrm/node-utils",
-    "patch-package": "^8.0.0"
+    "@appspltfrm/node-utils": "github:appspltfrm/node-utils"
   },
   "optionalDependencies": {
     "rxjs": "^7.4.0"
   },
   "peerDependencies": {
     "firebase": "^11.0.0",
-    "firebase-admin": "^12.0.0",
-    "tslib": "^2.8.0"
+    "firebase-admin": "^12.0.0"
   },
   "devDependencies": {
     "@appspltfrm/js-utils": "github:appspltfrm/js-utils",
     "firebase": "^11.0.0",
     "firebase-admin": "^12.0.0",
     "rxjs": "^7.4.0",
-    "tslib": "^2.8.0",
     "typescript": "^5.6.3"
   },
   "exports": {
@@ -43,8 +38,7 @@
     "./firestore/*": {
       "types": "./firestore/*/index.d.ts",
       "default": "./firestore/*/index.js"
-    },
-    "./patches/*": "./patches/*.patch"
+    }
   },
   "sideEffects": false
 }

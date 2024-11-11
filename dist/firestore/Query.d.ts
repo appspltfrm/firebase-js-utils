@@ -1,6 +1,6 @@
 import type { firestore as admin } from "firebase-admin";
 import { Query as $QueryClient } from "firebase/firestore";
-import { DocumentData } from "./DocumentData";
+import { DocumentData } from "./DocumentData.js";
 export type QueryClient<T = DocumentData> = $QueryClient<T>;
 export type QueryAdmin<T = DocumentData> = admin.Query<T>;
 export type Query<T = DocumentData> = QueryAdmin<T> | QueryClient<T>;

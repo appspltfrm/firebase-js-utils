@@ -1,5 +1,5 @@
 import { doc, DocumentReference as $DocumentReferenceClient } from "firebase/firestore";
-import { Firestore } from "./Firestore";
+import { Firestore } from "./Firestore.js";
 export var DocumentReference;
 (function (DocumentReference) {
     function isInstance(obj) {

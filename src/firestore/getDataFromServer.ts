@@ -1,8 +1,8 @@
 import type {SnapshotOptions} from "firebase/firestore"
 import {getDocFromServer, getDocsFromServer} from "firebase/firestore";
-import {DocumentData} from "./DocumentData";
-import {DocumentReference} from "./DocumentReference";
-import {Query} from "./Query";
+import {DocumentData} from "./DocumentData.js";
+import {DocumentReference} from "./DocumentReference.js";
+import {Query} from "./Query.js";
 
 export async function getDataFromServer<T = DocumentData>(doc: DocumentReference<T>, options?: SnapshotOptions): Promise<T>;
 

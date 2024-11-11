@@ -1,8 +1,8 @@
 import type { Precondition, SetOptions as SetOptionsAdmin, WriteResult } from "@google-cloud/firestore";
 import type { SetOptions as SetOptionsClient } from "firebase/firestore";
-import { DocumentData } from "./DocumentData";
-import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } from "./DocumentReference";
-import { Firestore, FirestoreAdmin, FirestoreClient } from "./Firestore";
+import { DocumentData } from "./DocumentData.js";
+import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } from "./DocumentReference.js";
+import { Firestore, FirestoreAdmin, FirestoreClient } from "./Firestore.js";
 interface CommitResult<SuccessResult = any> {
     successCount: number;
     successResults: SuccessResult[];

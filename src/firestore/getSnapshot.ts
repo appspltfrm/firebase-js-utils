@@ -1,9 +1,9 @@
 import {getDoc, getDocs} from "firebase/firestore";
-import {DocumentData} from "./DocumentData";
-import {DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient} from "./DocumentReference";
-import {DocumentSnapshot, DocumentSnapshotAdmin, DocumentSnapshotClient} from "./DocumentSnapshot";
-import {Query, QueryAdmin, QueryClient} from "./Query";
-import {QuerySnapshot, QuerySnapshotAdmin, QuerySnapshotClient} from "./QuerySnapshot";
+import {DocumentData} from "./DocumentData.js";
+import {DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient} from "./DocumentReference.js";
+import {DocumentSnapshot, DocumentSnapshotAdmin, DocumentSnapshotClient} from "./DocumentSnapshot.js";
+import {Query, QueryAdmin, QueryClient} from "./Query.js";
+import {QuerySnapshot, QuerySnapshotAdmin, QuerySnapshotClient} from "./QuerySnapshot.js";
 
 export async function getSnapshot<T = DocumentData>(query: QueryClient<T>): Promise<QuerySnapshotClient<T>>;
 

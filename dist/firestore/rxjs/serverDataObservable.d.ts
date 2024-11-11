@@ -1,9 +1,9 @@
 import { Observable } from "rxjs";
-import { DocumentData } from "../DocumentData";
-import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } from "../DocumentReference";
-import { Query, QueryAdmin, QueryClient } from "../Query";
-import { SnapshotListenOptions } from "../SnapshotListenOptions";
-import { SnapshotOptions } from "../SnapshotOptions";
+import { DocumentData } from "../DocumentData.js";
+import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } from "../DocumentReference.js";
+import { Query, QueryAdmin, QueryClient } from "../Query.js";
+import { SnapshotListenOptions } from "../SnapshotListenOptions.js";
+import { SnapshotOptions } from "../SnapshotOptions.js";
 type Options = SnapshotOptions & SnapshotListenOptions;
 export declare function serverDataObservable<T = DocumentData>(query: QueryClient<T>, options?: Options): Observable<T[]>;
 export declare function serverDataObservable<T = DocumentData>(query: QueryAdmin<T>): Observable<T[]>;

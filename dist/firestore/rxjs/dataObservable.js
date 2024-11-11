@@ -1,8 +1,8 @@
 import { map, skipWhile } from "rxjs";
-import { DocumentReference } from "../DocumentReference";
-import { Query } from "../Query";
-import { SnapshotOptions } from "../SnapshotOptions";
-import { snapshotObservable } from "./snapshotObservable";
+import { DocumentReference } from "../DocumentReference.js";
+import { Query } from "../Query.js";
+import { SnapshotOptions } from "../SnapshotOptions.js";
+import { snapshotObservable } from "./snapshotObservable.js";
 export function dataObservable(docOrQuery, options) {
     const snapshotListenOptions = { includeMetadataChanges: !!options?.skipCache, skipErrors: options?.skipErrors };
     if (Query.isInstance(docOrQuery)) {

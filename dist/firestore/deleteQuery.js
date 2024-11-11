@@ -1,10 +1,10 @@
 import { sleep } from "@appspltfrm/js-utils/core";
-import { buildQuery } from "./buildQuery";
-import { deleteDocument } from "./deleteDocument";
-import { DocumentReference } from "./DocumentReference";
-import { getSnapshot } from "./getSnapshot";
-import { Query } from "./Query";
-import { WriteBatch, writeBatch } from "./WriteBatch";
+import { buildQuery } from "./buildQuery.js";
+import { deleteDocument } from "./deleteDocument.js";
+import { DocumentReference } from "./DocumentReference.js";
+import { getSnapshot } from "./getSnapshot.js";
+import { Query } from "./Query.js";
+import { WriteBatch, writeBatch } from "./WriteBatch.js";
 export async function deleteQuery(query, options) {
     if (!options) {
         options = {};

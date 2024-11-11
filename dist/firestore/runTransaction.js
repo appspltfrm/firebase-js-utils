@@ -1,5 +1,5 @@
 import { runTransaction as runTransactionClient } from "firebase/firestore";
-import { Firestore } from "./Firestore";
+import { Firestore } from "./Firestore.js";
 export function runTransaction(firestore, updateFunction) {
     if (Firestore.isClient(firestore)) {
         return runTransactionClient(firestore, updateFunction);

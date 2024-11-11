@@ -1,4 +1,6 @@
-import { buildQuery, collectionReference, documentReference } from "./firestore";
+import { buildQuery } from "./firestore/buildQuery.js";
+import { collectionReference } from "./firestore/CollectionReference.js";
+import { documentReference } from "./firestore/DocumentReference.js";
 class UniversalFirebaseContext {
 }
 export class FirebaseContextClient extends UniversalFirebaseContext {

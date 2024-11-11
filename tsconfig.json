@@ -5,14 +5,14 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "esModuleInterop": true,
-        "lib": ["dom", "ESNext"],
-        "module": "esnext",
-        "moduleResolution": "bundler",
-        "target": "esnext",
+        "lib": ["DOM", "ESNext"],
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "target": "ESNext",
         "outDir": "dist",
         "rootDir": "src",
         "sourceMap": true,
-        "importHelpers": true
+        "importHelpers": false
     },
 
     "exclude": [

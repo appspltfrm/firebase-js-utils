@@ -1,5 +1,5 @@
 import { writeBatch } from "firebase/firestore";
-import { Firestore } from "./Firestore";
+import { Firestore } from "./Firestore.js";
 export class AutoWriteBatch {
     firestore;
     constructor(firestore) {

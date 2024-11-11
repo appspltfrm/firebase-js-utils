@@ -1,7 +1,7 @@
-import {DocumentData} from "./DocumentData";
-import {getSnapshotFromServer} from "./getSnapshotFromServer";
-import {Query, QueryAdmin, QueryClient} from "./Query";
-import {QueryDocumentSnapshot, QueryDocumentSnapshotAdmin, QueryDocumentSnapshotClient} from "./QueryDocumentSnapshot";
+import {DocumentData} from "./DocumentData.js";
+import {getSnapshotFromServer} from "./getSnapshotFromServer.js";
+import {Query, QueryAdmin, QueryClient} from "./Query.js";
+import {QueryDocumentSnapshot, QueryDocumentSnapshotAdmin, QueryDocumentSnapshotClient} from "./QueryDocumentSnapshot.js";
 
 export async function getSnapshotsFromServer<T = DocumentData>(query: QueryClient<T>): Promise<QueryDocumentSnapshotClient<T>[]>;
 

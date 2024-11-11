@@ -1,5 +1,5 @@
 import { GeoPoint as $GeoPointClient } from "firebase/firestore";
-import { Firestore } from "./Firestore";
+import { Firestore } from "./Firestore.js";
 export var GeoPoint;
 (function (GeoPoint) {
     function isClient(gp) {

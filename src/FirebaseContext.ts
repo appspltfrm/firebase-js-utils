@@ -1,14 +1,21 @@
-import {AuthUser} from "./client-auth";
+import {AuthUser} from "./client-auth/AuthUser.js";
+import {buildQuery} from "./firestore/buildQuery.js";
 import {
-    buildQuery,
     collectionReference,
-    CollectionReference, CollectionReferenceAdmin, CollectionReferenceClient,
-    DocumentData, documentReference, DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient,
-    Firestore,
-    FirestoreAdmin,
-    FirestoreClient,
-    Query, QueryAdmin, QueryClient, QueryConstraint
-} from "./firestore";
+    CollectionReference,
+    CollectionReferenceAdmin,
+    CollectionReferenceClient
+} from "./firestore/CollectionReference.js";
+import {DocumentData} from "./firestore/DocumentData.js";
+import {
+    documentReference,
+    DocumentReference,
+    DocumentReferenceAdmin,
+    DocumentReferenceClient
+} from "./firestore/DocumentReference.js";
+import {Firestore, FirestoreAdmin, FirestoreClient} from "./firestore/Firestore.js";
+import {Query, QueryAdmin, QueryClient} from "./firestore/Query.js";
+import {QueryConstraint} from "./firestore/QueryConstraint.js";
 
 abstract class UniversalFirebaseContext {
 

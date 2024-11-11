@@ -1,6 +1,6 @@
 import { getDocFromServer, getDocsFromServer } from "firebase/firestore";
-import { DocumentReference } from "./DocumentReference";
-import { Query } from "./Query";
+import { DocumentReference } from "./DocumentReference.js";
+import { Query } from "./Query.js";
 export async function getDataFromServer(docOrQuery, options) {
     if (Query.isInstance(docOrQuery)) {
         if (Query.isClient(docOrQuery)) {

@@ -1,4 +1,4 @@
-import { Query, QueryAdmin, QueryClient } from "./Query";
+import { Query, QueryAdmin, QueryClient } from "./Query.js";
 export interface DeleteOptions {
     readLimit?: number;
     batch?: boolean;

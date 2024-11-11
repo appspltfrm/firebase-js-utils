@@ -1,4 +1,4 @@
-import { getSnapshotFromCache } from "./getSnapshotFromCache";
+import { getSnapshotFromCache } from "./getSnapshotFromCache.js";
 export async function getSnapshotsFromCache(query) {
     return (await getSnapshotFromCache(query)).docs;
 }

@@ -1,5 +1,5 @@
 import { updateDoc } from "firebase/firestore";
-import { DocumentReference } from "./DocumentReference";
+import { DocumentReference } from "./DocumentReference.js";
 export function updateDocument(doc, data, precondition) {
     if (DocumentReference.isClient(doc)) {
         return updateDoc(doc, data);

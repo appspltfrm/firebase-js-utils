@@ -1,5 +1,5 @@
 import { FieldValue as $FieldValueClient } from "firebase/firestore";
-import { Firestore } from "./Firestore";
+import { Firestore } from "./Firestore.js";
 export var FieldValue;
 (function (FieldValue) {
     function isInstance(obj) {

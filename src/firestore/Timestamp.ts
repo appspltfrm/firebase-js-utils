@@ -1,6 +1,6 @@
 import type {firestore as admin} from "firebase-admin";
 import {Timestamp as $TimestampClient} from "firebase/firestore";
-import {Firestore, FirestoreAdmin, FirestoreClient} from "./Firestore";
+import {Firestore} from "./Firestore.js";
 
 export type TimestampClient = $TimestampClient;
 export type TimestampAdmin = admin.Timestamp;

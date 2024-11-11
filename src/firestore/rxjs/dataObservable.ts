@@ -1,12 +1,12 @@
 import {map, Observable, skipWhile} from "rxjs";
-import {DocumentData} from "../DocumentData";
-import {DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient} from "../DocumentReference";
-import {DocumentSnapshotClient} from "../DocumentSnapshot";
-import {Query, QueryAdmin, QueryClient} from "../Query";
-import {QuerySnapshotClient} from "../QuerySnapshot";
-import {SnapshotListenOptions} from "../SnapshotListenOptions";
-import {SnapshotOptions} from "../SnapshotOptions";
-import {snapshotObservable} from "./snapshotObservable";
+import {DocumentData} from "../DocumentData.js";
+import {DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient} from "../DocumentReference.js";
+import {DocumentSnapshotClient} from "../DocumentSnapshot.js";
+import {Query, QueryAdmin, QueryClient} from "../Query.js";
+import {QuerySnapshotClient} from "../QuerySnapshot.js";
+import {SnapshotListenOptions} from "../SnapshotListenOptions.js";
+import {SnapshotOptions} from "../SnapshotOptions.js";
+import {snapshotObservable} from "./snapshotObservable.js";
 
 type Options = SnapshotOptions & SnapshotListenOptions & {
     skipCache?: boolean,

@@ -1,7 +1,7 @@
 import { query as queryClient } from "@firebase/firestore";
 import { endAt, endBefore, limit, limitToLast, orderBy, startAfter, startAt, where, or, and } from "firebase/firestore";
-import { Firestore } from "./Firestore";
-import { Query } from "./Query";
+import { Firestore } from "./Firestore.js";
+import { Query } from "./Query.js";
 export function buildQuery(query, ...queryConstraints) {
     if (Query.isClient(query)) {
         if (queryConstraints) {

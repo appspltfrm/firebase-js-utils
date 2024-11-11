@@ -1,4 +1,4 @@
-import { getSnapshot } from "./getSnapshot";
+import { getSnapshot } from "./getSnapshot.js";
 export async function getSnapshots(query) {
     return (await getSnapshot(query)).docs;
 }

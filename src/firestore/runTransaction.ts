@@ -1,6 +1,6 @@
 import {runTransaction as runTransactionClient} from "firebase/firestore";
-import {Firestore, FirestoreAdmin, FirestoreClient} from "./Firestore";
-import {TransactionFunction, TransactionFunctionAdmin, TransactionFunctionClient} from "./Transaction";
+import {Firestore, FirestoreAdmin, FirestoreClient} from "./Firestore.js";
+import {TransactionFunction, TransactionFunctionAdmin, TransactionFunctionClient} from "./Transaction.js";
 
 export function runTransaction<T>(firestore: FirestoreClient, updateFunction: TransactionFunctionClient<T>): Promise<T>;
 

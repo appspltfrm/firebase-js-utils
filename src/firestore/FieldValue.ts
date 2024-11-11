@@ -1,6 +1,6 @@
 import type {firestore as admin} from "firebase-admin";
 import {FieldValue as $FieldValueClient} from "firebase/firestore";
-import {Firestore} from "./Firestore";
+import {Firestore} from "./Firestore.js";
 
 export type FieldValueClient = $FieldValueClient;
 export type FieldValueAdmin = admin.FieldValue;

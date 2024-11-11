@@ -1,9 +1,9 @@
 import {map, Observable} from "rxjs";
-import {DocumentData} from "../DocumentData";
-import {Query, QueryAdmin, QueryClient} from "../Query";
-import {QueryDocumentSnapshot, QueryDocumentSnapshotAdmin, QueryDocumentSnapshotClient} from "../QueryDocumentSnapshot";
-import {SnapshotListenOptions} from "../SnapshotListenOptions";
-import {snapshotObservable} from "./snapshotObservable";
+import {DocumentData} from "../DocumentData.js";
+import {Query, QueryAdmin, QueryClient} from "../Query.js";
+import {QueryDocumentSnapshot, QueryDocumentSnapshotAdmin, QueryDocumentSnapshotClient} from "../QueryDocumentSnapshot.js";
+import {SnapshotListenOptions} from "../SnapshotListenOptions.js";
+import {snapshotObservable} from "./snapshotObservable.js";
 
 export function snapshotsObservable<T = DocumentData>(query: QueryClient<T>, options?: SnapshotListenOptions): Observable<QueryDocumentSnapshotClient<T>[]>;
 

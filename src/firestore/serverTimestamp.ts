@@ -1,6 +1,6 @@
 import {serverTimestamp as serverTimestampClient} from "firebase/firestore";
-import {FieldValue} from "./FieldValue";
-import {Firestore} from "./Firestore";
+import {FieldValue} from "./FieldValue.js";
+import {Firestore} from "./Firestore.js";
 
 export function serverTimestamp(): FieldValue {
 

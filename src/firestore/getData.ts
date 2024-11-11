@@ -1,7 +1,7 @@
 import {getDoc, getDocs} from "firebase/firestore";
-import {DocumentData} from "./DocumentData";
-import {DocumentReference} from "./DocumentReference";
-import {Query} from "./Query";
+import {DocumentData} from "./DocumentData.js";
+import {DocumentReference} from "./DocumentReference.js";
+import {Query} from "./Query.js";
 
 export async function getData<T = DocumentData>(docOrQuery: DocumentReference<T>): Promise<T>;
 

@@ -1,5 +1,5 @@
 import { collection } from "firebase/firestore";
-import { Firestore } from "./Firestore";
+import { Firestore } from "./Firestore.js";
 export var CollectionReference;
 (function (CollectionReference) {
     function isClient(ref) {

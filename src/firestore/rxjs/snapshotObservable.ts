@@ -1,11 +1,11 @@
 import {onSnapshot, SnapshotListenOptions as FirestoreSnapshotListenOptions} from "firebase/firestore";
 import {Observable} from "rxjs";
-import {DocumentData} from "../DocumentData";
-import {DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient} from "../DocumentReference";
-import {DocumentSnapshot, DocumentSnapshotAdmin, DocumentSnapshotClient} from "../DocumentSnapshot";
-import {Query, QueryAdmin, QueryClient} from "../Query";
-import {QuerySnapshot, QuerySnapshotAdmin, QuerySnapshotClient} from "../QuerySnapshot";
-import {SnapshotListenOptions} from "../SnapshotListenOptions";
+import {DocumentData} from "../DocumentData.js";
+import {DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient} from "../DocumentReference.js";
+import {DocumentSnapshot, DocumentSnapshotAdmin, DocumentSnapshotClient} from "../DocumentSnapshot.js";
+import {Query, QueryAdmin, QueryClient} from "../Query.js";
+import {QuerySnapshot, QuerySnapshotAdmin, QuerySnapshotClient} from "../QuerySnapshot.js";
+import {SnapshotListenOptions} from "../SnapshotListenOptions.js";
 
 export function snapshotObservable<T = DocumentData>(query: QueryClient<T>, options?: SnapshotListenOptions): Observable<QuerySnapshotClient<T>>;
 

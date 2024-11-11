@@ -1,7 +1,7 @@
 import type { firestore as admin } from "firebase-admin";
 import { CollectionReference as $CollectionReferenceClient } from "firebase/firestore";
-import { DocumentData } from "./DocumentData";
-import { Firestore, FirestoreAdmin, FirestoreClient } from "./Firestore";
+import { DocumentData } from "./DocumentData.js";
+import { Firestore, FirestoreAdmin, FirestoreClient } from "./Firestore.js";
 export type CollectionReferenceClient<T = DocumentData> = $CollectionReferenceClient<T>;
 export type CollectionReferenceAdmin<T = DocumentData> = admin.CollectionReference<T>;
 export type CollectionReference<T = DocumentData> = CollectionReferenceAdmin<T> | CollectionReferenceClient<T>;

@@ -1,6 +1,6 @@
 import type {firestore as admin} from "firebase-admin";
 import {GeoPoint as $GeoPointClient} from "firebase/firestore";
-import {Firestore} from "./Firestore";
+import {Firestore} from "./Firestore.js";
 
 export type GeoPointClient = $GeoPointClient;
 export type GeoPointAdmin = admin.GeoPoint;

@@ -1,5 +1,5 @@
 import { Query as $QueryClient } from "firebase/firestore";
-import { Firestore } from "./Firestore";
+import { Firestore } from "./Firestore.js";
 export var Query;
 (function (Query) {
     function isInstance(obj) {

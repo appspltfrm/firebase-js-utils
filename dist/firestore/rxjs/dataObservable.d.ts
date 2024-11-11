@@ -1,9 +1,9 @@
 import { Observable } from "rxjs";
-import { DocumentData } from "../DocumentData";
-import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } from "../DocumentReference";
-import { Query, QueryAdmin, QueryClient } from "../Query";
-import { SnapshotListenOptions } from "../SnapshotListenOptions";
-import { SnapshotOptions } from "../SnapshotOptions";
+import { DocumentData } from "../DocumentData.js";
+import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } from "../DocumentReference.js";
+import { Query, QueryAdmin, QueryClient } from "../Query.js";
+import { SnapshotListenOptions } from "../SnapshotListenOptions.js";
+import { SnapshotOptions } from "../SnapshotOptions.js";
 type Options = SnapshotOptions & SnapshotListenOptions & {
     skipCache?: boolean;
     skipErrors?: boolean;

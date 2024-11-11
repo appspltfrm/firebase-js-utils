@@ -1,7 +1,7 @@
 import { onSnapshot } from "firebase/firestore";
 import { Observable } from "rxjs";
-import { DocumentReference } from "../DocumentReference";
-import { Query } from "../Query";
+import { DocumentReference } from "../DocumentReference.js";
+import { Query } from "../Query.js";
 export function snapshotObservable(docOrQuery, options) {
     if (!(Query.isInstance(docOrQuery) || DocumentReference.isInstance(docOrQuery))) {
         throw new Error("Invalid DocumentReference or Query object");
