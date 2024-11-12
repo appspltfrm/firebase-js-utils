@@ -2,9 +2,9 @@ import {sleep} from "@appspltfrm/js-utils/core";
 import {deleteApp, getApp, initializeApp} from "firebase/app";
 import {getAuth} from "firebase/auth";
 import {getFirestore} from "firebase/firestore";
-import {AuthUser} from "../client-auth";
-import {FirebaseContextClient} from "../FirebaseContext";
-import {dataObservable} from "../firestore/rxjs";
+import {AuthUser} from "../client-auth/AuthUser.js";
+import {FirebaseContextClient} from "../FirebaseContext.js";
+import {dataObservable} from "../firestore/rxjs/dataObservable.js";
 
 interface SomeType {
     field: string;
@@ -24,8 +24,12 @@ interface SomeType {
         })
 
         const context = new class extends FirebaseContextClient {
+            readonly projectId = "dev-test-17b7a";
             readonly firestore = getFirestore();
             readonly authUser = new AuthUser(getAuth());
+            functionUrl(name: string): string {
+                return "";
+            }
         }
 
         const recordQuery = context.firestoreQuery("records");

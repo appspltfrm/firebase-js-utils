@@ -26,4 +26,4 @@ export { runTransaction } from "./runTransaction.js";
 export { serverTimestamp } from "./serverTimestamp.js";
 export { setDocument } from "./setDocument.js";
 export { updateDocument } from "./updateDocument.js";
-//# sourceMappingURL=public.js.map
+//# sourceMappingURL=index.js.map

@@ -28,16 +28,16 @@
   },
   "exports": {
     ".": {
-      "types": "./public.d.ts",
-      "default": "./public.js"
+      "types": "./index.d.ts",
+      "default": "./index.js"
     },
     "./*": {
-      "types": "./*/public.d.ts",
-      "default": "./*/public.js"
+      "types": "./*/index.d.ts",
+      "default": "./*/index.js"
     },
     "./firestore/*": {
-      "types": "./firestore/*/public.d.ts",
-      "default": "./firestore/*/public.js"
+      "types": "./firestore/*/index.d.ts",
+      "default": "./firestore/*/index.js"
     }
   },
   "sideEffects": false
