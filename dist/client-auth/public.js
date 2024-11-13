@@ -1,2 +1,2 @@
 export { AuthUser } from "./AuthUser.js";
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=public.js.map
