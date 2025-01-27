@@ -17,7 +17,7 @@ import {Firestore, FirestoreAdmin, FirestoreClient} from "./firestore/Firestore.
 import {Query, QueryAdmin, QueryClient} from "./firestore/Query.js";
 import {QueryConstraint} from "./firestore/QueryConstraint.js";
 
-abstract class UniversalFirebaseContext {
+export abstract class UniversalFirebaseContext {
 
     abstract get firestore(): Firestore;
 

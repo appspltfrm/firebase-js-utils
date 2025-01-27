@@ -5,7 +5,7 @@ import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } fr
 import { Firestore, FirestoreAdmin, FirestoreClient } from "./firestore/Firestore.js";
 import { Query, QueryAdmin, QueryClient } from "./firestore/Query.js";
 import { QueryConstraint } from "./firestore/QueryConstraint.js";
-declare abstract class UniversalFirebaseContext {
+export declare abstract class UniversalFirebaseContext {
     abstract get firestore(): Firestore;
     abstract firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;
     abstract firestoreQuery<T = DocumentData>(collection: CollectionReference<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;
@@ -31,4 +31,3 @@ export declare abstract class FirebaseContextAdmin extends UniversalFirebaseCont
     firestoreDocument<T = DocumentData>(path: string): DocumentReferenceAdmin<T>;
 }
 export type FirebaseContext = FirebaseContextClient | FirebaseContextAdmin;
-export {};

@@ -1,1 +1,1 @@
-export {FirebaseContext, FirebaseContextAdmin, FirebaseContextClient} from "./FirebaseContext.js";
+export {FirebaseContext, FirebaseContextAdmin, FirebaseContextClient, UniversalFirebaseContext} from "./FirebaseContext.js";
