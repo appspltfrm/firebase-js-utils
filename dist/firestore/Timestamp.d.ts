@@ -4,6 +4,7 @@ export type TimestampClient = $TimestampClient;
 export type TimestampAdmin = admin.Timestamp;
 export type Timestamp = TimestampAdmin | TimestampClient;
 export declare namespace Timestamp {
+    const jsonTypeName = "firestore/Timestamp";
     function isClient(timestamp: Timestamp): timestamp is TimestampClient;
     function isAdmin(timestamp: Timestamp): timestamp is TimestampAdmin;
     function isInstance(obj: any): obj is Timestamp;

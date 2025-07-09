@@ -1,5 +1,6 @@
 import {AssignableType} from "@appspltfrm/js-utils/core";
 import {SerializationOptions, Serializer} from "@appspltfrm/js-utils/json";
+import {Timestamp} from "./Timestamp.js";
 
 export class TimestampSerializer extends Serializer {
 
@@ -25,7 +26,7 @@ export class TimestampSerializer extends Serializer {
         if (this.isUndefinedOrNull(object)) {
             return this.serializeUndefinedOrNull(object);
         } else if (object instanceof this.timestampClass) {
-            return object;
+            return {"@type": Timestamp.jsonTypeName, ...object.toJson()};
         } else {
             throw new Error(`Cannot serialize "${object}" as Firestore Timestamp`);
         }

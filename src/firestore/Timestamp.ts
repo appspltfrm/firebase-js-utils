@@ -9,6 +9,8 @@ export type Timestamp = TimestampAdmin | TimestampClient;
 
 export namespace Timestamp {
 
+    export const jsonTypeName = "firestore/Timestamp";
+
     export function isClient(timestamp: Timestamp): timestamp is TimestampClient {
         return timestamp instanceof $TimestampClient;
     }

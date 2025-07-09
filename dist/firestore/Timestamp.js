@@ -2,6 +2,7 @@ import { Timestamp as $TimestampClient } from "firebase/firestore";
 import { Firestore } from "./Firestore.js";
 export var Timestamp;
 (function (Timestamp) {
+    Timestamp.jsonTypeName = "firestore/Timestamp";
     function isClient(timestamp) {
         return timestamp instanceof $TimestampClient;
     }
