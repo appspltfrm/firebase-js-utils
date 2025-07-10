@@ -26,7 +26,7 @@ export class TimestampSerializer extends Serializer {
         if (this.isUndefinedOrNull(object)) {
             return this.serializeUndefinedOrNull(object);
         } else if (object instanceof this.timestampClass) {
-            return {"@type": Timestamp.jsonTypeName, ...object.toJSON()};
+            return {"@type": Timestamp.jsonTypeName, seconds: object.seconds, nanoseconds: object.nanoseconds};
         } else {
             throw new Error(`Cannot serialize "${object}" as Firestore Timestamp`);
         }
