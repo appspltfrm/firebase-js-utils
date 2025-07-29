@@ -14,6 +14,7 @@ export { getChunkedDataFromServer } from "./getChunkedDataFromServer.js";
 export { getChunkedSnapshots } from "./getChunkedSnapshots.js";
 export { getChunkedSnapshotsFromCache } from "./getChunkedSnapshotsFromCache.js";
 export { getChunkedSnapshotsFromServer } from "./getChunkedSnapshotsFromServer.js";
+export { getCountFromServer } from "./getCountFromServer.js";
 export { getData } from "./getData.js";
 export { getDataFromCache } from "./getDataFromCache.js";
 export { getDataFromServer } from "./getDataFromServer.js";
