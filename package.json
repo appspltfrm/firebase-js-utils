@@ -13,7 +13,8 @@
     "@appspltfrm/node-utils": "github:appspltfrm/node-utils"
   },
   "optionalDependencies": {
-    "rxjs": "^7.4.0"
+    "rxjs": "^7.4.0",
+    "transliteration": "^2.3.5"
   },
   "peerDependencies": {
     "firebase": "^11.0.0",
