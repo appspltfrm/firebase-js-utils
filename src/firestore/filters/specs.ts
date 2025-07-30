@@ -2,14 +2,14 @@ export interface FilterFieldSpec<T = any> {
     name: string;
     queryName?: string | ((args: {operator: FilterOperator}) => string);
     dataName?: string | ((args: {operator: FilterOperator}) => string);
-    dataValue?: (data: T) => any;
+    dataValue?: (args: {data: T}) => any;
     filterValue?: (args: {operator: FilterOperator, value: any | undefined}) => any;
     label: string;
     description?: string;
     hint?: string;
     type: FilterFieldType;
     operators: FilterOperator[];
-    operatorLabel?: (operator: FilterOperator) => string;
+    operatorLabel?: (args: {operator: FilterOperator}) => string;
 }
 
 

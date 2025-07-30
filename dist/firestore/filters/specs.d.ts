@@ -6,7 +6,9 @@ export interface FilterFieldSpec<T = any> {
     dataName?: string | ((args: {
         operator: FilterOperator;
     }) => string);
-    dataValue?: (data: T) => any;
+    dataValue?: (args: {
+        data: T;
+    }) => any;
     filterValue?: (args: {
         operator: FilterOperator;
         value: any | undefined;
@@ -16,7 +18,9 @@ export interface FilterFieldSpec<T = any> {
     hint?: string;
     type: FilterFieldType;
     operators: FilterOperator[];
-    operatorLabel?: (operator: FilterOperator) => string;
+    operatorLabel?: (args: {
+        operator: FilterOperator;
+    }) => string;
 }
 export declare enum FilterOperator {
     textTrigram = 1,
