@@ -18,7 +18,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
         ...filter,
         value: filter.field.filterValue ? filter.field.filterValue({ operator: filter.operator, value: filter.value }) : filter.value
     }));
-    const textFilterWords = filters.filter(f => f.field.type === FilterFieldType.text)
+    const textFilterWords = filtersNormalized.filter(f => f.field.type === FilterFieldType.text)
         .map(filter => [filter, splitTextSearchWords(filter.value, transliterate)]);
     const testFilters = (data) => {
         for (const filter of filtersNormalized) {
