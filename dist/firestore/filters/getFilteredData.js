@@ -80,9 +80,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                     if (deepEqual(startAfter, d)) {
                         startAfterFound = true;
                     }
-                    else {
-                        continue;
-                    }
+                    continue;
                 }
                 records.push(data);
                 if (records.length === limit + 1) {

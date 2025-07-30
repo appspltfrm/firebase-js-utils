@@ -111,9 +111,8 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                     const d = getStartAfter(data);
                     if (deepEqual(startAfter, d)) {
                         startAfterFound = true;
-                    } else {
-                        continue;
                     }
+                    continue;
                 }
 
                 records.push(data);
