@@ -39,13 +39,15 @@ export namespace FilterFieldType {
 }
 
 export interface Filter {
-    field: FilterFieldSpec;
+    field: string;
+    spec?: FilterFieldSpec;
     operator: FilterOperator;
     value?: string | string[];
 }
 
 export namespace Filter {
 
+    export type SpecRequired = Filter & {spec: FilterFieldSpec};
     export type Serialized = [fieldName: string, operator: FilterOperator, value?: string | string[]];
 
     export function serialize(filters: Filter[] | undefined) {
@@ -55,7 +57,7 @@ export namespace Filter {
 
         const serialized: Serialized[] = [];
         for (const filter of filters) {
-            const s = [filter.field.name, filter.operator] as Serialized;
+            const s = [filter.field, filter.operator] as Serialized;
             if (filter.value !== undefined) {
                 s.push(filter.value);
             }
@@ -69,11 +71,11 @@ export namespace Filter {
             return;
         }
 
-        const unserialized: Filter[] = [];
+        const unserialized: Filter.SpecRequired[] = [];
         for (const filter of filters) {
-            const field = fields.find(f => f.name === filter[0]);
-            if (field) {
-                unserialized.push({field, operator: filter[1], value: filter[2]})
+            const spec = fields.find(f => f.name === filter[0]);
+            if (spec) {
+                unserialized.push({field: spec.name, spec, operator: filter[1], value: filter[2]})
             }
         }
         return unserialized;

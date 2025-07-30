@@ -6,7 +6,7 @@ type Args<T> = {
     getStartAfter: (data: T) => any[];
     allData?: T[];
     limit: number;
-    filters: Filter[];
+    filters: Filter.SpecRequired[];
     transliterate?: (input: string) => string;
 };
 export declare function getFilteredData<T>({ filters, query: baseQuery, transliterate, limit, startAfter, getStartAfter, allData }: Args<T>): Promise<{

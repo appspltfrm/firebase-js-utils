@@ -29,7 +29,7 @@ export var Filter;
         }
         const serialized = [];
         for (const filter of filters) {
-            const s = [filter.field.name, filter.operator];
+            const s = [filter.field, filter.operator];
             if (filter.value !== undefined) {
                 s.push(filter.value);
             }
@@ -44,9 +44,9 @@ export var Filter;
         }
         const unserialized = [];
         for (const filter of filters) {
-            const field = fields.find(f => f.name === filter[0]);
-            if (field) {
-                unserialized.push({ field, operator: filter[1], value: filter[2] });
+            const spec = fields.find(f => f.name === filter[0]);
+            if (spec) {
+                unserialized.push({ field: spec.name, spec, operator: filter[1], value: filter[2] });
             }
         }
         return unserialized;

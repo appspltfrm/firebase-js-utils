@@ -13,7 +13,7 @@ type Args<T> = {
     getStartAfter: (data: T) => any[],
     allData?: T[],
     limit: number, 
-    filters: Filter[],
+    filters: Filter.SpecRequired[],
     transliterate?: (input: string) => string
 }
 
@@ -27,19 +27,19 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
 
     const filtersNormalized = filters.map(filter => ({
         ...filter, 
-        value: filter.field.filterValue ? filter.field.filterValue({operator: filter.operator, value: filter.value}) : filter.value
+        value: filter.spec.filterValue ? filter.spec.filterValue({operator: filter.operator, value: filter.value}) : filter.value
     }));
 
-    const textFilterWords: [filter: Filter, string[]][] = filtersNormalized.filter(f => f.field.type === FilterFieldType.text)
+    const textFilterWords: [filter: Filter, string[]][] = filtersNormalized.filter(f => f.spec.type === FilterFieldType.text)
         .map(filter => [filter, splitTextSearchWords(filter.value as string, transliterate)]);
 
     const testFilters = (data: any) => {
         
         for (const filter of filtersNormalized) {
-            const propName = typeof filter.field.dataName === "string" ? filter.field.dataName : filter.field.dataName?.({operator: filter.operator});
-            let dataValue = filter.field.dataValue ? filter.field.dataValue({data}) : data[propName || filter.field.name];
+            const propName = typeof filter.spec.dataName === "string" ? filter.spec.dataName : filter.spec.dataName?.({operator: filter.operator});
+            let dataValue = filter.spec.dataValue ? filter.spec.dataValue({data}) : data[propName || filter.spec.name];
 
-            if ([FilterOperator.includeChars, FilterOperator.includeWord].includes(filter.operator) && [FilterFieldType.text, FilterFieldType.textArray].includes(filter.field.type)) {
+            if ([FilterOperator.includeChars, FilterOperator.includeWord].includes(filter.operator) && [FilterFieldType.text, FilterFieldType.textArray].includes(filter.spec.type)) {
                 if (Array.isArray(dataValue)) {
                     dataValue = dataValue.map(v => transliterate(v));
                 } else {
@@ -47,7 +47,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                 }
             }
             
-            if (filter.field.type === FilterFieldType.text) {
+            if (filter.spec.type === FilterFieldType.text) {
 
                 if (!filter.value) {
                     return false;
@@ -69,7 +69,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                     }
                 }
 
-            } else if (filter.field.type === FilterFieldType.textArray) {
+            } else if (filter.spec.type === FilterFieldType.textArray) {
 
                 if (filter.operator === FilterOperator.emptyArray) {
                     return !dataValue || (dataValue as string[]).length === 0;
@@ -137,9 +137,9 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
 
         for (const filter of filtersNormalized) {
 
-            const fieldName = (typeof filter.field.queryName === "string" ? filter.field.queryName : filter.field.queryName({operator: filter.operator})) || filter.field.name;
+            const fieldName = (typeof filter.spec.queryName === "string" ? filter.spec.queryName : filter.spec.queryName({operator: filter.operator})) || filter.spec.name;
 
-            if (filter.field.type === FilterFieldType.text) {
+            if (filter.spec.type === FilterFieldType.text) {
 
                 if (!filter.value) {
                     return result;
@@ -177,7 +177,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                     }
                 }
 
-            } else if (filter.field.type === FilterFieldType.textArray) {
+            } else if (filter.spec.type === FilterFieldType.textArray) {
 
                 if (filter.operator !== FilterOperator.emptyArray && (!filter.value || !Array.isArray(filter.value))) {
                     return result;

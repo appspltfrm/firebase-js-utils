@@ -12,15 +12,15 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
     }
     const filtersNormalized = filters.map(filter => ({
         ...filter,
-        value: filter.field.filterValue ? filter.field.filterValue({ operator: filter.operator, value: filter.value }) : filter.value
+        value: filter.spec.filterValue ? filter.spec.filterValue({ operator: filter.operator, value: filter.value }) : filter.value
     }));
-    const textFilterWords = filtersNormalized.filter(f => f.field.type === FilterFieldType.text)
+    const textFilterWords = filtersNormalized.filter(f => f.spec.type === FilterFieldType.text)
         .map(filter => [filter, splitTextSearchWords(filter.value, transliterate)]);
     const testFilters = (data) => {
         for (const filter of filtersNormalized) {
-            const propName = typeof filter.field.dataName === "string" ? filter.field.dataName : filter.field.dataName?.({ operator: filter.operator });
-            let dataValue = filter.field.dataValue ? filter.field.dataValue({ data }) : data[propName || filter.field.name];
-            if ([FilterOperator.includeChars, FilterOperator.includeWord].includes(filter.operator) && [FilterFieldType.text, FilterFieldType.textArray].includes(filter.field.type)) {
+            const propName = typeof filter.spec.dataName === "string" ? filter.spec.dataName : filter.spec.dataName?.({ operator: filter.operator });
+            let dataValue = filter.spec.dataValue ? filter.spec.dataValue({ data }) : data[propName || filter.spec.name];
+            if ([FilterOperator.includeChars, FilterOperator.includeWord].includes(filter.operator) && [FilterFieldType.text, FilterFieldType.textArray].includes(filter.spec.type)) {
                 if (Array.isArray(dataValue)) {
                     dataValue = dataValue.map(v => transliterate(v));
                 }
@@ -28,7 +28,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                     dataValue = transliterate(dataValue);
                 }
             }
-            if (filter.field.type === FilterFieldType.text) {
+            if (filter.spec.type === FilterFieldType.text) {
                 if (!filter.value) {
                     return false;
                 }
@@ -48,7 +48,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                     }
                 }
             }
-            else if (filter.field.type === FilterFieldType.textArray) {
+            else if (filter.spec.type === FilterFieldType.textArray) {
                 if (filter.operator === FilterOperator.emptyArray) {
                     return !dataValue || dataValue.length === 0;
                 }
@@ -98,8 +98,8 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
             baseQuery = buildQuery(baseQuery, ["startAfter", ...startAfter]);
         }
         for (const filter of filtersNormalized) {
-            const fieldName = (typeof filter.field.queryName === "string" ? filter.field.queryName : filter.field.queryName({ operator: filter.operator })) || filter.field.name;
-            if (filter.field.type === FilterFieldType.text) {
+            const fieldName = (typeof filter.spec.queryName === "string" ? filter.spec.queryName : filter.spec.queryName({ operator: filter.operator })) || filter.spec.name;
+            if (filter.spec.type === FilterFieldType.text) {
                 if (!filter.value) {
                     return result;
                 }
@@ -125,7 +125,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                     }
                 }
             }
-            else if (filter.field.type === FilterFieldType.textArray) {
+            else if (filter.spec.type === FilterFieldType.textArray) {
                 if (filter.operator !== FilterOperator.emptyArray && (!filter.value || !Array.isArray(filter.value))) {
                     return result;
                 }

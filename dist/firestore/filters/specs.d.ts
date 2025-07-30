@@ -44,12 +44,16 @@ export declare namespace FilterFieldType {
     };
 }
 export interface Filter {
-    field: FilterFieldSpec;
+    field: string;
+    spec?: FilterFieldSpec;
     operator: FilterOperator;
     value?: string | string[];
 }
 export declare namespace Filter {
+    type SpecRequired = Filter & {
+        spec: FilterFieldSpec;
+    };
     type Serialized = [fieldName: string, operator: FilterOperator, value?: string | string[]];
     function serialize(filters: Filter[] | undefined): Serialized[];
-    function unserialize(filters: Serialized[] | undefined, fields: FilterFieldSpec[]): Filter[];
+    function unserialize(filters: Serialized[] | undefined, fields: FilterFieldSpec[]): SpecRequired[];
 }
