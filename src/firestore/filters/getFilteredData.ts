@@ -21,15 +21,8 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
 
     const result: {next: boolean, records: T[]} = {next: false, records: []};
 
-    let bestQueryCount: number | undefined;
-    let bestQuery: Query<T> | undefined;
-
     if (!transliterate) {
         transliterate = (await import("transliteration")).transliterate;
-    }
-
-    if (startAfter?.length) {
-        baseQuery = buildQuery(baseQuery, ["startAfter", ...startAfter]);
     }
 
     const filtersNormalized = filters.map(filter => ({
@@ -135,6 +128,13 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
         result.next = records.length > limit;
 
     } else {
+
+        let bestQueryCount: number | undefined;
+        let bestQuery: Query<T> | undefined;
+
+        if (startAfter?.length) {
+            baseQuery = buildQuery(baseQuery, ["startAfter", ...startAfter]);
+        }
 
         for (const filter of filtersNormalized) {
 

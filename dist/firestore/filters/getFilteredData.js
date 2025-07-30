@@ -7,13 +7,8 @@ import { splitTextSearchWords } from "./splitTextSearchWords.js";
 import { deepEqual } from "fast-equals";
 export async function getFilteredData({ filters, query: baseQuery, transliterate, limit, startAfter, getStartAfter, allData }) {
     const result = { next: false, records: [] };
-    let bestQueryCount;
-    let bestQuery;
     if (!transliterate) {
         transliterate = (await import("transliteration")).transliterate;
-    }
-    if (startAfter?.length) {
-        baseQuery = buildQuery(baseQuery, ["startAfter", ...startAfter]);
     }
     const filtersNormalized = filters.map(filter => ({
         ...filter,
@@ -99,6 +94,11 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
         result.next = records.length > limit;
     }
     else {
+        let bestQueryCount;
+        let bestQuery;
+        if (startAfter?.length) {
+            baseQuery = buildQuery(baseQuery, ["startAfter", ...startAfter]);
+        }
         for (const filter of filtersNormalized) {
             const fieldName = (typeof filter.field.queryName === "string" ? filter.field.queryName : filter.field.queryName({ operator: filter.operator })) || filter.field.name;
             if (filter.field.type === FilterFieldType.text) {
