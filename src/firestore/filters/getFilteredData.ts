@@ -43,7 +43,15 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
         
         for (const filter of filtersNormalized) {
             const propName = typeof filter.field.dataName === "string" ? filter.field.dataName : filter.field.dataName?.({operator: filter.operator});
-            const dataValue = filter.field.dataValue ? filter.field.dataValue({data}) : data[propName || filter.field.name];
+            let dataValue = filter.field.dataValue ? filter.field.dataValue({data}) : data[propName || filter.field.name];
+
+            if ([FilterOperator.textTrigram, FilterOperator.textWord].includes(filter.operator) && [FilterFieldType.text, FilterFieldType.textArray].includes(filter.field.type)) {
+                if (Array.isArray(dataValue)) {
+                    dataValue = dataValue.map(v => transliterate(v));
+                } else {
+                    dataValue = transliterate(dataValue);
+                }
+            }
             
             if (filter.field.type === FilterFieldType.text) {
 
@@ -58,7 +66,9 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                 if (filter.operator === FilterOperator.textTrigram || filter.operator === FilterOperator.textWord) {
                     for (const [, words] of textFilterWords.filter(([f]) => f === filter)) {
                         for (const word of words) {
-                            if (!(Array.isArray(dataValue) && dataValue.find((v: string) => filter.operator === FilterOperator.textTrigram ? v.includes(word) : v === word))) {
+                            if (typeof dataValue === "string") {
+                                return dataValue.includes(word);
+                            } else if (!(Array.isArray(dataValue) && dataValue.find((v: string) => filter.operator === FilterOperator.textTrigram ? v.includes(word) : v === word))) {
                                 return false;
                             }
                         }
