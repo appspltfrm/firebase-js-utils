@@ -23,8 +23,8 @@ export interface FilterFieldSpec<T = any> {
     }) => string;
 }
 export declare enum FilterOperator {
-    textTrigram = 1,
-    textWord = 2,
+    includeChars = 1,
+    includeWord = 2,
     hasAll = 3,
     hasAnyOf = 4,
     emptyArray = 5,
@@ -39,7 +39,7 @@ export declare enum FilterFieldType {
 }
 export declare namespace FilterFieldType {
     const operators: {
-        readonly 1: readonly [FilterOperator.textTrigram, FilterOperator.textWord, FilterOperator.equals];
+        readonly 1: readonly [FilterOperator.includeChars, FilterOperator.includeWord, FilterOperator.equals];
         readonly 2: readonly [FilterOperator.hasAnyOf, FilterOperator.hasAll, FilterOperator.emptyArray];
     };
 }

@@ -14,8 +14,8 @@ export interface FilterFieldSpec<T = any> {
 
 
 export enum FilterOperator {
-    textTrigram = 1,
-    textWord = 2,
+    includeChars = 1,
+    includeWord = 2,
     hasAll = 3,
     hasAnyOf = 4,
     emptyArray = 5,
@@ -33,7 +33,7 @@ export enum FilterFieldType {
 
 export namespace FilterFieldType {
     export const operators = {
-        [FilterFieldType.text]: [FilterOperator.textTrigram, FilterOperator.textWord, FilterOperator.equals],
+        [FilterFieldType.text]: [FilterOperator.includeChars, FilterOperator.includeWord, FilterOperator.equals],
         [FilterFieldType.textArray]: [FilterOperator.hasAnyOf, FilterOperator.hasAll, FilterOperator.emptyArray]
     } as const;
 }

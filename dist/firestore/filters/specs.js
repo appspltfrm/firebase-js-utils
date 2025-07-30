@@ -1,7 +1,7 @@
 export var FilterOperator;
 (function (FilterOperator) {
-    FilterOperator[FilterOperator["textTrigram"] = 1] = "textTrigram";
-    FilterOperator[FilterOperator["textWord"] = 2] = "textWord";
+    FilterOperator[FilterOperator["includeChars"] = 1] = "includeChars";
+    FilterOperator[FilterOperator["includeWord"] = 2] = "includeWord";
     FilterOperator[FilterOperator["hasAll"] = 3] = "hasAll";
     FilterOperator[FilterOperator["hasAnyOf"] = 4] = "hasAnyOf";
     FilterOperator[FilterOperator["emptyArray"] = 5] = "emptyArray";
@@ -17,7 +17,7 @@ export var FilterFieldType;
 })(FilterFieldType || (FilterFieldType = {}));
 (function (FilterFieldType) {
     FilterFieldType.operators = {
-        [FilterFieldType.text]: [FilterOperator.textTrigram, FilterOperator.textWord, FilterOperator.equals],
+        [FilterFieldType.text]: [FilterOperator.includeChars, FilterOperator.includeWord, FilterOperator.equals],
         [FilterFieldType.textArray]: [FilterOperator.hasAnyOf, FilterOperator.hasAll, FilterOperator.emptyArray]
     };
 })(FilterFieldType || (FilterFieldType = {}));

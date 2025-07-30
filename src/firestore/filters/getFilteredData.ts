@@ -39,7 +39,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
             const propName = typeof filter.field.dataName === "string" ? filter.field.dataName : filter.field.dataName?.({operator: filter.operator});
             let dataValue = filter.field.dataValue ? filter.field.dataValue({data}) : data[propName || filter.field.name];
 
-            if ([FilterOperator.textTrigram, FilterOperator.textWord].includes(filter.operator) && [FilterFieldType.text, FilterFieldType.textArray].includes(filter.field.type)) {
+            if ([FilterOperator.includeChars, FilterOperator.includeWord].includes(filter.operator) && [FilterFieldType.text, FilterFieldType.textArray].includes(filter.field.type)) {
                 if (Array.isArray(dataValue)) {
                     dataValue = dataValue.map(v => transliterate(v));
                 } else {
@@ -57,12 +57,12 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                     return false;
                 }
 
-                if (filter.operator === FilterOperator.textTrigram || filter.operator === FilterOperator.textWord) {
+                if (filter.operator === FilterOperator.includeChars || filter.operator === FilterOperator.includeWord) {
                     for (const [, words] of textFilterWords.filter(([f]) => f === filter)) {
                         for (const word of words) {
                             if (typeof dataValue === "string") {
                                 return dataValue.includes(word);
-                            } else if (!(Array.isArray(dataValue) && dataValue.find((v: string) => filter.operator === FilterOperator.textTrigram ? v.includes(word) : v === word))) {
+                            } else if (!(Array.isArray(dataValue) && dataValue.find((v: string) => filter.operator === FilterOperator.includeChars ? v.includes(word) : v === word))) {
                                 return false;
                             }
                         }
@@ -147,20 +147,20 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
 
                 const values = filter.operator === FilterOperator.equals ? [filter.value] : [
                     ...textFilterWords.filter(([f]) => f === filter).map(([, words]) => words).flat(),
-                    ...((filter.operator === FilterOperator.textTrigram && generateTextSearchTrigrams(filter.value as string, "query", transliterate)) || [])
+                    ...((filter.operator === FilterOperator.includeChars && generateTextSearchTrigrams(filter.value as string, "query", transliterate)) || [])
                 ].filter((v, i, a) => a.indexOf(v) === i);
 
                 for (const value of values) {
 
                     const query = buildQuery(baseQuery, 
-                        ([FilterOperator.textTrigram, FilterOperator.textWord].includes(filter.operator) && ["where", fieldName, "array-contains", value]) || undefined,
+                        ([FilterOperator.includeChars, FilterOperator.includeWord].includes(filter.operator) && ["where", fieldName, "array-contains", value]) || undefined,
                         (filter.operator === FilterOperator.equals && ["where", fieldName, "==", value]) || undefined
                     )
 
                     const count = await getCountFromServer(query);
 
                     ZERO: if (count === 0) {
-                        if (filter.operator === FilterOperator.textTrigram && value.length !== 3) {
+                        if (filter.operator === FilterOperator.includeChars && value.length !== 3) {
                             break ZERO;
                         }
 
