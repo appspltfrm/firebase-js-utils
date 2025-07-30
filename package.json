@@ -14,7 +14,8 @@
   },
   "optionalDependencies": {
     "rxjs": "^7.4.0",
-    "transliteration": "^2.3.5"
+    "transliteration": "^2.3.5",
+    "fast-equals": "^5.0.0"
   },
   "peerDependencies": {
     "firebase": "^11.0.0",

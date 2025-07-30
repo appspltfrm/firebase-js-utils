@@ -4,6 +4,7 @@ import { getDataFromServer } from "../getDataFromServer.js";
 import { generateTextSearchTrigrams } from "./generateTextSearchTrigrams.js";
 import { FilterFieldType, FilterOperator } from "./specs.js";
 import { splitTextSearchWords } from "./splitTextSearchWords.js";
+import { deepEqual } from "fast-equals";
 export async function getFilteredData({ filters, query: baseQuery, transliterate, limit, startAfter, getStartAfter, allData }) {
     const result = { next: false, records: [] };
     let bestQueryCount;
@@ -75,12 +76,27 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
         return true;
     };
     if (allData) {
-        result.next = false;
+        const records = [];
+        let startAfterFound = false;
         for (const data of allData) {
             if (testFilters(data)) {
-                result.records.push(data);
+                if (startAfter && !startAfterFound) {
+                    const d = getStartAfter(data);
+                    if (deepEqual(startAfter, d)) {
+                        startAfterFound = true;
+                    }
+                    else {
+                        continue;
+                    }
+                }
+                records.push(data);
+                if (records.length === limit + 1) {
+                    break;
+                }
             }
         }
+        result.records = records.slice(0, limit);
+        result.next = records.length > limit;
     }
     else {
         for (const filter of filtersNormalized) {
