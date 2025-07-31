@@ -94,9 +94,6 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
     else {
         let bestQueryCount;
         let bestQuery;
-        if (startAfter?.length) {
-            baseQuery = buildQuery(baseQuery, ["startAfter", ...startAfter]);
-        }
         for (const filter of filtersNormalized) {
             const fieldName = (typeof filter.spec.queryName === "string" ? filter.spec.queryName : filter.spec.queryName({ operator: filter.operator })) || filter.spec.name;
             if (filter.spec.type === FilterFieldType.text) {
@@ -108,7 +105,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                     ...((filter.operator === FilterOperator.includeChars && generateTextSearchTrigrams(filter.value, "query", transliterate)) || [])
                 ].filter((v, i, a) => a.indexOf(v) === i);
                 for (const value of values) {
-                    const query = buildQuery(baseQuery, ([FilterOperator.includeChars, FilterOperator.includeWord].includes(filter.operator) && ["where", fieldName, "array-contains", value]) || undefined, (filter.operator === FilterOperator.equals && ["where", fieldName, "==", value]) || undefined);
+                    const query = buildQuery(baseQuery, ([FilterOperator.includeChars, FilterOperator.includeWord].includes(filter.operator) && ["where", fieldName, "array-contains", value]) || undefined, (filter.operator === FilterOperator.equals && ["where", fieldName, "==", value]) || undefined, (startAfter?.length && ["startAfter", ...startAfter]) || undefined);
                     const count = await getCountFromServer(query);
                     ZERO: if (count === 0) {
                         if (filter.operator === FilterOperator.includeChars && value.length !== 3) {
@@ -131,7 +128,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                 }
                 if (filter.operator === FilterOperator.hasAll) {
                     for (const value of filter.value) {
-                        const query = buildQuery(baseQuery, ["where", fieldName, "array-contains", value]);
+                        const query = buildQuery(baseQuery, ["where", fieldName, "array-contains", value], (startAfter?.length && ["startAfter", ...startAfter]) || undefined);
                         const count = await getCountFromServer(query);
                         if (count === 0) {
                             return result;
@@ -143,7 +140,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                     }
                 }
                 else {
-                    const query = buildQuery(baseQuery, (filter.operator === FilterOperator.emptyArray && ["where", fieldName, "==", null]) || undefined, (filter.operator === FilterOperator.hasAnyOf && ["where", fieldName, "array-contains-any", filter.value]) || undefined);
+                    const query = buildQuery(baseQuery, (filter.operator === FilterOperator.emptyArray && ["where", fieldName, "==", null]) || undefined, (filter.operator === FilterOperator.hasAnyOf && ["where", fieldName, "array-contains-any", filter.value]) || undefined, (startAfter?.length && ["startAfter", ...startAfter]) || undefined);
                     const count = await getCountFromServer(query);
                     if (count === 0) {
                         return result;
