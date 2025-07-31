@@ -22,10 +22,10 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
             let dataValue = filter.spec.dataValue ? filter.spec.dataValue({ data }) : data[propName || filter.spec.name];
             if ([FilterOperator.includeChars, FilterOperator.includeWord].includes(filter.operator) && [FilterFieldType.text, FilterFieldType.textArray].includes(filter.spec.type)) {
                 if (Array.isArray(dataValue)) {
-                    dataValue = dataValue.map(v => transliterate(v));
+                    dataValue = dataValue.map(v => transliterate(v).toLowerCase());
                 }
                 else {
-                    dataValue = transliterate(dataValue);
+                    dataValue = transliterate(dataValue).toLowerCase();
                 }
             }
             if (filter.spec.type === FilterFieldType.text) {
