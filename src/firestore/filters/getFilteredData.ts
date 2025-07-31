@@ -133,7 +133,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
 
         for (const filter of filtersNormalized) {
 
-            const fieldName = (typeof filter.spec.queryName === "string" ? filter.spec.queryName : filter.spec.queryName({operator: filter.operator})) || filter.spec.name;
+            const fieldName = (typeof filter.spec.queryName === "function" ? filter.spec.queryName({operator: filter.operator}) : filter.spec.queryName) || filter.spec.name;
 
             if (filter.spec.type === FilterFieldType.text) {
 
@@ -154,7 +154,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                         (startAfter?.length && ["startAfter", ...startAfter]) || undefined
                     )
 
-                    const count = await getCountFromServer(query);
+                    const count = await getCountFromServer(buildQuery(query, ["limit", (bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
 
                     ZERO: if (count === 0) {
                         if (filter.operator === FilterOperator.includeChars && value.length !== 3) {
@@ -188,7 +188,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                             (startAfter?.length && ["startAfter", ...startAfter]) || undefined
                         )
 
-                        const count = await getCountFromServer(query);
+                        const count = await getCountFromServer(buildQuery(query, ["limit", (bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
                         if (count === 0) {
                             return result;
                         }
@@ -196,6 +196,10 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                         if (count > 0 && (!bestQueryCount || bestQueryCount > count)) {
                             bestQueryCount = count;
                             bestQuery = query;
+                        }
+
+                        if (count > 0 && count < limit) {
+                            break;
                         }
                     }
 
@@ -207,7 +211,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                         (startAfter?.length && ["startAfter", ...startAfter]) || undefined
                     )
 
-                    const count = await getCountFromServer(query);
+                    const count = await getCountFromServer(buildQuery(query, ["limit", (bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
                     if (count === 0) {
                         return result;
                     }
@@ -215,6 +219,10 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                     if (count > 0 && (!bestQueryCount || bestQueryCount > count)) {
                         bestQueryCount = count;
                         bestQuery = query;
+                    }
+                    
+                    if (count > 0 && count < limit) {
+                        break;
                     }
                 }
             }

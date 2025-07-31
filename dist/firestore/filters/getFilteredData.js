@@ -95,7 +95,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
         let bestQueryCount;
         let bestQuery;
         for (const filter of filtersNormalized) {
-            const fieldName = (typeof filter.spec.queryName === "string" ? filter.spec.queryName : filter.spec.queryName({ operator: filter.operator })) || filter.spec.name;
+            const fieldName = (typeof filter.spec.queryName === "function" ? filter.spec.queryName({ operator: filter.operator }) : filter.spec.queryName) || filter.spec.name;
             if (filter.spec.type === FilterFieldType.text) {
                 if (!filter.value) {
                     return result;
@@ -106,7 +106,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                 ].filter((v, i, a) => a.indexOf(v) === i);
                 for (const value of values) {
                     const query = buildQuery(baseQuery, ([FilterOperator.includeChars, FilterOperator.includeWord].includes(filter.operator) && ["where", fieldName, "array-contains", value]) || undefined, (filter.operator === FilterOperator.equals && ["where", fieldName, "==", value]) || undefined, (startAfter?.length && ["startAfter", ...startAfter]) || undefined);
-                    const count = await getCountFromServer(query);
+                    const count = await getCountFromServer(buildQuery(query, ["limit", (bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
                     ZERO: if (count === 0) {
                         if (filter.operator === FilterOperator.includeChars && value.length !== 3) {
                             break ZERO;
@@ -129,7 +129,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                 if (filter.operator === FilterOperator.hasAll) {
                     for (const value of filter.value) {
                         const query = buildQuery(baseQuery, ["where", fieldName, "array-contains", value], (startAfter?.length && ["startAfter", ...startAfter]) || undefined);
-                        const count = await getCountFromServer(query);
+                        const count = await getCountFromServer(buildQuery(query, ["limit", (bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
                         if (count === 0) {
                             return result;
                         }
@@ -137,17 +137,23 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                             bestQueryCount = count;
                             bestQuery = query;
                         }
+                        if (count > 0 && count < limit) {
+                            break;
+                        }
                     }
                 }
                 else {
                     const query = buildQuery(baseQuery, (filter.operator === FilterOperator.emptyArray && ["where", fieldName, "==", null]) || undefined, (filter.operator === FilterOperator.hasAnyOf && ["where", fieldName, "array-contains-any", filter.value]) || undefined, (startAfter?.length && ["startAfter", ...startAfter]) || undefined);
-                    const count = await getCountFromServer(query);
+                    const count = await getCountFromServer(buildQuery(query, ["limit", (bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
                     if (count === 0) {
                         return result;
                     }
                     if (count > 0 && (!bestQueryCount || bestQueryCount > count)) {
                         bestQueryCount = count;
                         bestQuery = query;
+                    }
+                    if (count > 0 && count < limit) {
+                        break;
                     }
                 }
             }
