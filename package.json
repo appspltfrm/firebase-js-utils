@@ -2,10 +2,8 @@
   "name": "@appspltfrm/firebase-js-utils",
   "version": "4.0.0",
   "author": "Unipla",
-  "private": false,
   "type": "module",
   "scripts": {
-    "install": "node-utils-npm-install-dist",
     "build": "node-utils-file-system-glob-delete \"dist/**/*\" && tsc -p tsconfig.build.json"
   },
   "dependencies": {
@@ -13,34 +11,35 @@
     "@appspltfrm/node-utils": "github:appspltfrm/node-utils"
   },
   "optionalDependencies": {
+    "fast-equals": "^5.0.0",
     "rxjs": "^7.4.0",
-    "transliteration": "^2.3.5",
-    "fast-equals": "^5.0.0"
+    "transliteration": "^2.3.5"
   },
   "peerDependencies": {
-    "firebase": "^11.0.0",
+    "firebase": "^12.0.0",
     "firebase-admin": "^13.0.0"
   },
   "devDependencies": {
     "@appspltfrm/js-utils": "github:appspltfrm/js-utils",
-    "firebase": "^11.0.0",
+    "firebase": "^12.0.0",
     "firebase-admin": "^13.0.0",
     "rxjs": "^7.4.0",
     "typescript": "^5.6.3"
   },
   "exports": {
     ".": {
-      "types": "./public.d.ts",
-      "default": "./public.js"
+      "types": "./dist/public.d.ts",
+      "default": "./dist/public.js"
     },
     "./*": {
-      "types": "./*/public.d.ts",
-      "default": "./*/public.js"
+      "types": "./dist/*/public.d.ts",
+      "default": "./dist/*/public.js"
     },
     "./firestore/*": {
-      "types": "./firestore/*/public.d.ts",
-      "default": "./firestore/*/public.js"
+      "types": "./dist/firestore/*/public.d.ts",
+      "default": "./dist/firestore/*/public.js"
     }
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "packageManager": "yarn@4.9.2"
 }
