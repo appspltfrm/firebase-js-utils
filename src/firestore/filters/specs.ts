@@ -4,7 +4,7 @@ export interface FilterFieldSpec<T = any> {
     dataName?: string | ((args: {operator: FilterOperator}) => string);
     dataValue?: (args: {data: T}) => any;
     filterValue?: (args: {operator: FilterOperator, value: any | undefined}) => any;
-    label: string;
+    label?: string;
     description?: string;
     hint?: string;
     type: FilterFieldType;

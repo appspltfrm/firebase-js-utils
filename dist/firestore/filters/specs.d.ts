@@ -13,7 +13,7 @@ export interface FilterFieldSpec<T = any> {
         operator: FilterOperator;
         value: any | undefined;
     }) => any;
-    label: string;
+    label?: string;
     description?: string;
     hint?: string;
     type: FilterFieldType;
