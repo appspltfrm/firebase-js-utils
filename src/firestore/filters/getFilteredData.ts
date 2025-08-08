@@ -233,6 +233,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
             while (result.records.length < limit + 1) {
 
                 const bestData = await getDataFromServer<any>(buildQuery(bestQuery, 
+                    (startAfter?.length && ["startAfter", ...startAfter]) || undefined,
                     ["limit", limit + 1]
                 ))
 
