@@ -230,7 +230,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
 
         if (bestQuery) {
 
-            while (result.records.length < limit + 1) {
+            RECORDS: while (result.records.length < limit + 1) {
 
                 const bestData = await getDataFromServer<any>(buildQuery(bestQuery, 
                     (startAfter?.length && ["startAfter", ...startAfter]) || undefined,
@@ -240,6 +240,10 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                 for (const data of bestData) {
                     if (testFilters(data)) {
                         result.records.push(data);
+
+                        if (result.records.length > limit) {
+                            break RECORDS;
+                        }
                     }
                 }
 
@@ -249,9 +253,10 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
 
                 startAfter = getStartAfter(bestData[bestData.length - 1]);
             }
+            
             if (result.records.length > limit) {
                 result.next = true;
-                result.records.splice(limit, 1);
+                result.records.splice(limit);
             }
         }
     }

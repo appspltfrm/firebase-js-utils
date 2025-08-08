@@ -159,11 +159,14 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
             }
         }
         if (bestQuery) {
-            while (result.records.length < limit + 1) {
+            RECORDS: while (result.records.length < limit + 1) {
                 const bestData = await getDataFromServer(buildQuery(bestQuery, (startAfter?.length && ["startAfter", ...startAfter]) || undefined, ["limit", limit + 1]));
                 for (const data of bestData) {
                     if (testFilters(data)) {
                         result.records.push(data);
+                        if (result.records.length > limit) {
+                            break RECORDS;
+                        }
                     }
                 }
                 if (bestData.length <= limit) {
@@ -173,7 +176,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
             }
             if (result.records.length > limit) {
                 result.next = true;
-                result.records.splice(limit, 1);
+                result.records.splice(limit);
             }
         }
     }
