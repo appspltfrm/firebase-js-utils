@@ -14,7 +14,20 @@ export function unserialize(json: any, targetType?: Type, options?: Serializatio
                 return obj;
             }
 
-            if (typeof obj === "object") {
+            if (Array.isArray(obj)) {
+                const niu: any[] = [];
+
+                for (const value of obj) {
+                    if (value && (Array.isArray(value) || typeof value === "object")) {
+                        niu.push(fixType(value));
+                    } else {
+                        niu.push(value);
+                    }
+                }
+
+                return niu;
+                
+            } else if (typeof obj === "object") {
                 const niu: any = {};
 
                 for (const [key, value] of Object.entries(obj)) {
@@ -24,19 +37,6 @@ export function unserialize(json: any, targetType?: Type, options?: Serializatio
                         niu[key] = fixType(value);
                     } else {
                         niu[key] = value;
-                    }
-                }
-
-                return niu;
-                
-            } else if (Array.isArray(obj)) {
-                const niu: any[] = [];
-
-                for (const value of obj) {
-                    if (value && (Array.isArray(value) || typeof value === "object")) {
-                        niu.push(fixType(value));
-                    } else {
-                        niu.push(value);
                     }
                 }
 

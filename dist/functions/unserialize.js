@@ -7,7 +7,19 @@ export function unserialize(json, targetType, options) {
             if (!obj) {
                 return obj;
             }
-            if (typeof obj === "object") {
+            if (Array.isArray(obj)) {
+                const niu = [];
+                for (const value of obj) {
+                    if (value && (Array.isArray(value) || typeof value === "object")) {
+                        niu.push(fixType(value));
+                    }
+                    else {
+                        niu.push(value);
+                    }
+                }
+                return niu;
+            }
+            else if (typeof obj === "object") {
                 const niu = {};
                 for (const [key, value] of Object.entries(obj)) {
                     if (key === fixedTypeField) {
@@ -18,18 +30,6 @@ export function unserialize(json, targetType, options) {
                     }
                     else {
                         niu[key] = value;
-                    }
-                }
-                return niu;
-            }
-            else if (Array.isArray(obj)) {
-                const niu = [];
-                for (const value of obj) {
-                    if (value && (Array.isArray(value) || typeof value === "object")) {
-                        niu.push(fixType(value));
-                    }
-                    else {
-                        niu.push(value);
                     }
                 }
                 return niu;
