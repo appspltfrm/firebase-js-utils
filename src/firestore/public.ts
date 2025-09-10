@@ -1,12 +1,13 @@
 export {AutoWriteBatch, autoWriteBatch, AutoWriteBatchAdmin, AutoWriteBatchClient} from "./AutoWriteBatch.js";
 export {buildQuery} from "./buildQuery.js";
-export {CollectionReference, CollectionReferenceAdmin, CollectionReferenceClient, collectionReference} from "./CollectionReference.js";
+export {CollectionReference, collectionReference, CollectionReferenceAdmin, CollectionReferenceClient} from "./CollectionReference.js";
 export {DataConverter, DataConverterAdmin, DataConverterClient} from "./DataConverter.js";
 export {deleteDocument} from "./deleteDocument.js";
 export {DeleteOptions, DeleteOptionsAdmin, deleteQuery} from "./deleteQuery.js";
 export {DocumentData, DocumentDataAdmin, DocumentDataClient} from "./DocumentData.js";
-export {DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient, documentReference} from "./DocumentReference.js";
+export {DocumentReference, documentReference, DocumentReferenceAdmin, DocumentReferenceClient} from "./DocumentReference.js";
 export {DocumentSnapshot, DocumentSnapshotAdmin, DocumentSnapshotClient} from "./DocumentSnapshot.js";
+export {FieldPath, FieldPathAdmin, FieldPathClient} from "./FieldPath.js";
 export {FieldValue, FieldValueAdmin, FieldValueClient} from "./FieldValue.js";
 export {Firestore, FirestoreAdmin, FirestoreClient} from "./Firestore.js";
 export {GeoPoint, GeoPointAdmin, GeoPointClient} from "./GeoPoint.js";
@@ -35,6 +36,7 @@ export {serverTimestamp} from "./serverTimestamp.js";
 export {setDocument} from "./setDocument.js";
 export {Timestamp, TimestampAdmin, TimestampClient} from "./Timestamp.js";
 export {TimestampSerializer} from "./TimestampSerializer.js";
-export {Transaction, TransactionAdmin, TransactionFunctionAdmin, TransactionFunctionClient, TransactionClient, TransactionFunction} from "./Transaction.js";
+export {Transaction, TransactionAdmin, TransactionClient, TransactionFunction, TransactionFunctionAdmin, TransactionFunctionClient} from "./Transaction.js";
 export {updateDocument} from "./updateDocument.js";
 export {WriteBatch, writeBatch, WriteBatchAdmin, WriteBatchClient} from "./WriteBatch.js";
+

@@ -1,4 +1,5 @@
 import {OrderByDirection, WhereFilterOp} from "@firebase/firestore";
+import {FieldPath} from "firebase-admin/firestore";
 import {DocumentSnapshot} from "./DocumentSnapshot.js";
 
 export type QueryConstraintAndOr = [constraintType: "or" | "and", ...constraints: Array<QueryConstraintWhere | false | undefined | [constraintType: "or" | "and", ...constraints: Array<QueryConstraintWhere | false | undefined>]>];
@@ -14,12 +15,14 @@ export type QueryConstraintEndBeforeSnapshot = [constraintType: "endBefore", sna
 export type QueryConstraintEndBeforeValues = [constraintType: "endBefore", ...values: unknown[]];
 export type QueryConstraintLimitToLast = [constraintType: "limitToLast", limit: number];
 export type QueryConstraintOrderBy = [constraintType: "orderBy", fieldPath: string, directionStr?: OrderByDirection];
+export type QueryConstraintSelect = [constraintType: "select", ...fields: Array<string | FieldPath>];
 
 export type QueryConstraint = QueryConstraintAndOr | QueryConstraintWhere | QueryConstraintOrderBy |
     QueryConstraintLimit | QueryConstraintLimitToLast |
     QueryConstraintStartAtSnapshot | QueryConstraintStartAtValues |
     QueryConstraintStartAfterSnapshot | QueryConstraintStartAfterValues |
     QueryConstraintEndAtSnapshot | QueryConstraintEndAtValues |
-    QueryConstraintEndBeforeSnapshot | QueryConstraintEndBeforeValues;
+    QueryConstraintEndBeforeSnapshot | QueryConstraintEndBeforeValues | QueryConstraintSelect;
 
-export type {QueryConstraintType, QueryCompositeFilterConstraint} from "@firebase/firestore";
+export type {QueryCompositeFilterConstraint, QueryConstraintType} from "@firebase/firestore";
+

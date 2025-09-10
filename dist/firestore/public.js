@@ -5,6 +5,7 @@ export { DataConverter } from "./DataConverter.js";
 export { deleteDocument } from "./deleteDocument.js";
 export { deleteQuery } from "./deleteQuery.js";
 export { DocumentReference, documentReference } from "./DocumentReference.js";
+export { FieldPath } from "./FieldPath.js";
 export { FieldValue } from "./FieldValue.js";
 export { Firestore } from "./Firestore.js";
 export { GeoPoint } from "./GeoPoint.js";

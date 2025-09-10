@@ -61,6 +61,8 @@ export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraint
                     constraints.push(startAt.call(startAt, ...args));
                 } else if (type === "endAt") {
                     constraints.push(endAt.call(endAt, ...args));
+                } else if (type === "select") {
+                    throw new Error("Select query constraint is not supported");
                 }
             }
 
@@ -114,6 +116,8 @@ export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraint
                     niu = niu.startAt.call(niu, ...args);
                 } else if (type === "endAt") {
                     niu = niu.endAt.call(niu, ...args);
+                } else if (type === "select") {
+                    niu = niu.select.call(niu, ...args);
                 }
             }
 

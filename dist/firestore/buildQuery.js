@@ -56,6 +56,9 @@ export function buildQuery(query, ...queryConstraints) {
                 else if (type === "endAt") {
                     constraints.push(endAt.call(endAt, ...args));
                 }
+                else if (type === "select") {
+                    throw new Error("Select query constraint is not supported");
+                }
             }
             return queryClient(query, ...constraints);
         }
@@ -114,6 +117,9 @@ export function buildQuery(query, ...queryConstraints) {
                 }
                 else if (type === "endAt") {
                     niu = niu.endAt.call(niu, ...args);
+                }
+                else if (type === "select") {
+                    niu = niu.select.call(niu, ...args);
                 }
             }
             return niu;
