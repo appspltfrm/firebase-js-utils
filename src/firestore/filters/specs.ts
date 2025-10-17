@@ -12,14 +12,17 @@ export interface FilterFieldSpec<T = any> {
     operatorLabel?: (args: {operator: FilterOperator}) => string;
 }
 
-
 export enum FilterOperator {
     includeChars = 1,
     includeWord = 2,
     hasAll = 3,
     hasAnyOf = 4,
     emptyArray = 5,
-    equals = 6
+    equals = 6,
+    greater = 7,
+    greaterOrEqual = 8,
+    less = 9,
+    lessOrEqual = 10,
 }
 
 export namespace FilterOperator {
@@ -28,13 +31,15 @@ export namespace FilterOperator {
 
 export enum FilterFieldType {
     text = 1,
-    textArray = 2
+    textArray = 2,
+    number = 3
 }
 
 export namespace FilterFieldType {
     export const operators = {
         [FilterFieldType.text]: [FilterOperator.includeChars, FilterOperator.includeWord, FilterOperator.equals],
-        [FilterFieldType.textArray]: [FilterOperator.hasAnyOf, FilterOperator.hasAll, FilterOperator.emptyArray]
+        [FilterFieldType.textArray]: [FilterOperator.hasAnyOf, FilterOperator.hasAll, FilterOperator.emptyArray],
+        [FilterFieldType.number]: [FilterOperator.equals, FilterOperator.greater, FilterOperator.greaterOrEqual, FilterOperator.less, FilterOperator.lessOrEqual],
     } as const;
 }
 

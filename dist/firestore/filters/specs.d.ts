@@ -28,19 +28,25 @@ export declare enum FilterOperator {
     hasAll = 3,
     hasAnyOf = 4,
     emptyArray = 5,
-    equals = 6
+    equals = 6,
+    greater = 7,
+    greaterOrEqual = 8,
+    less = 9,
+    lessOrEqual = 10
 }
 export declare namespace FilterOperator {
     const noValueOperators: FilterOperator[];
 }
 export declare enum FilterFieldType {
     text = 1,
-    textArray = 2
+    textArray = 2,
+    number = 3
 }
 export declare namespace FilterFieldType {
     const operators: {
         readonly 1: readonly [FilterOperator.includeChars, FilterOperator.includeWord, FilterOperator.equals];
         readonly 2: readonly [FilterOperator.hasAnyOf, FilterOperator.hasAll, FilterOperator.emptyArray];
+        readonly 3: readonly [FilterOperator.equals, FilterOperator.greater, FilterOperator.greaterOrEqual, FilterOperator.less, FilterOperator.lessOrEqual];
     };
 }
 export interface Filter {
