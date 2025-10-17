@@ -16,11 +16,13 @@
     "transliteration": "^2.3.5"
   },
   "peerDependencies": {
+    "bignumber.js": "^9.0.0",
     "firebase": "^12.0.0",
     "firebase-admin": "^13.0.0"
   },
   "devDependencies": {
     "@appspltfrm/js-utils": "github:appspltfrm/js-utils",
+    "bignumber.js": "^9.0.0",
     "firebase": "^12.0.0",
     "firebase-admin": "^13.0.0",
     "rxjs": "^7.4.0",

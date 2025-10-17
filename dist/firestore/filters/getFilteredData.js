@@ -1,10 +1,11 @@
+import { BigNumber } from "bignumber.js";
+import { deepEqual } from "fast-equals";
 import { buildQuery } from "../buildQuery.js";
 import { getCountFromServer } from "../getCountFromServer.js";
 import { getDataFromServer } from "../getDataFromServer.js";
 import { generateTextSearchTrigrams } from "./generateTextSearchTrigrams.js";
 import { FilterFieldType, FilterOperator } from "./specs.js";
 import { splitTextSearchWords } from "./splitTextSearchWords.js";
-import { deepEqual } from "fast-equals";
 export async function getFilteredData({ filters, query: baseQuery, transliterate, limit, startAfter, getStartAfter, allData }) {
     const result = { next: false, records: [] };
     if (!transliterate) {
@@ -65,6 +66,34 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                 }
                 else {
                     return !!dataValue.find(v => filter.value.includes(v));
+                }
+            }
+            else if (filter.spec.type === FilterFieldType.number) {
+                if (typeof dataValue !== "number" && !(dataValue instanceof BigNumber)) {
+                    return false;
+                }
+                if (typeof filter.value !== "number" && !(filter.value instanceof BigNumber)) {
+                    return false;
+                }
+                const normalizedDataValue = dataValue instanceof BigNumber ? dataValue : new BigNumber(dataValue);
+                const normalizedFilterValue = filter.value instanceof BigNumber ? filter.value : new BigNumber(filter.value);
+                if (filter.operator === FilterOperator.equals) {
+                    return normalizedDataValue.eq(normalizedFilterValue);
+                }
+                else if (filter.operator === FilterOperator.greater) {
+                    return normalizedDataValue.gt(normalizedFilterValue);
+                }
+                else if (filter.operator === FilterOperator.greaterOrEqual) {
+                    return normalizedDataValue.gte(normalizedFilterValue);
+                }
+                else if (filter.operator === FilterOperator.less) {
+                    return normalizedDataValue.lt(normalizedFilterValue);
+                }
+                else if (filter.operator === FilterOperator.lessOrEqual) {
+                    return normalizedDataValue.lte(normalizedFilterValue);
+                }
+                else {
+                    return false;
                 }
             }
         }
@@ -155,6 +184,28 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                     if (count > 0 && count < limit) {
                         break;
                     }
+                }
+            }
+            else if (filter.spec.type === FilterFieldType.number) {
+                const whereOperator = (filter.operator === FilterOperator.equals && "==") ||
+                    (filter.operator === FilterOperator.greater && ">") ||
+                    (filter.operator === FilterOperator.greaterOrEqual && ">=") ||
+                    (filter.operator === FilterOperator.less && "<") ||
+                    (filter.operator === FilterOperator.lessOrEqual && "<=") || undefined;
+                if (!whereOperator) {
+                    return result;
+                }
+                const query = buildQuery(baseQuery, ["where", fieldName, whereOperator, filter.value]);
+                const count = await getCountFromServer(buildQuery(query, ["limit", (bestQueryCount && bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
+                if (count === 0) {
+                    return result;
+                }
+                if (count > 0 && (!bestQueryCount || bestQueryCount > count)) {
+                    bestQueryCount = count;
+                    bestQuery = query;
+                }
+                if (count > 0 && count < limit) {
+                    break;
                 }
             }
         }
