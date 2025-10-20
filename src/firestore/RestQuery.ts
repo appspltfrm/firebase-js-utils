@@ -59,6 +59,8 @@ export class RestQuery<T extends DocumentData = any> {
 
                     return copied;
                 }
+
+                t.where = copy(p.where);
             }
 
             if (p.select) {

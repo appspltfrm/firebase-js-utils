@@ -34,6 +34,7 @@ export class RestQuery {
                     }
                     return copied;
                 };
+                t.where = copy(p.where);
             }
             if (p.select) {
                 t.select = { fields: p.select.fields.map(({ fieldPath }) => ({ fieldPath })) };
