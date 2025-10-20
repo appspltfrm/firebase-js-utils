@@ -130,15 +130,18 @@ export class RestQuery {
                 return data;
             }
         };
-        return (await response.json()).map(({ document }) => ({
-            name: document.name,
-            data: convert(Object.entries(document.fields).reduce((acc, [key, val]) => {
-                acc[key] = restValueToJSValue(val, this.firebase);
-                return acc;
-            }, {})),
-            createTime: Timestamp.fromDate(new Date(document.createTime)),
-            updateTime: Timestamp.fromDate(new Date(document.updateTime))
-        }));
+        const result = await response.json();
+        return {
+            docs: result.filter(r => r.document).map(({ document }) => ({
+                name: document.name,
+                data: convert(Object.entries(document.fields).reduce((acc, [key, val]) => {
+                    acc[key] = restValueToJSValue(val, this.firebase);
+                    return acc;
+                }, {})),
+                createTime: Timestamp.fromDate(new Date(document.createTime)),
+                updateTime: Timestamp.fromDate(new Date(document.updateTime))
+            }))
+        };
     }
 }
 const jsOperatorsToRest = {

@@ -4,7 +4,7 @@ import { Query } from "./Query.js";
 import { RestQuery } from "./RestQuery";
 export async function getDataFromServer(docOrQuery, options) {
     if (docOrQuery instanceof RestQuery) {
-        return (await docOrQuery.run()).map(doc => doc.data);
+        return (await docOrQuery.run()).docs.map(doc => doc.data);
     }
     else if (Query.isInstance(docOrQuery)) {
         if (Query.isClient(docOrQuery)) {

@@ -139,7 +139,7 @@ export class RestQuery<T extends DocumentData = any> {
         return this;
     }
     
-    async run(): Promise<RestQueryDocument<T>[]> {
+    async run(): Promise<RestQuerySnapshot<T>> {
         
         const endpoint = `https://firestore.googleapis.com/v1/projects/${this.firebase.projectId}/databases/(default)/documents:runQuery`;
         
@@ -164,26 +164,39 @@ export class RestQuery<T extends DocumentData = any> {
             }
         }
 
-        return (await response.json() as {document: {
-            name: string;
-            fields: Record<string, Value>;
-            createTime: string;
-            updateTime: string;
-        }}[]).map(({document}) => ({
-            name: document.name,
-            data: convert(Object.entries(document.fields).reduce((acc, [key, val]) => {
-                acc[key] = restValueToJSValue(val, this.firebase);
-                return acc;
-            }, {} as T)),
-            createTime: Timestamp.fromDate(new Date(document.createTime)),
-            updateTime: Timestamp.fromDate(new Date(document.updateTime))
-        }))
+        const result = (await response.json() as Array<ResultDocument>);
+
+        return {
+            docs: result.filter(r => r.document).map(({document}) => ({
+                name: document.name,
+                data: convert(Object.entries(document.fields).reduce((acc, [key, val]) => {
+                    acc[key] = restValueToJSValue(val, this.firebase);
+                    return acc;
+                }, {} as T)),
+                createTime: Timestamp.fromDate(new Date(document.createTime)),
+                updateTime: Timestamp.fromDate(new Date(document.updateTime))
+            }))
+        } as RestQuerySnapshot<T>;
     }
 
 
 }
 
-export interface RestQueryDocument<T extends DocumentData> {
+interface ResultDocument {
+    document: {
+        name: string;
+        fields: Record<string, Value>;
+        createTime: string;
+        updateTime: string;
+    }
+}
+
+export interface RestQuerySnapshot<T extends DocumentData = any> {
+    docs: RestQueryDocumentSnapshot<T>[];
+    readTime: Timestamp;
+}
+
+export interface RestQueryDocumentSnapshot<T extends DocumentData> {
     name: string;
     data: T;
     createTime: Timestamp;

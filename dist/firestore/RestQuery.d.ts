@@ -12,9 +12,13 @@ export declare class RestQuery<T extends DocumentData = any> {
         from: (data: DocumentData) => T;
     }) | undefined): this;
     apply(...constraints: RestQueryConstraint[]): this;
-    run(): Promise<RestQueryDocument<T>[]>;
+    run(): Promise<RestQuerySnapshot<T>>;
 }
-export interface RestQueryDocument<T extends DocumentData> {
+export interface RestQuerySnapshot<T extends DocumentData = any> {
+    docs: RestQueryDocumentSnapshot<T>[];
+    readTime: Timestamp;
+}
+export interface RestQueryDocumentSnapshot<T extends DocumentData> {
     name: string;
     data: T;
     createTime: Timestamp;

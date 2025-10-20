@@ -12,7 +12,7 @@ export async function getDataFromServer<T = DocumentData>(query: Query<T> | Rest
 export async function getDataFromServer<T = DocumentData>(docOrQuery: DocumentReference<T> | Query<T> | RestQuery<T>, options?: any): Promise<T | T[]> {
 
     if (docOrQuery instanceof RestQuery) {
-        return (await docOrQuery.run()).map(doc => doc.data);
+        return (await docOrQuery.run()).docs.map(doc => doc.data);
 
     } else if (Query.isInstance(docOrQuery)) {
         if (Query.isClient(docOrQuery)) {

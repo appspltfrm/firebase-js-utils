@@ -6,7 +6,7 @@ export async function* getChunkedDataFromServer(query, chunkSize) {
     if (query instanceof RestQuery) {
         let offset = 0;
         while (!done) {
-            const batch = (await new RestQuery(query).apply(["limit", chunkSize], ["offset", offset]).run()).map(d => d.data);
+            const batch = (await new RestQuery(query).apply(["limit", chunkSize], ["offset", offset]).run()).docs.map(d => d.data);
             if (batch.length === 0) {
                 done = true;
                 break;
