@@ -84,7 +84,7 @@ export class RestQuery<T extends DocumentData = any> {
         return this;
     }
 
-    applyConstraint(...constraints: RestQueryConstraint[]): this {
+    apply(...constraints: RestQueryConstraint[]): this {
 
         const buildWhereOrAnd = (constraint: QueryConstraintWhere | QueryConstraintAndOr): Filter => {
             const type = constraint[0] as "where" | "and" | "or";
@@ -157,22 +157,24 @@ export class RestQuery<T extends DocumentData = any> {
         const convert = (data: any) => {
             if (this.converter) {
                 return this.converter.from(data);
+            } else {
+                return data;
             }
         }
 
-        return (await response.json() as {
+        return (await response.json() as {document: {
             name: string;
             fields: Record<string, Value>;
             createTime: string;
             updateTime: string;
-        }[]).map(doc => ({
-            path: doc.name,
-            data: convert(Object.entries(doc.fields).reduce((acc, [key, val]) => {
-                acc[key] = jsValueToRestValue(val);
+        }}[]).map(({document}) => ({
+            name: document.name,
+            data: convert(Object.entries(document.fields).reduce((acc, [key, val]) => {
+                acc[key] = restValueToJSValue(val, this.firebase);
                 return acc;
             }, {} as T)),
-            createTime: Timestamp.fromDate(new Date(doc.createTime)),
-            updateTime: Timestamp.fromDate(new Date(doc.updateTime))
+            createTime: Timestamp.fromDate(new Date(document.createTime)),
+            updateTime: Timestamp.fromDate(new Date(document.updateTime))
         }))
     }
 
@@ -180,7 +182,7 @@ export class RestQuery<T extends DocumentData = any> {
 }
 
 export interface RestQueryDocument<T extends DocumentData> {
-    path: string;
+    name: string;
     data: T;
     createTime: Timestamp;
     updateTime: Timestamp;

@@ -53,7 +53,7 @@ export class RestQuery {
         this.converter = converter;
         return this;
     }
-    applyConstraint(...constraints) {
+    apply(...constraints) {
         const buildWhereOrAnd = (constraint) => {
             const type = constraint[0];
             if (type === "where") {
@@ -125,15 +125,18 @@ export class RestQuery {
             if (this.converter) {
                 return this.converter.from(data);
             }
+            else {
+                return data;
+            }
         };
-        return (await response.json()).map(doc => ({
-            path: doc.name,
-            data: convert(Object.entries(doc.fields).reduce((acc, [key, val]) => {
-                acc[key] = jsValueToRestValue(val);
+        return (await response.json()).map(({ document }) => ({
+            name: document.name,
+            data: convert(Object.entries(document.fields).reduce((acc, [key, val]) => {
+                acc[key] = restValueToJSValue(val, this.firebase);
                 return acc;
             }, {})),
-            createTime: Timestamp.fromDate(new Date(doc.createTime)),
-            updateTime: Timestamp.fromDate(new Date(doc.updateTime))
+            createTime: Timestamp.fromDate(new Date(document.createTime)),
+            updateTime: Timestamp.fromDate(new Date(document.updateTime))
         }));
     }
 }

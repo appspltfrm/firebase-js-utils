@@ -5,7 +5,7 @@ import { Query } from "./Query.js";
 import { RestQuery } from "./RestQuery";
 export function buildQuery(query, ...queryConstraints) {
     if (query instanceof RestQuery) {
-        return new RestQuery(query).applyConstraint(...queryConstraints);
+        return new RestQuery(query).apply(...queryConstraints);
     }
     else if (Query.isClient(query)) {
         if (queryConstraints) {

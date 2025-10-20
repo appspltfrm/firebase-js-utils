@@ -11,11 +11,11 @@ export declare class RestQuery<T extends DocumentData = any> {
     withConverter(converter: ({
         from: (data: DocumentData) => T;
     }) | undefined): this;
-    applyConstraint(...constraints: RestQueryConstraint[]): this;
+    apply(...constraints: RestQueryConstraint[]): this;
     run(): Promise<RestQueryDocument<T>[]>;
 }
 export interface RestQueryDocument<T extends DocumentData> {
-    path: string;
+    name: string;
     data: T;
     createTime: Timestamp;
     updateTime: Timestamp;

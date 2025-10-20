@@ -21,7 +21,7 @@ export function buildQuery<T = DocumentData>(query: RestQuery<T>, ...queryConstr
 export function buildQuery<T = DocumentData>(query: Query<T> | RestQuery<T>, ...queryConstraints: Array<QueryConstraint | RestQueryConstraint | undefined | false>): Query<T> | RestQuery<T> {
 
     if (query instanceof RestQuery) {
-        return new RestQuery(query).applyConstraint(...queryConstraints as RestQueryConstraint[]);
+        return new RestQuery(query).apply(...queryConstraints as RestQueryConstraint[]);
 
     } else if (Query.isClient(query)) {
 
