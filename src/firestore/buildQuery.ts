@@ -18,6 +18,8 @@ export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraint
 
 export function buildQuery<T = DocumentData>(query: RestQuery<T>, ...queryConstraints: Array<RestQueryConstraint | undefined | false>): RestQuery<T>;
 
+export function buildQuery<T = DocumentData>(query: Query<T> | RestQuery<T>, ...queryConstraints: Array<QueryConstraint | RestQueryConstraint | undefined | false>): Query<T> | RestQuery<T>;
+
 export function buildQuery<T = DocumentData>(query: Query<T> | RestQuery<T>, ...queryConstraints: Array<QueryConstraint | RestQueryConstraint | undefined | false>): Query<T> | RestQuery<T> {
 
     if (query instanceof RestQuery) {

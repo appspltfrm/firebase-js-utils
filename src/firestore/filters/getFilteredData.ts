@@ -4,12 +4,13 @@ import {buildQuery} from "../buildQuery.js";
 import {getCountFromServer} from "../getCountFromServer.js";
 import {getDataFromServer} from "../getDataFromServer.js";
 import {Query} from "../Query.js";
+import {RestQuery} from "../RestQuery";
 import {generateTextSearchTrigrams} from "./generateTextSearchTrigrams.js";
 import {Filter, FilterFieldType, FilterOperator} from "./specs.js";
 import {splitTextSearchWords} from "./splitTextSearchWords.js";
 
 type Args<T> = {
-    query: Query<T>, 
+    query: Query<T> | RestQuery<T>,
     startAfter?: any[], 
     getStartAfter: (data: T) => any[],
     allData?: T[],
@@ -155,7 +156,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
     } else {
 
         let bestQueryCount: number | undefined;
-        let bestQuery: Query<T> | undefined;
+        let bestQuery: Query<T> | RestQuery<T> | undefined;
 
         for (const filter of filtersNormalized) {
 
@@ -174,7 +175,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
 
                 for (const value of values) {
 
-                    const query = buildQuery(baseQuery, 
+                    const query = buildQuery(baseQuery,
                         ([FilterOperator.includeChars, FilterOperator.includeWord].includes(filter.operator) && ["where", fieldName, "array-contains", value]) || undefined,
                         (filter.operator === FilterOperator.equals && ["where", fieldName, "==", value]) || undefined,
                         (startAfter?.length && ["startAfter", ...startAfter]) || undefined

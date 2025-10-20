@@ -138,23 +138,40 @@ export class RestQuery<T extends DocumentData = any> {
 
         return this;
     }
-    
-    async run(): Promise<RestQuerySnapshot<T>> {
-        
+
+    private async fetch(body: any) {
+
         const endpoint = `https://firestore.googleapis.com/v1/projects/${this.firebase.projectId}/databases/(default)/documents:runQuery`;
-        
+
         const response = await fetch(endpoint, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${await this.firebase.authUser.userIdToken}`
             },
-            body: JSON.stringify({structuredQuery: this.query})
+            body: JSON.stringify(body)
         })
 
         if (!response.ok) {
             throw new Error(response.statusText);
         }
+
+        return await response.json();
+    }
+
+    async runCount(): Promise<number> {
+        const alias = "aggregate_0"
+        const result = (await this.fetch({
+            structuredAggregationQuery: {
+                aggregations: [{alias, count: {}}],
+                structuredQuery: this.query
+            }
+        })) as ResultAggregation;
+
+        return restValueToJSValue(result.result.aggregateFields[alias], this.firebase) as number;
+    }
+    
+    async run(): Promise<RestQuerySnapshot<T>> {
 
         const convert = (data: any) => {
             if (this.converter) {
@@ -164,7 +181,7 @@ export class RestQuery<T extends DocumentData = any> {
             }
         }
 
-        const result = (await response.json() as Array<ResultDocument>);
+        const result = (await this.fetch({structuredQuery: this.query}) as Array<ResultDocument>);
 
         return {
             docs: result.filter(r => r.document).map(({document}) => ({
@@ -180,6 +197,13 @@ export class RestQuery<T extends DocumentData = any> {
     }
 
 
+}
+
+interface ResultAggregation {
+    result: {
+        aggregateFields: {[field: string]: Value};
+    },
+    readTime: string;
 }
 
 interface ResultDocument {

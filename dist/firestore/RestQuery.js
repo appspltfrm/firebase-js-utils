@@ -109,7 +109,7 @@ export class RestQuery {
         }
         return this;
     }
-    async run() {
+    async fetch(body) {
         const endpoint = `https://firestore.googleapis.com/v1/projects/${this.firebase.projectId}/databases/(default)/documents:runQuery`;
         const response = await fetch(endpoint, {
             method: "POST",
@@ -117,11 +117,24 @@ export class RestQuery {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${await this.firebase.authUser.userIdToken}`
             },
-            body: JSON.stringify({ structuredQuery: this.query })
+            body: JSON.stringify(body)
         });
         if (!response.ok) {
             throw new Error(response.statusText);
         }
+        return await response.json();
+    }
+    async runCount() {
+        const alias = "aggregate_0";
+        const result = (await this.fetch({
+            structuredAggregationQuery: {
+                aggregations: [{ alias, count: {} }],
+                structuredQuery: this.query
+            }
+        }));
+        return restValueToJSValue(result.result.aggregateFields[alias], this.firebase);
+    }
+    async run() {
         const convert = (data) => {
             if (this.converter) {
                 return this.converter.from(data);
@@ -130,7 +143,7 @@ export class RestQuery {
                 return data;
             }
         };
-        const result = await response.json();
+        const result = await this.fetch({ structuredQuery: this.query });
         return {
             docs: result.filter(r => r.document).map(({ document }) => ({
                 name: document.name,

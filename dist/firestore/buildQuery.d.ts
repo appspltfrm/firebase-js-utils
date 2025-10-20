@@ -6,3 +6,4 @@ export declare function buildQuery<T = DocumentData>(query: QueryClient<T>, ...q
 export declare function buildQuery<T = DocumentData>(query: QueryAdmin<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryAdmin<T>;
 export declare function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;
 export declare function buildQuery<T = DocumentData>(query: RestQuery<T>, ...queryConstraints: Array<RestQueryConstraint | undefined | false>): RestQuery<T>;
+export declare function buildQuery<T = DocumentData>(query: Query<T> | RestQuery<T>, ...queryConstraints: Array<QueryConstraint | RestQueryConstraint | undefined | false>): Query<T> | RestQuery<T>;

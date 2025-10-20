@@ -12,6 +12,8 @@ export declare class RestQuery<T extends DocumentData = any> {
         from: (data: DocumentData) => T;
     }) | undefined): this;
     apply(...constraints: Array<RestQueryConstraint | undefined | false>): this;
+    private fetch;
+    runCount(): Promise<number>;
     run(): Promise<RestQuerySnapshot<T>>;
 }
 export interface RestQuerySnapshot<T extends DocumentData = any> {
