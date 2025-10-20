@@ -1,5 +1,5 @@
 import { Timestamp } from "@firebase/firestore";
-import { FirebaseContextClient } from "../FirebaseContext";
+import { type FirebaseContextClient } from "../FirebaseContext";
 import { DocumentData } from "./DocumentData";
 import { RestQueryConstraint } from "./QueryConstraint";
 export declare class RestQuery<T extends DocumentData = any> {

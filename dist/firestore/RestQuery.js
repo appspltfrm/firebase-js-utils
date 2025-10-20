@@ -1,4 +1,4 @@
-import { Bytes, GeoPoint, Timestamp, DocumentReference } from "@firebase/firestore";
+import { Bytes, DocumentReference, GeoPoint, Timestamp } from "@firebase/firestore";
 export class RestQuery {
     constructor(firebaseOrProto, collectionId) {
         this.firebase = firebaseOrProto instanceof RestQuery ? firebaseOrProto.firebase : firebaseOrProto;
