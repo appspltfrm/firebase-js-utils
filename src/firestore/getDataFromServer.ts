@@ -3,14 +3,18 @@ import {getDocFromServer, getDocsFromServer} from "firebase/firestore";
 import {DocumentData} from "./DocumentData.js";
 import {DocumentReference} from "./DocumentReference.js";
 import {Query} from "./Query.js";
+import {RestQuery} from "./RestQuery";
 
 export async function getDataFromServer<T = DocumentData>(doc: DocumentReference<T>, options?: SnapshotOptions): Promise<T>;
 
-export async function getDataFromServer<T = DocumentData>(query: Query<T>, options?: SnapshotOptions): Promise<T[]>;
+export async function getDataFromServer<T = DocumentData>(query: Query<T> | RestQuery<T>, options?: SnapshotOptions): Promise<T[]>;
 
-export async function getDataFromServer<T = DocumentData>(docOrQuery: DocumentReference<T> | Query<T>, options?: any): Promise<T | T[]> {
+export async function getDataFromServer<T = DocumentData>(docOrQuery: DocumentReference<T> | Query<T> | RestQuery<T>, options?: any): Promise<T | T[]> {
 
-    if (Query.isInstance(docOrQuery)) {
+    if (docOrQuery instanceof RestQuery) {
+        return (await docOrQuery.run()).map(doc => doc.data);
+
+    } else if (Query.isInstance(docOrQuery)) {
         if (Query.isClient(docOrQuery)) {
             return (await getDocsFromServer(docOrQuery)).docs.map(snapshot => snapshot.data(options));
         } else {

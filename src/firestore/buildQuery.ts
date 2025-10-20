@@ -6,8 +6,9 @@ import {Query, QueryAdmin, QueryClient} from "./Query.js";
 import {
     QueryConstraint,
     QueryConstraintType,
-    QueryConstraintWhere, QueryConstraintAndOr
+    QueryConstraintWhere, QueryConstraintAndOr, RestQueryConstraint
 } from "./QueryConstraint.js";
+import {RestQuery} from "./RestQuery";
 
 export function buildQuery<T = DocumentData>(query: QueryClient<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
 
@@ -15,8 +16,14 @@ export function buildQuery<T = DocumentData>(query: QueryAdmin<T>, ...queryConst
 
 export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;
 
-export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T> {
-    if (Query.isClient(query)) {
+export function buildQuery<T = DocumentData>(query: RestQuery<T>, ...queryConstraints: Array<RestQueryConstraint | undefined | false>): RestQuery<T>;
+
+export function buildQuery<T = DocumentData>(query: Query<T> | RestQuery<T>, ...queryConstraints: Array<QueryConstraint | RestQueryConstraint | undefined | false>): Query<T> | RestQuery<T> {
+
+    if (query instanceof RestQuery) {
+        return new RestQuery(query).applyConstraint(...queryConstraints as RestQueryConstraint[]);
+
+    } else if (Query.isClient(query)) {
 
         if (queryConstraints) {
 
@@ -94,7 +101,7 @@ export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraint
             }
 
             for (const constraint of queryConstraints.filter(c => !!c) as QueryConstraint[]) {
-                const type = constraint[0] as QueryConstraintType | "and" | "or";
+                const type = constraint[0] as QueryConstraintType | "and" | "or" | "select";
                 const args = constraint.slice(1);
                 if (type === "or") {
                     niu = niu.where.call(niu, Filter.or(...buildFilterWhere(...args as any)));
