@@ -1,5 +1,5 @@
-import {WhereFilterOp, Bytes, GeoPoint, Timestamp, DocumentReference, FirestoreDataConverter} from "@firebase/firestore";
-import {FirebaseContextClient} from "../FirebaseContext";
+import {Bytes, DocumentReference, GeoPoint, Timestamp, WhereFilterOp} from "@firebase/firestore";
+import {type FirebaseContextClient} from "../FirebaseContext";
 import {DocumentData} from "./DocumentData";
 import {
     QueryConstraintAndOr,
@@ -86,7 +86,7 @@ export class RestQuery<T extends DocumentData = any> {
         return this;
     }
 
-    apply(...constraints: RestQueryConstraint[]): this {
+    apply(...constraints: Array<RestQueryConstraint | undefined | false>): this {
 
         const buildWhereOrAnd = (constraint: QueryConstraintWhere | QueryConstraintAndOr): Filter => {
             const type = constraint[0] as "where" | "and" | "or";
@@ -114,7 +114,7 @@ export class RestQuery<T extends DocumentData = any> {
 
         const {query} = this;
 
-        for (const constraint of constraints.filter(c => !!c)) {
+        for (const constraint of constraints.filter(c => !!c) as RestQueryConstraint[]) {
             const type = constraint[0] as Exclude<QueryConstraintType, "limitToLast"> | "and" | "or" | "select" | "offset";
 
             if (type === "or" || type === "and" || type === "where") {

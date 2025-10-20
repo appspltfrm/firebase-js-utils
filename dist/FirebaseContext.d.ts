@@ -4,7 +4,8 @@ import { DocumentData } from "./firestore/DocumentData.js";
 import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } from "./firestore/DocumentReference.js";
 import { Firestore, FirestoreAdmin, FirestoreClient } from "./firestore/Firestore.js";
 import { Query, QueryAdmin, QueryClient } from "./firestore/Query.js";
-import { QueryConstraint } from "./firestore/QueryConstraint.js";
+import { QueryConstraint, RestQueryConstraint } from "./firestore/QueryConstraint.js";
+import { RestQuery } from "./firestore/RestQuery";
 export declare abstract class UniversalFirebaseContext {
     abstract get firestore(): Firestore;
     abstract firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;
@@ -18,6 +19,7 @@ export declare abstract class FirebaseContextClient extends UniversalFirebaseCon
     abstract get firestore(): FirestoreClient;
     abstract get authUser(): AuthUser;
     abstract functionUrl(name: string): string;
+    firestoreRestQuery<T = DocumentData>(path: string, ...queryConstraints: Array<RestQueryConstraint | undefined | false>): RestQuery<T>;
     firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
     firestoreQuery<T = DocumentData>(collection: CollectionReferenceClient<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
     firestoreCollection<T = DocumentData>(path: string): CollectionReferenceClient<T>;

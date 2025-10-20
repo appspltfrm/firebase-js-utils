@@ -1,9 +1,13 @@
 import { buildQuery } from "./firestore/buildQuery.js";
 import { collectionReference } from "./firestore/CollectionReference.js";
 import { documentReference } from "./firestore/DocumentReference.js";
+import { RestQuery } from "./firestore/RestQuery";
 export class UniversalFirebaseContext {
 }
 export class FirebaseContextClient extends UniversalFirebaseContext {
+    firestoreRestQuery(path, ...queryConstraints) {
+        return new RestQuery(this, path).apply(...queryConstraints);
+    }
     firestoreQuery(pathOrCollection, ...queryConstraints) {
         const collection = typeof pathOrCollection === "string" ? this.firestoreCollection(pathOrCollection) : pathOrCollection;
         return buildQuery(collection, ...queryConstraints);

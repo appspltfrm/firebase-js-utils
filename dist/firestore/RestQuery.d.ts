@@ -11,7 +11,7 @@ export declare class RestQuery<T extends DocumentData = any> {
     withConverter(converter: ({
         from: (data: DocumentData) => T;
     }) | undefined): this;
-    apply(...constraints: RestQueryConstraint[]): this;
+    apply(...constraints: Array<RestQueryConstraint | undefined | false>): this;
     run(): Promise<RestQuerySnapshot<T>>;
 }
 export interface RestQuerySnapshot<T extends DocumentData = any> {
