@@ -5,7 +5,7 @@ import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } fr
 import { Firestore, FirestoreAdmin, FirestoreClient } from "./firestore/Firestore.js";
 import { Query, QueryAdmin, QueryClient } from "./firestore/Query.js";
 import { QueryConstraint, RestQueryConstraint } from "./firestore/QueryConstraint.js";
-import { RestQuery } from "./firestore/RestQuery";
+import { RestQuery } from "./firestore/RestQuery.js";
 export declare abstract class UniversalFirebaseContext {
     abstract get firestore(): Firestore;
     abstract firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;

@@ -8,7 +8,7 @@ import {
     QueryConstraintType,
     QueryConstraintWhere, QueryConstraintAndOr, RestQueryConstraint
 } from "./QueryConstraint.js";
-import {RestQuery} from "./RestQuery";
+import {RestQuery} from "./RestQuery.js";
 
 export function buildQuery<T = DocumentData>(query: QueryClient<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
 

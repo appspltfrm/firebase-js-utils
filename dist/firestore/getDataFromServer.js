@@ -1,7 +1,7 @@
 import { getDocFromServer, getDocsFromServer } from "firebase/firestore";
 import { DocumentReference } from "./DocumentReference.js";
 import { Query } from "./Query.js";
-import { RestQuery } from "./RestQuery";
+import { RestQuery } from "./RestQuery.js";
 export async function getDataFromServer(docOrQuery, options) {
     if (docOrQuery instanceof RestQuery) {
         return (await docOrQuery.run()).docs.map(doc => doc.data);

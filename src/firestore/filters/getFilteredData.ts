@@ -4,7 +4,7 @@ import {buildQuery} from "../buildQuery.js";
 import {getCountFromServer} from "../getCountFromServer.js";
 import {getDataFromServer} from "../getDataFromServer.js";
 import {Query} from "../Query.js";
-import {RestQuery} from "../RestQuery";
+import {RestQuery} from "../RestQuery.js";
 import {generateTextSearchTrigrams} from "./generateTextSearchTrigrams.js";
 import {Filter, FilterFieldType, FilterOperator} from "./specs.js";
 import {splitTextSearchWords} from "./splitTextSearchWords.js";

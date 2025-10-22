@@ -1,6 +1,6 @@
 import { getCountFromServer as getCountFromServerClient } from "firebase/firestore";
 import { Query } from "./Query.js";
-import { RestQuery } from "./RestQuery";
+import { RestQuery } from "./RestQuery.js";
 export async function getCountFromServer(query) {
     if (query instanceof RestQuery) {
         return query.runCount();

@@ -2,7 +2,7 @@ import { query as queryClient } from "@firebase/firestore";
 import { endAt, endBefore, limit, limitToLast, orderBy, startAfter, startAt, where, or, and } from "firebase/firestore";
 import { Firestore } from "./Firestore.js";
 import { Query } from "./Query.js";
-import { RestQuery } from "./RestQuery";
+import { RestQuery } from "./RestQuery.js";
 export function buildQuery(query, ...queryConstraints) {
     if (query instanceof RestQuery) {
         return new RestQuery(query).apply(...queryConstraints);

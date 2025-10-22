@@ -1,5 +1,5 @@
 import { Query } from "../Query.js";
-import { RestQuery } from "../RestQuery";
+import { RestQuery } from "../RestQuery.js";
 import { Filter } from "./specs.js";
 type Args<T> = {
     query: Query<T> | RestQuery<T>;

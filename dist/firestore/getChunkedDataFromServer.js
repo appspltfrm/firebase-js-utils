@@ -1,6 +1,6 @@
 import { buildQuery } from "./buildQuery.js";
 import { getSnapshotsFromServer } from "./getSnapshotsFromServer.js";
-import { RestQuery } from "./RestQuery";
+import { RestQuery } from "./RestQuery.js";
 export async function* getChunkedDataFromServer(query, chunkSize) {
     let done = false;
     if (query instanceof RestQuery) {

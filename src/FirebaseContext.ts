@@ -16,7 +16,7 @@ import {
 import {Firestore, FirestoreAdmin, FirestoreClient} from "./firestore/Firestore.js";
 import {Query, QueryAdmin, QueryClient} from "./firestore/Query.js";
 import {QueryConstraint, RestQueryConstraint} from "./firestore/QueryConstraint.js";
-import {RestQuery} from "./firestore/RestQuery";
+import {RestQuery} from "./firestore/RestQuery.js";
 
 export abstract class UniversalFirebaseContext {
 
