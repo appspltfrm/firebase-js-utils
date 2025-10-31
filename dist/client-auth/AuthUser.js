@@ -1,4 +1,4 @@
-import { first, firstValueFrom, map, Observable, of, ReplaySubject, switchMap, throwError } from "rxjs";
+import { first, firstValueFrom, map, of, ReplaySubject, switchMap, throwError } from "rxjs";
 export class AuthUser {
     auth;
     constructor(auth) {
@@ -21,12 +21,13 @@ export class AuthUser {
             resolve(this.auth.currentUser?.getIdToken() || null);
         });
     }
-    get userIdTokenObservable() {
-        return new Observable(subscriber => {
-            let unsubscribe = this.auth.onIdTokenChanged(subscriber);
-            return () => unsubscribe();
-        }).pipe(switchMap(user => user.getIdToken()));
-    }
+    //
+    // get userIdTokenObservable(): Observable<string> {
+    //     return new Observable<User>(subscriber => {
+    //         let unsubscribe = this.auth.onIdTokenChanged(subscriber);
+    //         return () => unsubscribe();
+    //     }).pipe(switchMap(user => user.getIdToken()));
+    // }
     userChanged(user) {
         this._user = user;
         this.authInitialized = true;

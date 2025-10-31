@@ -29,13 +29,13 @@ export class AuthUser {
             resolve(this.auth.currentUser?.getIdToken() || null);
         })
     }
-
-    get userIdTokenObservable(): Observable<string> {
-        return new Observable<User>(subscriber => {
-            let unsubscribe = this.auth.onIdTokenChanged(subscriber);
-            return () => unsubscribe();
-        }).pipe(switchMap(user => user.getIdToken()));
-    }
+    //
+    // get userIdTokenObservable(): Observable<string> {
+    //     return new Observable<User>(subscriber => {
+    //         let unsubscribe = this.auth.onIdTokenChanged(subscriber);
+    //         return () => unsubscribe();
+    //     }).pipe(switchMap(user => user.getIdToken()));
+    // }
 
     private userChanged(user: User) {
 
