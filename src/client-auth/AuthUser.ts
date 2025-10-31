@@ -23,8 +23,11 @@ export class AuthUser {
 
     readonly userIdObservable = this.userObservable.pipe(map(user => user?.uid || null));
 
-    get userIdToken(): Promise<string> {
-        return this.auth.currentUser?.getIdToken();
+    get userIdToken(): Promise<string | null> {
+        return new Promise<string>(async (resolve) => {
+            await this.initialized();
+            resolve(this.auth.currentUser?.getIdToken() || null);
+        })
     }
 
     get userIdTokenObservable(): Observable<string> {

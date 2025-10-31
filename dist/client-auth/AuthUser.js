@@ -16,7 +16,10 @@ export class AuthUser {
     userObservable = new ReplaySubject(1);
     userIdObservable = this.userObservable.pipe(map(user => user?.uid || null));
     get userIdToken() {
-        return this.auth.currentUser?.getIdToken();
+        return new Promise(async (resolve) => {
+            await this.initialized();
+            resolve(this.auth.currentUser?.getIdToken() || null);
+        });
     }
     get userIdTokenObservable() {
         return new Observable(subscriber => {

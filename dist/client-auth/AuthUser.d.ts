@@ -9,7 +9,7 @@ export declare class AuthUser {
     get userId(): string;
     readonly userObservable: ReplaySubject<User>;
     readonly userIdObservable: Observable<string>;
-    get userIdToken(): Promise<string>;
+    get userIdToken(): Promise<string | null>;
     get userIdTokenObservable(): Observable<string>;
     private userChanged;
     protected onAuthError(error: any): void;
