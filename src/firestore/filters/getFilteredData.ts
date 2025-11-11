@@ -27,10 +27,20 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
         transliterate = (await import("transliteration")).transliterate;
     }
 
-    const filtersNormalized = filters.map(filter => ({
-        ...filter, 
-        value: filter.spec.filterValue ? filter.spec.filterValue({operator: filter.operator, value: filter.value}) : filter.value
-    }));
+    const filtersNormalized = filters.map(filter => {
+
+        let value = filter.spec.filterValue ? filter.spec.filterValue({operator: filter.operator, value: filter.value}) : filter.value;
+
+        if ([FilterOperator.includeChars, FilterOperator.includeWord].includes(filter.operator) && [FilterFieldType.text, FilterFieldType.textArray].includes(filter.spec.type)) {
+            if (Array.isArray(value)) {
+                value = value.map(v => transliterate(v).toLowerCase());
+            } else {
+                value = transliterate(value).toLowerCase();
+            }
+        }
+
+        return {...filter, value}
+    });
 
     const textFilterWords: [filter: Filter, string[]][] = filtersNormalized.filter(f => f.spec.type === FilterFieldType.text)
         .map(filter => [filter, splitTextSearchWords(filter.value as string, transliterate)]);
@@ -59,16 +69,26 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                     return false;
                 }
 
-                if (filter.operator === FilterOperator.includeChars || filter.operator === FilterOperator.includeWord) {
+                if (filter.operator === FilterOperator.includeChars) {
+                    if (typeof dataValue === "string") {
+                        return dataValue.includes(filter.value);
+                    } else if (Array.isArray(dataValue)) {
+                        return !!dataValue.find((v: string) => v.includes(filter.value));
+                    }
+                    return false;
+                }
+
+                if (filter.operator === FilterOperator.includeWord) {
                     for (const [, words] of textFilterWords.filter(([f]) => f === filter)) {
                         for (const word of words) {
                             if (typeof dataValue === "string") {
                                 return dataValue.includes(word);
-                            } else if (!(Array.isArray(dataValue) && dataValue.find((v: string) => filter.operator === FilterOperator.includeChars ? v.includes(word) : v === word))) {
-                                return false;
+                            } else if (Array.isArray(dataValue)) {
+                                return dataValue.includes(word);
                             }
                         }
                     }
+                    return false;
                 }
 
             } else if (filter.spec.type === FilterFieldType.textArray) {
@@ -123,7 +143,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
             }
         }
 
-        return true;
+        return false;
     }
 
     if (allData) {
@@ -265,7 +285,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                     return result;
                 }
 
-                const query = buildQuery(baseQuery, ["where", fieldName, whereOperator, filter.value]);
+                const query = buildQuery(baseQuery, ["where", fieldName, whereOperator, filter.value instanceof BigNumber ? filter.value.toNumber() : filter.value]);
 
                 const count = await getCountFromServer(buildQuery(query, ["limit", (bestQueryCount && bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
                 if (count === 0) {
