@@ -139,9 +139,9 @@ export class RestQuery<T extends DocumentData = any> {
         return this;
     }
 
-    private async fetch(body: any) {
+    private async fetch(body: any, aggregation = false) {
 
-        const endpoint = `https://firestore.googleapis.com/v1/projects/${this.firebase.projectId}/databases/(default)/documents:runQuery`;
+        const endpoint = `https://firestore.googleapis.com/v1/projects/${this.firebase.projectId}/databases/(default)/documents:${aggregation ? "runAggregationQuery" : "runQuery"}`;
 
         const response = await fetch(endpoint, {
             method: "POST",
@@ -166,9 +166,9 @@ export class RestQuery<T extends DocumentData = any> {
                 aggregations: [{alias, count: {}}],
                 structuredQuery: this.query
             }
-        })) as ResultAggregation;
+        }, true)) as ResultAggregation[];
 
-        return restValueToJSValue(result.result.aggregateFields[alias], this.firebase) as number;
+        return result.length ? restValueToJSValue(result[0].result.aggregateFields[alias], this.firebase) as number : 0;
     }
     
     async run(): Promise<RestQuerySnapshot<T>> {

@@ -1,3 +1,6 @@
+import {Query} from "../Query";
+import {RestQuery} from "../RestQuery";
+
 export interface FilterFieldSpec<T = any> {
     name: string;
     queryName?: string | ((args: {operator: FilterOperator}) => string);
@@ -10,6 +13,7 @@ export interface FilterFieldSpec<T = any> {
     type: FilterFieldType;
     operators: FilterOperator[];
     operatorLabel?: (args: {operator: FilterOperator}) => string;
+    join?: {query: Query<T> | RestQuery<T>, dataField: string, whereField?: string, resultField: string, type: "in"};
 }
 
 export enum FilterOperator {
