@@ -87,6 +87,6 @@ export namespace Filter {
                 unserialized.push({field: spec.name, spec, operator: filter[1], value: filter[2]})
             }
         }
-        return unserialized;
+        return unserialized.length ? unserialized : undefined;
     }
 }

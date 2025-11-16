@@ -55,7 +55,7 @@ export var Filter;
                 unserialized.push({ field: spec.name, spec, operator: filter[1], value: filter[2] });
             }
         }
-        return unserialized;
+        return unserialized.length ? unserialized : undefined;
     }
     Filter.unserialize = unserialize;
 })(Filter || (Filter = {}));

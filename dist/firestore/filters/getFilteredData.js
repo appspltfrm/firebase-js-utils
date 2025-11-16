@@ -151,9 +151,14 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                         return false;
                     }
                 }
+                else {
+                    // unknown filter
+                    return false;
+                }
             }
         }
-        return false;
+        // all filters test passed
+        return true;
     };
     if (allData) {
         const records = [];

@@ -182,11 +182,16 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                     } else {
                         return false;
                     }
+
+                } else {
+                    // unknown filter
+                    return false;
                 }
             }
         }
 
-        return false;
+        // all filters test passed
+        return true;
     }
 
     if (allData) {
