@@ -83,8 +83,8 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
     }
 
     const testFilters = async (data: any) => {
-        
-        for (const filter of filtersNormalized) {
+
+        const test = async (filter: (typeof filtersNormalized)[0]) => {
             const propName = typeof filter.spec.dataName === "string" ? filter.spec.dataName : filter.spec.dataName?.({operator: filter.operator});
             let dataValue = filter.spec.dataValue ? filter.spec.dataValue({data}) : data[propName || filter.spec.name];
 
@@ -107,8 +107,8 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                         return false;
                     }
 
-                    if (filter.operator === FilterOperator.equals && dataValue !== filter.value) {
-                        return false;
+                    if (filter.operator === FilterOperator.equals) {
+                        return dataValue === filter.value;
                     }
 
                     if (filter.operator === FilterOperator.includeChars) {
@@ -116,8 +116,9 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                             return dataValue.includes(filter.value);
                         } else if (Array.isArray(dataValue)) {
                             return !!dataValue.find((v: string) => v.includes(filter.value));
+                        } else {
+                            return false;
                         }
-                        return false;
                     }
 
                     if (filter.operator === FilterOperator.includeWord) {
@@ -182,15 +183,18 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                     } else {
                         return false;
                     }
-
-                } else {
-                    // unknown filter
-                    return false;
                 }
+            }
+
+            return false;
+        }
+
+        for (const filter of filtersNormalized) {
+            if (!await test(filter)) {
+                return false;
             }
         }
 
-        // all filters test passed
         return true;
     }
 

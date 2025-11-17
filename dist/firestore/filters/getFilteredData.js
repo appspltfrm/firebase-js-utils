@@ -59,7 +59,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
         return joinResults[filter.spec.name];
     };
     const testFilters = async (data) => {
-        for (const filter of filtersNormalized) {
+        const test = async (filter) => {
             const propName = typeof filter.spec.dataName === "string" ? filter.spec.dataName : filter.spec.dataName?.({ operator: filter.operator });
             let dataValue = filter.spec.dataValue ? filter.spec.dataValue({ data }) : data[propName || filter.spec.name];
             if (filter.spec.join) {
@@ -78,8 +78,8 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                     if (!filter.value) {
                         return false;
                     }
-                    if (filter.operator === FilterOperator.equals && dataValue !== filter.value) {
-                        return false;
+                    if (filter.operator === FilterOperator.equals) {
+                        return dataValue === filter.value;
                     }
                     if (filter.operator === FilterOperator.includeChars) {
                         if (typeof dataValue === "string") {
@@ -88,7 +88,9 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                         else if (Array.isArray(dataValue)) {
                             return !!dataValue.find((v) => v.includes(filter.value));
                         }
-                        return false;
+                        else {
+                            return false;
+                        }
                     }
                     if (filter.operator === FilterOperator.includeWord) {
                         for (const [, words] of textFilterWords.filter(([f]) => f === filter)) {
@@ -151,13 +153,14 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                         return false;
                     }
                 }
-                else {
-                    // unknown filter
-                    return false;
-                }
+            }
+            return false;
+        };
+        for (const filter of filtersNormalized) {
+            if (!await test(filter)) {
+                return false;
             }
         }
-        // all filters test passed
         return true;
     };
     if (allData) {
