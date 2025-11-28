@@ -153,6 +153,21 @@ export class RestQuery<T extends DocumentData = any> {
         })
 
         if (!response.ok) {
+
+            class FirestoreError extends Error {}
+
+            try {
+                const result = await response.json();
+                const error = Array.isArray(result) && result.find(r => r.error)?.error;
+                if (error) {
+                    console.error(result);
+                    throw new FirestoreError(error.message);
+                }
+            } catch (e) {
+                if (e instanceof FirestoreError) {
+                    throw e;
+                }
+            }
             throw new Error(response.statusText);
         }
 
