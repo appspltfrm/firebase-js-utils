@@ -9,6 +9,9 @@ export function snapshotObservable(docOrQuery, options) {
     return new Observable(subscriber => {
         let hasValue = false;
         const handleNext = (snapshot) => {
+            if (options?.skipCache && (snapshot.metadata?.fromCache) && (!Query.isInstance(docOrQuery) || !snapshot.docs.find(d => d.metadata.fromCache))) {
+                return;
+            }
             hasValue = true;
             subscriber.next(snapshot);
         };
@@ -44,9 +47,9 @@ export function snapshotObservable(docOrQuery, options) {
     });
 }
 function extractSnapshotListen(options) {
-    if (!options) {
-        return {};
-    }
-    return Object.assign({}, "includeMetadataChanges" in options ? { "includeMetadataChanges": options.includeMetadataChanges } : undefined);
+    return {
+        includeMetadataChanges: !!options?.includeMetadataChanges || !!options?.skipCache,
+        source: options?.source,
+    };
 }
 //# sourceMappingURL=snapshotObservable.js.map

@@ -29,7 +29,11 @@ export function snapshotObservable<T = DocumentData>(docOrQuery: DocumentReferen
 
         let hasValue = false;
 
-        const handleNext = (snapshot: any) => {
+        const handleNext = (snapshot: QuerySnapshot<T> | DocumentSnapshot<T>) => {
+            if (options?.skipCache && ((snapshot as QuerySnapshotClient | DocumentSnapshotClient).metadata?.fromCache) && (!Query.isInstance(docOrQuery) || !(snapshot as QuerySnapshotClient).docs.find(d => d.metadata.fromCache))) {
+                return;
+            }
+
             hasValue = true;
             subscriber.next(snapshot);
         }
@@ -66,11 +70,9 @@ export function snapshotObservable<T = DocumentData>(docOrQuery: DocumentReferen
 
 }
 
-function extractSnapshotListen(options: Partial<SnapshotListenOptions>): FirestoreSnapshotListenOptions {
-
-    if (!options) {
-        return {};
-    }
-
-    return Object.assign({}, "includeMetadataChanges" in options ? {"includeMetadataChanges": options.includeMetadataChanges} : undefined);
+function extractSnapshotListen(options?: Partial<SnapshotListenOptions>): FirestoreSnapshotListenOptions {
+    return {
+        includeMetadataChanges: !!options?.includeMetadataChanges || !!options?.skipCache,
+        source: options?.source,
+    } as FirestoreSnapshotListenOptions;
 }
