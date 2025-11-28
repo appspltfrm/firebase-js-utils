@@ -1,0 +1,10 @@
+import { Observable } from "rxjs";
+import { DocumentData } from "../DocumentData.js";
+import { Query, QueryAdmin, QueryClient } from "../Query.js";
+import { QueryDocumentSnapshot, QueryDocumentSnapshotAdmin, QueryDocumentSnapshotClient } from "../QueryDocumentSnapshot.js";
+import { SnapshotListenOptions } from "../SnapshotListenOptions.js";
+type Options = Omit<SnapshotListenOptions, "skipCache" | "includeMetadataChanges">;
+export declare function serverSnapshotsObservable<T = DocumentData>(query: QueryClient<T>, options?: Options): Observable<QueryDocumentSnapshotClient<T>[]>;
+export declare function serverSnapshotsObservable<T = DocumentData>(query: QueryAdmin<T>): Observable<QueryDocumentSnapshotAdmin<T>[]>;
+export declare function serverSnapshotsObservable<T = DocumentData>(query: Query<T>, options?: Options): Observable<QueryDocumentSnapshot<T>[]>;
+export {};

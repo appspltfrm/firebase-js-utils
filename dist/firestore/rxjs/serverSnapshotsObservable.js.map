@@ -1,0 +1,1 @@
+{"version":3,"file":"serverSnapshotsObservable.js","sourceRoot":"","sources":["../../../src/firestore/rxjs/serverSnapshotsObservable.ts"],"names":[],"mappings":"AASA,OAAO,EAAC,mBAAmB,EAAC,MAAM,uBAAuB,CAAC;AAU1D,MAAM,UAAU,yBAAyB,CAAmB,KAAe,EAAE,OAAiB;IAC1F,OAAO,mBAAmB,CAAC,KAAK,EAAE,MAAM,CAAC,MAAM,CAAC,EAAC,SAAS,EAAE,IAAI,EAAC,EAAE,OAAO,CAAC,CAAC,CAAC;AACjF,CAAC"}
