@@ -130,7 +130,7 @@ export class RestQuery<T extends DocumentData = any> {
                 query.endAt = {values: constraint.slice(1).map(v => jsValueToRestValue(v)), before: type === "startAt"} as Cursor;
             } else if (type === "orderBy") {
                 query.orderBy ??= [];
-                query.orderBy.push({field: {fieldPath: (constraint as QueryConstraintOrderBy)[1]}, direction: (constraint as QueryConstraintOrderBy)[2]?.toUpperCase() as OrderDirection ?? "ASCENDING"});
+                query.orderBy.push({field: {fieldPath: (constraint as QueryConstraintOrderBy)[1]}, direction: jsOrderDirectionToRest[(constraint as QueryConstraintOrderBy)[2]?.toUpperCase()] ?? "ASCENDING"});
             } else if (type === "select") {
                 query.select = {fields: constraint.slice(1).map(fieldPath => ({fieldPath} satisfies FieldReference))}
             }
@@ -311,6 +311,7 @@ interface Order {
 }
 
 type OrderDirection = "ASCENDING" | "DESCENDING";
+const jsOrderDirectionToRest = {"ASC": "ASCENDING", "DESC": "DESCENDING"};
 
 interface Cursor {
     before: boolean;
