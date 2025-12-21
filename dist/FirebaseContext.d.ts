@@ -27,8 +27,8 @@ export declare abstract class FirebaseContextClient extends UniversalFirebaseCon
 }
 export declare abstract class FirebaseContextAdmin extends UniversalFirebaseContext {
     abstract get firestore(): FirestoreAdmin;
-    firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: QueryConstraint[]): QueryAdmin<T>;
-    firestoreQuery<T = DocumentData>(collection: CollectionReferenceAdmin<T>, ...queryConstraints: QueryConstraint[]): QueryAdmin<T>;
+    firestoreQuery<T = DocumentData>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryAdmin<T>;
+    firestoreQuery<T = DocumentData>(collection: CollectionReferenceAdmin<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryAdmin<T>;
     firestoreCollection<T = DocumentData>(path: string): CollectionReferenceAdmin<T>;
     firestoreDocument<T = DocumentData>(path: string): DocumentReferenceAdmin<T>;
 }
