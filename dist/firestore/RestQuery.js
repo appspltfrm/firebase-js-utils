@@ -158,7 +158,7 @@ export class RestQuery {
                 return data;
             }
         };
-        const result = (await this.fetch({ structuredQuery: this.query }) ?? []);
+        const result = await this.fetch({ structuredQuery: this.query });
         return {
             docs: result.filter(r => r.document).map(({ document }) => ({
                 name: document.name,
@@ -253,10 +253,10 @@ function restValueToJSValue(value, firebase) {
         return null;
     }
     if (value.arrayValue !== undefined) {
-        return value.arrayValue.values.map(v => restValueToJSValue(v, firebase));
+        return (value.arrayValue.values ?? []).map(v => restValueToJSValue(v, firebase));
     }
     else if (value.mapValue !== undefined) {
-        return Object.entries(value.mapValue.fields).reduce((obj, [key, val]) => {
+        return Object.entries(value.mapValue.fields ?? {}).reduce((obj, [key, val]) => {
             obj[key] = restValueToJSValue(val, firebase);
             return obj;
         }, {});

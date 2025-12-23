@@ -196,7 +196,7 @@ export class RestQuery<T extends DocumentData = any> {
             }
         }
 
-        const result = ((await this.fetch({structuredQuery: this.query}) ?? []) as Array<ResultDocument>);
+        const result = (await this.fetch({structuredQuery: this.query}) as Array<ResultDocument>);
 
         return {
             docs: result.filter(r => r.document).map(({document}) => ({
@@ -466,10 +466,10 @@ function restValueToJSValue(value: Value, firebase: FirebaseContextClient) {
         return null;
 
     } if ((value as ArrayValue).arrayValue !== undefined) {
-        return (value as ArrayValue).arrayValue.values.map(v => restValueToJSValue(v, firebase));
+        return ((value as ArrayValue).arrayValue.values ?? []).map(v => restValueToJSValue(v, firebase));
 
     } else if ((value as ObjectValue).mapValue !== undefined) {
-        return Object.entries((value as ObjectValue).mapValue.fields).reduce((obj, [key, val]) => {
+        return Object.entries((value as ObjectValue).mapValue.fields ?? {}).reduce((obj, [key, val]) => {
             obj[key] = restValueToJSValue(val, firebase);
             return obj;
         }, {} as Record<string, any>);
