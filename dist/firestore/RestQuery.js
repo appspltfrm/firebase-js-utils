@@ -158,7 +158,7 @@ export class RestQuery {
                 return data;
             }
         };
-        const result = await this.fetch({ structuredQuery: this.query });
+        const result = (await this.fetch({ structuredQuery: this.query }) ?? []);
         return {
             docs: result.filter(r => r.document).map(({ document }) => ({
                 name: document.name,

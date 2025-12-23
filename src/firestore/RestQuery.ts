@@ -196,7 +196,7 @@ export class RestQuery<T extends DocumentData = any> {
             }
         }
 
-        const result = (await this.fetch({structuredQuery: this.query}) as Array<ResultDocument>);
+        const result = ((await this.fetch({structuredQuery: this.query}) ?? []) as Array<ResultDocument>);
 
         return {
             docs: result.filter(r => r.document).map(({document}) => ({
