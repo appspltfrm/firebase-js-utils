@@ -1,5 +1,6 @@
 import {query as queryClient, QueryConstraint as QueryConstraintClient} from "@firebase/firestore";
 import {endAt, endBefore, limit, limitToLast, orderBy, startAfter, startAt, where, or, and} from "firebase/firestore";
+import * as assert from "node:assert";
 import {DocumentData} from "./DocumentData.js";
 import {Firestore} from "./Firestore.js";
 import {Query, QueryAdmin, QueryClient} from "./Query.js";
@@ -10,17 +11,17 @@ import {
 } from "./QueryConstraint.js";
 import {RestQuery} from "./RestQuery.js";
 
-export function buildQuery<T = DocumentData>(query: QueryClient<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
+export function buildQuery<T extends DocumentData = any>(query: QueryClient<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
 
-export function buildQuery<T = DocumentData>(query: QueryAdmin<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryAdmin<T>;
+export function buildQuery<T extends DocumentData = any>(query: QueryAdmin<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryAdmin<T>;
 
-export function buildQuery<T = DocumentData>(query: Query<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;
+export function buildQuery<T extends DocumentData = any>(query: Query<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;
 
-export function buildQuery<T = DocumentData>(query: RestQuery<T>, ...queryConstraints: Array<RestQueryConstraint | undefined | false>): RestQuery<T>;
+export function buildQuery<T extends DocumentData = any>(query: RestQuery<T>, ...queryConstraints: Array<RestQueryConstraint | undefined | false>): RestQuery<T>;
 
-export function buildQuery<T = DocumentData>(query: Query<T> | RestQuery<T>, ...queryConstraints: Array<QueryConstraint | RestQueryConstraint | undefined | false>): Query<T> | RestQuery<T>;
+export function buildQuery<T extends DocumentData = any>(query: Query<T> | RestQuery<T>, ...queryConstraints: Array<QueryConstraint | RestQueryConstraint | undefined | false>): Query<T> | RestQuery<T>;
 
-export function buildQuery<T = DocumentData>(query: Query<T> | RestQuery<T>, ...queryConstraints: Array<QueryConstraint | RestQueryConstraint | undefined | false>): Query<T> | RestQuery<T> {
+export function buildQuery<T extends DocumentData = any>(query: Query<T> | RestQuery<T>, ...queryConstraints: Array<QueryConstraint | RestQueryConstraint | undefined | false>): Query<T> | RestQuery<T> {
 
     if (query instanceof RestQuery) {
         return new RestQuery(query).apply(...queryConstraints as RestQueryConstraint[]);
@@ -29,13 +30,13 @@ export function buildQuery<T = DocumentData>(query: Query<T> | RestQuery<T>, ...
 
         if (queryConstraints) {
 
-            const buildOrAnd = (...whereConstraints: Array<QueryConstraintWhere | QueryConstraintAndOr>) => {
+            const buildOrAnd = (...whereConstraints: Array<QueryConstraintWhere | QueryConstraintAndOr>): any[] => {
                 const constraints = [];
                 for (const constraint of whereConstraints.filter(c => !!c)) {
                     const type = constraint[0] as "where" | "and" | "or";
                     const args = constraint.slice(1);
                     if (type === "where") {
-                        constraints.push(where.call(where, ...args));
+                        constraints.push((where as Function).call(where, ...args));
                     } else if (type === "and") {
                         constraints.push(and.call(and, ...buildOrAnd(...args as any)));
                     } else if (type === "or") {
@@ -51,19 +52,19 @@ export function buildQuery<T = DocumentData>(query: Query<T> | RestQuery<T>, ...
                 const args = constraint.slice(1);
 
                 if (type === "or") {
-                    constraints.push(or.call(or, ...buildOrAnd(...args as any)));
+                    constraints.push((or as Function).call(or, ...buildOrAnd(...args as any)));
                 } else if (type === "and") {
-                    constraints.push(and.call(and, ...buildOrAnd(...args as any)));
+                    constraints.push((and as Function).call(and, ...buildOrAnd(...args as any)));
                 } else if (type === "where") {
-                    constraints.push(where.call(where, ...args));
+                    constraints.push((where as Function).call(where, ...args));
                 } else if (type === "limit") {
-                    constraints.push(limit.call(limit, ...args));
+                    constraints.push((limit as Function).call(limit, ...args));
                 } else if (type === "endBefore") {
                     constraints.push(endBefore.call(endBefore, ...args));
                 } else if (type === "limitToLast") {
-                    constraints.push(limitToLast.call(limitToLast, ...args));
+                    constraints.push((limitToLast as Function).call(limitToLast, ...args));
                 } else if (type === "orderBy") {
-                    constraints.push(orderBy.call(orderBy, ...args));
+                    constraints.push((orderBy as Function).call(orderBy, ...args));
                 } else if (type === "startAfter") {
                     constraints.push(startAfter.call(startAfter, ...args));
                 } else if (type === "startAt") {
@@ -84,15 +85,15 @@ export function buildQuery<T = DocumentData>(query: Query<T> | RestQuery<T>, ...
 
         if (queryConstraints) {
             let niu = query as QueryAdmin<T>;
-            const Filter = (Firestore.adminInitialized() && Firestore.admin().Filter);
+            const Filter = Firestore.admin().Filter;
 
-            const buildFilterWhere = (...whereConstraints: Array<QueryConstraintWhere | QueryConstraintAndOr>) => {
+            const buildFilterWhere = (...whereConstraints: Array<QueryConstraintWhere | QueryConstraintAndOr>): any[] => {
                 const where = [];
                 for (const constraint of whereConstraints.filter(c => !!c)) {
                     const type = constraint[0] as "where" | "and" | "or";
                     const args = constraint.slice(1);
                     if (type === "where") {
-                        where.push(Filter.where.call(Filter.where, ...args));
+                        where.push((Filter.where as Function).call(Filter.where, ...args));
                     } else if (type === "and") {
                         where.push(Filter.and.call(Filter.and, ...buildFilterWhere(...args as any)));
                     } else if (type === "or") {
@@ -110,15 +111,15 @@ export function buildQuery<T = DocumentData>(query: Query<T> | RestQuery<T>, ...
                 } else if (type === "and") {
                     niu = niu.where.call(niu, Filter.and(...buildFilterWhere(...args as any)));
                 } else if (type === "where") {
-                    niu = niu.where.call(niu, ...args);
+                    niu = (niu.where as Function).call(niu, ...args);
                 } else if (type === "limit") {
-                    niu = niu.limit.call(niu, ...args);
+                    niu = (niu.limit as Function).call(niu, ...args);
                 } else if (type === "endBefore") {
                     niu = niu.endBefore.call(niu, ...args);
                 } else if (type === "limitToLast") {
-                    niu = niu.limitToLast.call(niu, ...args);
+                    niu = (niu.limitToLast as Function).call(niu, ...args);
                 } else if (type === "orderBy") {
-                    niu = niu.orderBy.call(niu, ...args);
+                    niu = (niu.orderBy as Function).call(niu, ...args);
                 } else if (type === "startAfter") {
                     niu = niu.startAfter.call(niu, ...args);
                 } else if (type === "startAt") {
@@ -126,7 +127,7 @@ export function buildQuery<T = DocumentData>(query: Query<T> | RestQuery<T>, ...
                 } else if (type === "endAt") {
                     niu = niu.endAt.call(niu, ...args);
                 } else if (type === "select") {
-                    niu = niu.select.call(niu, ...args);
+                    niu = (niu.select as Function).call(niu, ...args);
                 }
             }
 

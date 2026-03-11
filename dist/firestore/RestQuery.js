@@ -101,7 +101,7 @@ export class RestQuery {
             }
             else if (type === "orderBy") {
                 query.orderBy ??= [];
-                query.orderBy.push({ field: { fieldPath: constraint[1] }, direction: jsOrderDirectionToRest[constraint[2]?.toUpperCase()] ?? "ASCENDING" });
+                query.orderBy.push({ field: { fieldPath: constraint[1] }, direction: (constraint[2] ? jsOrderDirectionToRest[constraint[2].toUpperCase()] : "ASCENDING") });
             }
             else if (type === "select") {
                 query.select = { fields: constraint.slice(1).map(fieldPath => ({ fieldPath })) };

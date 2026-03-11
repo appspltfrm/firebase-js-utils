@@ -11,6 +11,6 @@ export interface DeleteOptions {
 export interface DeleteOptionsAdmin extends DeleteOptions {
     subcollections?: boolean;
 }
-export declare function deleteQuery(query: QueryAdmin<any>, options?: DeleteOptionsAdmin): any;
-export declare function deleteQuery(query: QueryClient<any>, options?: DeleteOptions): any;
-export declare function deleteQuery(query: Query<any>, options?: DeleteOptions): any;
+export declare function deleteQuery(query: QueryAdmin<any>, options?: DeleteOptionsAdmin): Promise<number>;
+export declare function deleteQuery(query: QueryClient<any>, options?: DeleteOptions): Promise<number>;
+export declare function deleteQuery(query: Query<any>, options?: DeleteOptions): Promise<number>;

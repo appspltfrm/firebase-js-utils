@@ -71,7 +71,7 @@ export function buildQuery(query, ...queryConstraints) {
     else {
         if (queryConstraints) {
             let niu = query;
-            const Filter = (Firestore.adminInitialized() && Firestore.admin().Filter);
+            const Filter = Firestore.admin().Filter;
             const buildFilterWhere = (...whereConstraints) => {
                 const where = [];
                 for (const constraint of whereConstraints.filter(c => !!c)) {

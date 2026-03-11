@@ -3,6 +3,15 @@ import {SerializationOptions, serialize as serializeImpl} from "@appspltfrm/js-u
 const typeField = "@type";
 const fixedTypeField = `${typeField}@`;
 
+/**
+ * Serializuje obiekt do formatu JSON, obsługując typy specyficzne dla Firebase (np. Timestamp).
+ * Rozszerza standardową serializację z `@appspltfrm/js-utils/json`, dodając obsługę ucieczki pola `@type`.
+ * Jest to niezbędne przy przesyłaniu danych między klientem a serwerem (np. w Cloud Functions),
+ * aby uniknąć konfliktów z systemami, które używają `@type` do innych celów.
+ *
+ * @param inputObject Obiekt do serializacji.
+ * @param options Opcje serializacji.
+ */
 export function serialize(inputObject: any, options?: SerializationOptions) {
     const result = serializeImpl(inputObject, options);
 

@@ -1,6 +1,7 @@
 import {BigNumber} from "bignumber.js";
 import {deepEqual} from "fast-equals";
 import {buildQuery} from "../buildQuery.js";
+import {DocumentData} from "../DocumentData.js";
 import {getCountFromServer} from "../getCountFromServer.js";
 import {getDataFromServer} from "../getDataFromServer.js";
 import {Query} from "../Query.js";
@@ -9,7 +10,7 @@ import {generateTextSearchTrigrams} from "./generateTextSearchTrigrams.js";
 import {Filter, FilterFieldType, FilterOperator} from "./specs.js";
 import {splitTextSearchWords} from "./splitTextSearchWords.js";
 
-type Args<T> = {
+type Args<T extends DocumentData = any> = {
     query: Query<T> | RestQuery<T>,
     startAfter?: any[], 
     getStartAfter: (data: T) => any[],
@@ -19,7 +20,7 @@ type Args<T> = {
     transliterate?: (input: string) => string
 }
 
-export async function getFilteredData<T>({filters, query: baseQuery, transliterate, limit, startAfter, getStartAfter, allData}: Args<T>) {
+export async function getFilteredData<T extends DocumentData = any>({filters, query: baseQuery, transliterate, limit, startAfter, getStartAfter, allData}: Args<T>) {
 
     const hasLimit = limit > 0;
     const result: {next: boolean, records: T[]} = {next: false, records: []};
@@ -51,7 +52,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
     const fetchJoin = async (filter: Filter.SpecRequired) => {
 
         if (!joinResults[filter.spec.name]) {
-            const join = filter.spec.join;
+            const join = filter.spec.join!;
 
             let query = join.query;
             if (query instanceof RestQuery || Query.isAdmin(query)) {
@@ -61,7 +62,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
             joinResults[filter.spec.name] = (await getFilteredData({
                 limit: -1,
                 query,
-                getStartAfter: (data) => data[join.whereField],
+                getStartAfter: (data) => data[join.whereField!],
                 transliterate,
                 filters: [{
                     operator: filter.operator,
@@ -238,7 +239,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
 
                 const allQueries = arrayChunk(await fetchJoin(filter), 30).map(chunk => buildQuery(baseQuery,
                     ["where", fieldName, "in", chunk],
-                    (startAfter?.length && ["startAfter", ...startAfter])));
+                    (startAfter?.length ? ["startAfter", ...startAfter] : undefined)));
 
                 const resultQueries: typeof allQueries = [];
 
@@ -285,7 +286,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                             (startAfter?.length && ["startAfter", ...startAfter]) || undefined
                         )
 
-                        const count = await getCountFromServer(buildQuery(query, hasLimit && ["limit", (bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
+                        const count = await getCountFromServer(buildQuery(query, hasLimit && ["limit", (bestQueryCount! > 0 ? bestQueryCount! : limit) + 1]));
 
                         ZERO: if (count === 0) {
                             if (filter.operator === FilterOperator.includeChars && value.length !== 3) {
@@ -319,7 +320,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                                 (startAfter?.length && ["startAfter", ...startAfter]) || undefined
                             )
 
-                            const count = await getCountFromServer(buildQuery(query, hasLimit && ["limit", (bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
+                            const count = await getCountFromServer(buildQuery(query, hasLimit && ["limit", (bestQueryCount! > 0 ? bestQueryCount! : limit) + 1]));
                             if (count === 0) {
                                 return result;
                             }
@@ -342,7 +343,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                             (startAfter?.length && ["startAfter", ...startAfter]) || undefined
                         )
 
-                        const count = await getCountFromServer(buildQuery(query, hasLimit && ["limit", (bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
+                        const count = await getCountFromServer(buildQuery(query, hasLimit && ["limit", (bestQueryCount! > 0 ? bestQueryCount! : limit) + 1]));
                         if (count === 0) {
                             return result;
                         }
@@ -392,7 +393,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
 
             RECORDS: while (!hasLimit || result.records.length < limit + 1) {
 
-                let bestData: any[];
+                let bestData: any[] | undefined;
 
                 for (const query of Array.isArray(bestQuery) ? bestQuery : [bestQuery]) {
 
@@ -422,7 +423,7 @@ export async function getFilteredData<T>({filters, query: baseQuery, translitera
                     }
                 }
 
-                if (!hasLimit || bestData.length <= limit) {
+                if (!hasLimit || !bestData || bestData.length <= limit) {
                     break;
                 }
 

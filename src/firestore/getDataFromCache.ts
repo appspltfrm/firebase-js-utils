@@ -4,11 +4,11 @@ import {DocumentData} from "./DocumentData.js";
 import {DocumentReference} from "./DocumentReference.js";
 import {Query} from "./Query.js";
 
-export async function getDataFromCache<T = DocumentData>(doc: DocumentReference<T>, options?: SnapshotOptions): Promise<T>;
+export async function getDataFromCache<T extends DocumentData = any>(doc: DocumentReference<T>, options?: SnapshotOptions): Promise<T>;
 
-export async function getDataFromCache<T = DocumentData>(query: Query<T>, options?: SnapshotOptions): Promise<T[]>;
+export async function getDataFromCache<T extends DocumentData = any>(query: Query<T>, options?: SnapshotOptions): Promise<T[]>;
 
-export async function getDataFromCache<T = DocumentData>(docOrQuery: DocumentReference<T> | Query<T>, options?: any): Promise<T | T[]> {
+export async function getDataFromCache<T extends DocumentData = any>(docOrQuery: DocumentReference<T> | Query<T>, options?: any): Promise<T | T[]> {
 
     if (Query.isInstance(docOrQuery)) {
         if (Query.isClient(docOrQuery)) {
@@ -19,9 +19,9 @@ export async function getDataFromCache<T = DocumentData>(docOrQuery: DocumentRef
 
     } else if (DocumentReference.isInstance(docOrQuery)) {
         if (DocumentReference.isClient(docOrQuery)) {
-            return (await getDocFromCache(docOrQuery)).data(options);
+            return (await getDocFromCache(docOrQuery)).data(options)!;
         } else {
-            return (await docOrQuery.get()).data();
+            return (await docOrQuery.get()).data()!;
         }
 
     } else {

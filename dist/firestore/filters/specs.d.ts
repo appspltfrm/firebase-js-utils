@@ -1,6 +1,7 @@
-import { Query } from "../Query";
-import { RestQuery } from "../RestQuery";
-export interface FilterFieldSpec<T = any> {
+import { DocumentData } from "../DocumentData.js";
+import { Query } from "../Query.js";
+import { RestQuery } from "../RestQuery.js";
+export interface FilterFieldSpec<T extends DocumentData = any> {
     name: string;
     queryName?: string | ((args: {
         operator: FilterOperator;
@@ -69,6 +70,6 @@ export declare namespace Filter {
         spec: FilterFieldSpec;
     };
     type Serialized = [fieldName: string, operator: FilterOperator, value?: string | string[]];
-    function serialize(filters: Filter[] | undefined): Serialized[];
-    function unserialize(filters: Serialized[] | undefined, fields: FilterFieldSpec[]): SpecRequired[];
+    function serialize(filters: Filter[] | undefined): Serialized[] | undefined;
+    function unserialize(filters: Serialized[] | undefined, fields: FilterFieldSpec[]): SpecRequired[] | undefined;
 }

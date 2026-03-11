@@ -1,7 +1,8 @@
-import {Query} from "../Query";
-import {RestQuery} from "../RestQuery";
+import {DocumentData} from "../DocumentData.js";
+import {Query} from "../Query.js";
+import {RestQuery} from "../RestQuery.js";
 
-export interface FilterFieldSpec<T = any> {
+export interface FilterFieldSpec<T extends DocumentData = any> {
     name: string;
     queryName?: string | ((args: {operator: FilterOperator}) => string);
     dataName?: string | ((args: {operator: FilterOperator}) => string);

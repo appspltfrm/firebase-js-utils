@@ -1,18 +1,21 @@
 {
     "compilerOptions": {
+        "strict": true,
         "allowSyntheticDefaultImports": true,
         "declaration": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "esModuleInterop": true,
         "lib": ["DOM", "ESNext"],
-        "module": "esnext",
-        "moduleResolution": "bundler",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
         "target": "ESNext",
         "outDir": "dist",
         "rootDir": "src",
         "sourceMap": true,
-        "importHelpers": false
+        "importHelpers": false,
+        "skipLibCheck": true,
+        "customConditions": ["development"]
     },
 
     "exclude": [

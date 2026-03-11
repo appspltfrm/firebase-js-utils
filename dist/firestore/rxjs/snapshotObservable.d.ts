@@ -5,9 +5,9 @@ import { DocumentSnapshot, DocumentSnapshotAdmin, DocumentSnapshotClient } from 
 import { Query, QueryAdmin, QueryClient } from "../Query.js";
 import { QuerySnapshot, QuerySnapshotAdmin, QuerySnapshotClient } from "../QuerySnapshot.js";
 import { SnapshotListenOptions } from "../SnapshotListenOptions.js";
-export declare function snapshotObservable<T = DocumentData>(query: QueryClient<T>, options?: SnapshotListenOptions): Observable<QuerySnapshotClient<T>>;
-export declare function snapshotObservable<T = DocumentData>(query: QueryAdmin<T>): Observable<QuerySnapshotAdmin<T>>;
-export declare function snapshotObservable<T = DocumentData>(query: Query<T>, options?: SnapshotListenOptions): Observable<QuerySnapshot<T>>;
-export declare function snapshotObservable<T = DocumentData>(doc: DocumentReferenceClient<T>, options?: SnapshotListenOptions): Observable<DocumentSnapshotClient<T>>;
-export declare function snapshotObservable<T = DocumentData>(doc: DocumentReferenceAdmin<T>): Observable<DocumentSnapshotAdmin<T>>;
-export declare function snapshotObservable<T = DocumentData>(doc: DocumentReference<T>, options?: SnapshotListenOptions): Observable<DocumentSnapshot<T>>;
+export declare function snapshotObservable<T extends DocumentData = any>(query: QueryClient<T>, options?: SnapshotListenOptions): Observable<QuerySnapshotClient<T>>;
+export declare function snapshotObservable<T extends DocumentData = any>(query: QueryAdmin<T>): Observable<QuerySnapshotAdmin<T>>;
+export declare function snapshotObservable<T extends DocumentData = any>(query: Query<T>, options?: SnapshotListenOptions): Observable<QuerySnapshot<T>>;
+export declare function snapshotObservable<T extends DocumentData = any>(doc: DocumentReferenceClient<T>, options?: SnapshotListenOptions): Observable<DocumentSnapshotClient<T>>;
+export declare function snapshotObservable<T extends DocumentData = any>(doc: DocumentReferenceAdmin<T>): Observable<DocumentSnapshotAdmin<T>>;
+export declare function snapshotObservable<T extends DocumentData = any>(doc: DocumentReference<T>, options?: SnapshotListenOptions): Observable<DocumentSnapshot<T>>;

@@ -6,7 +6,7 @@ import { snapshotObservable } from "./snapshotObservable.js";
 export function dataObservable(docOrQuery, options) {
     if (Query.isInstance(docOrQuery)) {
         return snapshotObservable(docOrQuery, options)
-            .pipe(map(snapshot => snapshot.docs.map(d => d.data(SnapshotOptions.extract(options)))));
+            .pipe(map(snapshot => snapshot.docs.map(d => d.data(SnapshotOptions.extract(options ?? {})))));
     }
     else if (DocumentReference.isInstance(docOrQuery)) {
         return snapshotObservable(docOrQuery, options)

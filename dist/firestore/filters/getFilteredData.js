@@ -190,7 +190,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
         for (const filter of filtersNormalized) {
             const fieldName = (typeof filter.spec.queryName === "function" ? filter.spec.queryName({ operator: filter.operator }) : filter.spec.queryName) || filter.spec.name;
             if (filter.spec.join) {
-                const allQueries = arrayChunk(await fetchJoin(filter), 30).map(chunk => buildQuery(baseQuery, ["where", fieldName, "in", chunk], (startAfter?.length && ["startAfter", ...startAfter])));
+                const allQueries = arrayChunk(await fetchJoin(filter), 30).map(chunk => buildQuery(baseQuery, ["where", fieldName, "in", chunk], (startAfter?.length ? ["startAfter", ...startAfter] : undefined)));
                 const resultQueries = [];
                 let count = 0;
                 for (const query of allQueries) {
@@ -320,7 +320,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                         break;
                     }
                 }
-                if (!hasLimit || bestData.length <= limit) {
+                if (!hasLimit || !bestData || bestData.length <= limit) {
                     break;
                 }
                 startAfter = getStartAfter(bestData[bestData.length - 1]);

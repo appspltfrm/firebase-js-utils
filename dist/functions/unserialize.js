@@ -1,6 +1,15 @@
 import { unserialize as unserializeImpl } from "@appspltfrm/js-utils/json";
 const typeField = "@type";
 const fixedTypeField = `${typeField}@`;
+/**
+ * Deserializuje obiekt JSON z powrotem do typów JS/Firebase.
+ * Odwraca operację `serialize`, przywracając pole `@type` z `fixedTypeField`.
+ * Wykorzystuje `@appspltfrm/js-utils/json` do odtworzenia instancji klas na podstawie metadanych.
+ *
+ * @param json Dane JSON do deserializacji.
+ * @param targetType Opcjonalny docelowy typ (klasa).
+ * @param options Opcje serializacji.
+ */
 export function unserialize(json, targetType, options) {
     if (json && (Array.isArray(json) || typeof json === "object")) {
         const fixType = (obj) => {

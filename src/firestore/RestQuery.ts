@@ -1,6 +1,6 @@
 import {Bytes, DocumentReference, GeoPoint, Timestamp, WhereFilterOp} from "@firebase/firestore";
-import {type FirebaseContextClient} from "../FirebaseContext";
-import {DocumentData} from "./DocumentData";
+import {type FirebaseContextClient} from "../FirebaseContext.js";
+import {DocumentData} from "./DocumentData.js";
 import {
     QueryConstraintAndOr,
     QueryConstraintLimit,
@@ -9,7 +9,7 @@ import {
     QueryConstraintType,
     QueryConstraintWhere,
     RestQueryConstraint
-} from "./QueryConstraint";
+} from "./QueryConstraint.js";
 
 export class RestQuery<T extends DocumentData = any> {
 
@@ -22,7 +22,7 @@ export class RestQuery<T extends DocumentData = any> {
         const proto = firebaseOrProto instanceof RestQuery ? firebaseOrProto : undefined;
 
         this.query = {
-            from: typeof collectionId === "string" ? [{collectionId: collectionId}] : proto.query.from.map(({collectionId}) => ({collectionId}))
+            from: typeof collectionId === "string" ? [{collectionId: collectionId}] : proto!.query.from.map(({collectionId}) => ({collectionId}))
         }
 
         if (proto) {
@@ -88,7 +88,7 @@ export class RestQuery<T extends DocumentData = any> {
 
     apply(...constraints: Array<RestQueryConstraint | undefined | false>): this {
 
-        const buildWhereOrAnd = (constraint: QueryConstraintWhere | QueryConstraintAndOr): Filter => {
+        const buildWhereOrAnd = (constraint: QueryConstraintWhere | QueryConstraintAndOr): Filter | undefined => {
             const type = constraint[0] as "where" | "and" | "or";
             if (type === "where") {
                 const [, fieldPath, opStr, value] = constraint as QueryConstraintWhere;
@@ -107,7 +107,7 @@ export class RestQuery<T extends DocumentData = any> {
             } else if (type === "and" || type === "or") {
                 return {compositeFilter: {
                     op: type.toUpperCase() as CompositeFilterOp,
-                    filters: constraint.slice(1).filter(c => !!c).map(c => buildWhereOrAnd(c))
+                    filters: constraint.slice(1).filter(c => !!c).map(c => buildWhereOrAnd(c)) as Filter[]
                 }} satisfies CompositeFilter
             }
         }
@@ -119,7 +119,7 @@ export class RestQuery<T extends DocumentData = any> {
 
             if (type === "or" || type === "and" || type === "where") {
                 query.where ??= {compositeFilter: {op: "AND", filters: [] as Filter[]}} satisfies CompositeFilter;
-                (query.where as CompositeFilter).compositeFilter.filters.push(buildWhereOrAnd(constraint as QueryConstraintAndOr | QueryConstraintWhere));
+                (query.where as CompositeFilter).compositeFilter.filters.push(buildWhereOrAnd(constraint as QueryConstraintAndOr | QueryConstraintWhere)!);
             } else if (type === "limit") {
                 query.limit = (constraint as QueryConstraintLimit)[1];
             } else if (type === "offset") {
@@ -130,7 +130,7 @@ export class RestQuery<T extends DocumentData = any> {
                 query.endAt = {values: constraint.slice(1).map(v => jsValueToRestValue(v)), before: type === "startAt"} as Cursor;
             } else if (type === "orderBy") {
                 query.orderBy ??= [];
-                query.orderBy.push({field: {fieldPath: (constraint as QueryConstraintOrderBy)[1]}, direction: jsOrderDirectionToRest[(constraint as QueryConstraintOrderBy)[2]?.toUpperCase()] ?? "ASCENDING"});
+                query.orderBy.push({field: {fieldPath: (constraint as QueryConstraintOrderBy)[1]}, direction: ((constraint as QueryConstraintOrderBy)[2] ? jsOrderDirectionToRest[(constraint as QueryConstraintOrderBy)[2]!.toUpperCase() as "ASC" | "DESC"] : "ASCENDING") as OrderDirection});
             } else if (type === "select") {
                 query.select = {fields: constraint.slice(1).map(fieldPath => ({fieldPath} satisfies FieldReference))}
             }
@@ -448,7 +448,7 @@ function jsValueToRestValue(value: any): Value {
     throw new Error(`Nieobsługiwana wartość JS: ${value}`);
 }
 
-function restValueToJSValue(value: Value, firebase: FirebaseContextClient) {
+function restValueToJSValue(value: Value, firebase: FirebaseContextClient): any {
 
     if ((value as StringValue).stringValue !== undefined) {
         return (value as StringValue).stringValue;

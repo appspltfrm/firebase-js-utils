@@ -74,6 +74,7 @@ export class AutoWriteBatch {
             for (let i = 0; i < this.count; i++) {
                 batchCount++;
                 const operation = this.operations[i];
+                // @ts-ignore
                 batch[operation[0]].call(batch, ...operation[1]);
                 if (batchCount === this.limit$) {
                     await commit();

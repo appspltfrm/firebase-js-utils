@@ -1,6 +1,13 @@
 import {Auth, User} from "firebase/auth";
 import {first, firstValueFrom, map, Observable, of, ReplaySubject, switchMap, throwError} from "rxjs";
 
+/**
+ * Reprezentuje zalogowanego użytkownika po stronie klienta (Web SDK).
+ * Ułatwia dostęp do instancji User, jej ID oraz tokenów ID, a także dostarcza
+ * strumienie Observable (RxJS) do śledzenia zmian stanu uwierzytelnienia.
+ *
+ * @category Auth
+ */
 export class AuthUser {
 
     constructor(private readonly auth: Auth) {
@@ -9,24 +16,39 @@ export class AuthUser {
 
     private authInitialized: boolean = false;
 
-    private _user: User;
+    private _user: User | null = null;
 
-    get user(): User {
+    /**
+     * Zwraca aktualną instancję użytkownika Firebase.
+     */
+    get user(): User | null {
         return this._user;
     }
 
-    get userId(): string {
-        return this.user && this.user.uid;
+    /**
+     * Zwraca UID aktualnego użytkownika lub null.
+     */
+    get userId(): string | undefined {
+        return this.user ? this.user.uid : undefined;
     }
 
-    readonly userObservable: ReplaySubject<User> = new ReplaySubject<User>(1);
+    /**
+     * Strumień emitujący aktualną instancję użytkownika przy każdej zmianie.
+     */
+    readonly userObservable: ReplaySubject<User | null> = new ReplaySubject<User | null>(1);
 
+    /**
+     * Strumień emitujący UID użytkownika (lub null) przy każdej zmianie.
+     */
     readonly userIdObservable = this.userObservable.pipe(map(user => user?.uid || null));
 
+    /**
+     * Zwraca aktualny token ID użytkownika.
+     */
     get userIdToken(): Promise<string | null> {
-        return new Promise<string>(async (resolve) => {
+        return new Promise<string | null>(async (resolve) => {
             await this.initialized();
-            resolve(this.auth.currentUser?.getIdToken() || null);
+            resolve((await this.auth.currentUser?.getIdToken()) || null);
         })
     }
     //
@@ -37,7 +59,7 @@ export class AuthUser {
     //     }).pipe(switchMap(user => user.getIdToken()));
     // }
 
-    private userChanged(user: User) {
+    private userChanged(user: User | null) {
 
         this._user = user;
         this.authInitialized = true;
@@ -60,6 +82,9 @@ export class AuthUser {
         console.error(error);
     }
 
+    /**
+     * Zwraca Promise, który rozwiązuje się, gdy stan uwierzytelnienia zostanie po raz pierwszy zainicjalizowany.
+     */
     initialized(): Promise<boolean> {
         if (this.authInitialized) {
             return Promise.resolve(true);
@@ -72,7 +97,10 @@ export class AuthUser {
         return new Error("User not signed");
     }
 
-    observeUser(assertSigned?: boolean): Observable<User> {
+    /**
+     * Zwraca strumień użytkownika, opcjonalnie rzucając błąd, jeśli użytkownik nie jest zalogowany.
+     */
+    observeUser(assertSigned?: boolean): Observable<User | null> {
         return this.userObservable.pipe(switchMap(user => user || !assertSigned ? of(user) : throwError(() => this.userNotSignedError())));
     }
 

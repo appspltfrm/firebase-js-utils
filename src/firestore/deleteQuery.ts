@@ -20,13 +20,13 @@ export interface DeleteOptionsAdmin extends DeleteOptions {
     subcollections?: boolean;
 }
 
-export async function deleteQuery(query: QueryAdmin<any>, options?: DeleteOptionsAdmin);
+export async function deleteQuery(query: QueryAdmin<any>, options?: DeleteOptionsAdmin): Promise<number>;
 
-export async function deleteQuery(query: QueryClient<any>, options?: DeleteOptions);
+export async function deleteQuery(query: QueryClient<any>, options?: DeleteOptions): Promise<number>;
 
-export async function deleteQuery(query: Query<any>, options?: DeleteOptions);
+export async function deleteQuery(query: Query<any>, options?: DeleteOptions): Promise<number>;
 
-export async function deleteQuery(query: Query<any>, options?: DeleteOptions & DeleteOptionsAdmin) {
+export async function deleteQuery(query: Query<any>, options?: DeleteOptions & DeleteOptionsAdmin): Promise<number> {
 
     if (!options) {
         options = {};
@@ -75,7 +75,7 @@ export async function deleteQuery(query: Query<any>, options?: DeleteOptions & D
                 }
             }
 
-            for (let i = 1; i <= (options.batchRetryCount > 1 ? options.batchRetryCount : 1); i++) {
+            for (let i = 1; i <= (options.batchRetryCount! > 1 ? options.batchRetryCount! : 1); i++) {
 
                 try {
                     await batch.commit();
@@ -85,7 +85,7 @@ export async function deleteQuery(query: Query<any>, options?: DeleteOptions & D
                 } catch (error) {
                     console.warn(error);
 
-                    if (i < (options.batchRetryCount > 1 ? options.batchRetryCount : 1)) {
+                    if (i < (options.batchRetryCount! > 1 ? options.batchRetryCount! : 1)) {
                         await sleep(options.batchRetryDelay || (2000 * i));
                     }
                 }

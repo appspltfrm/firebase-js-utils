@@ -4,13 +4,13 @@ import {DocumentSnapshot} from "./DocumentSnapshot.js";
 import {getSnapshotsFromCache} from "./getSnapshotsFromCache.js";
 import {Query, QueryAdmin, QueryClient} from "./Query.js";
 
-export function getChunkedDataFromCache<T = DocumentData>(query: QueryClient<T>, chunkSize: number): AsyncGenerator<T[]>;
+export function getChunkedDataFromCache<T extends DocumentData = any>(query: QueryClient<T>, chunkSize: number): AsyncGenerator<T[]>;
 
-export function getChunkedDataFromCache<T = DocumentData>(query: QueryAdmin<T>, chunkSize: number): AsyncGenerator<T[]>;
+export function getChunkedDataFromCache<T extends DocumentData = any>(query: QueryAdmin<T>, chunkSize: number): AsyncGenerator<T[]>;
 
-export function getChunkedDataFromCache<T = DocumentData>(query: Query<T>, chunkSize: number): AsyncGenerator<T[]>;
+export function getChunkedDataFromCache<T extends DocumentData = any>(query: Query<T>, chunkSize: number): AsyncGenerator<T[]>;
 
-export async function* getChunkedDataFromCache<T = DocumentData>(query: Query<T>, chunkSize: number): AsyncGenerator<T[], void, undefined> {
+export async function* getChunkedDataFromCache<T extends DocumentData = any>(query: Query<T>, chunkSize: number): AsyncGenerator<T[], void, undefined> {
     let done = false;
     let lastDocument: DocumentSnapshot | undefined;
 

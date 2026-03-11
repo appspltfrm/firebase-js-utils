@@ -5,11 +5,11 @@ import {DocumentReference} from "./DocumentReference.js";
 import {Query} from "./Query.js";
 import {RestQuery} from "./RestQuery.js";
 
-export async function getDataFromServer<T = DocumentData>(doc: DocumentReference<T>, options?: SnapshotOptions): Promise<T>;
+export async function getDataFromServer<T extends DocumentData = any>(doc: DocumentReference<T>, options?: SnapshotOptions): Promise<T>;
 
-export async function getDataFromServer<T = DocumentData>(query: Query<T> | RestQuery<T>, options?: SnapshotOptions): Promise<T[]>;
+export async function getDataFromServer<T extends DocumentData = any>(query: Query<T> | RestQuery<T>, options?: SnapshotOptions): Promise<T[]>;
 
-export async function getDataFromServer<T = DocumentData>(docOrQuery: DocumentReference<T> | Query<T> | RestQuery<T>, options?: any): Promise<T | T[]> {
+export async function getDataFromServer<T extends DocumentData = any>(docOrQuery: DocumentReference<T> | Query<T> | RestQuery<T>, options?: any): Promise<T | T[]> {
 
     if (docOrQuery instanceof RestQuery) {
         return (await docOrQuery.run()).docs.map(doc => doc.data);
@@ -23,9 +23,9 @@ export async function getDataFromServer<T = DocumentData>(docOrQuery: DocumentRe
 
     } else if (DocumentReference.isInstance(docOrQuery)) {
         if (DocumentReference.isClient(docOrQuery)) {
-            return (await getDocFromServer(docOrQuery)).data(options);
+            return (await getDocFromServer(docOrQuery)).data(options)!;
         } else {
-            return (await docOrQuery.get()).data();
+            return (await docOrQuery.get()).data()!;
         }
 
     } else {

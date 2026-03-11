@@ -7,19 +7,19 @@ import {Query, QueryAdmin, QueryClient} from "../Query.js";
 import {QuerySnapshot, QuerySnapshotAdmin, QuerySnapshotClient} from "../QuerySnapshot.js";
 import {SnapshotListenOptions} from "../SnapshotListenOptions.js";
 
-export function snapshotObservable<T = DocumentData>(query: QueryClient<T>, options?: SnapshotListenOptions): Observable<QuerySnapshotClient<T>>;
+export function snapshotObservable<T extends DocumentData = any>(query: QueryClient<T>, options?: SnapshotListenOptions): Observable<QuerySnapshotClient<T>>;
 
-export function snapshotObservable<T = DocumentData>(query: QueryAdmin<T>): Observable<QuerySnapshotAdmin<T>>;
+export function snapshotObservable<T extends DocumentData = any>(query: QueryAdmin<T>): Observable<QuerySnapshotAdmin<T>>;
 
-export function snapshotObservable<T = DocumentData>(query: Query<T>, options?: SnapshotListenOptions): Observable<QuerySnapshot<T>>;
+export function snapshotObservable<T extends DocumentData = any>(query: Query<T>, options?: SnapshotListenOptions): Observable<QuerySnapshot<T>>;
 
-export function snapshotObservable<T = DocumentData>(doc: DocumentReferenceClient<T>, options?: SnapshotListenOptions): Observable<DocumentSnapshotClient<T>>;
+export function snapshotObservable<T extends DocumentData = any>(doc: DocumentReferenceClient<T>, options?: SnapshotListenOptions): Observable<DocumentSnapshotClient<T>>;
 
-export function snapshotObservable<T = DocumentData>(doc: DocumentReferenceAdmin<T>): Observable<DocumentSnapshotAdmin<T>>;
+export function snapshotObservable<T extends DocumentData = any>(doc: DocumentReferenceAdmin<T>): Observable<DocumentSnapshotAdmin<T>>;
 
-export function snapshotObservable<T = DocumentData>(doc: DocumentReference<T>, options?: SnapshotListenOptions): Observable<DocumentSnapshot<T>>;
+export function snapshotObservable<T extends DocumentData = any>(doc: DocumentReference<T>, options?: SnapshotListenOptions): Observable<DocumentSnapshot<T>>;
 
-export function snapshotObservable<T = DocumentData>(docOrQuery: DocumentReference<T> | Query<T>, options?: SnapshotListenOptions): Observable<DocumentSnapshot<T> | QuerySnapshot<T>> {
+export function snapshotObservable<T extends DocumentData = any>(docOrQuery: DocumentReference<T> | Query<T>, options?: SnapshotListenOptions): Observable<DocumentSnapshot<T> | QuerySnapshot<T>> {
 
     if (!(Query.isInstance(docOrQuery) || DocumentReference.isInstance(docOrQuery))) {
         throw new Error("Invalid DocumentReference or Query object");

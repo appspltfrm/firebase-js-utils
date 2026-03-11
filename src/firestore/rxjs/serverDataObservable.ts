@@ -8,18 +8,18 @@ import {dataObservable} from "./dataObservable.js";
 
 type Options = SnapshotOptions & SnapshotListenOptions;
 
-export function serverDataObservable<T = DocumentData>(query: QueryClient<T>, options?: Options): Observable<T[]>;
+export function serverDataObservable<T extends DocumentData = any>(query: QueryClient<T>, options?: Options): Observable<T[]>;
 
-export function serverDataObservable<T = DocumentData>(query: QueryAdmin<T>): Observable<T[]>;
+export function serverDataObservable<T extends DocumentData = any>(query: QueryAdmin<T>): Observable<T[]>;
 
-export function serverDataObservable<T = DocumentData>(query: Query<T>, options?: Options): Observable<T[]>;
+export function serverDataObservable<T extends DocumentData = any>(query: Query<T>, options?: Options): Observable<T[]>;
 
-export function serverDataObservable<T = DocumentData>(doc: DocumentReferenceClient<T>, options?: Options): Observable<T>;
+export function serverDataObservable<T extends DocumentData = any>(doc: DocumentReferenceClient<T>, options?: Options): Observable<T>;
 
-export function serverDataObservable<T = DocumentData>(doc: DocumentReferenceAdmin<T>): Observable<T>;
+export function serverDataObservable<T extends DocumentData = any>(doc: DocumentReferenceAdmin<T>): Observable<T>;
 
-export function serverDataObservable<T = DocumentData>(doc: DocumentReference<T>, options?: Options): Observable<T>;
+export function serverDataObservable<T extends DocumentData = any>(doc: DocumentReference<T>, options?: Options): Observable<T>;
 
-export function serverDataObservable<T = DocumentData>(docOrQuery: DocumentReference<T> | Query<T>, options?: Options): Observable<T | T[]> {
+export function serverDataObservable<T extends DocumentData = any>(docOrQuery: DocumentReference<T> | Query<T>, options?: Options): Observable<T | T[]> {
     return dataObservable(docOrQuery as any, Object.assign({skipCache: true}, options));
 }

@@ -3,9 +3,9 @@ import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } fr
 import { DocumentSnapshot, DocumentSnapshotAdmin, DocumentSnapshotClient } from "./DocumentSnapshot.js";
 import { Query, QueryAdmin, QueryClient } from "./Query.js";
 import { QuerySnapshot, QuerySnapshotAdmin, QuerySnapshotClient } from "./QuerySnapshot.js";
-export declare function getSnapshotFromServer<T = DocumentData>(query: QueryClient<T>): Promise<QuerySnapshotClient<T>>;
-export declare function getSnapshotFromServer<T = DocumentData>(query: QueryAdmin<T>): Promise<QuerySnapshotAdmin<T>>;
-export declare function getSnapshotFromServer<T = DocumentData>(query: Query<T>): Promise<QuerySnapshot<T>>;
-export declare function getSnapshotFromServer<T = DocumentData>(doc: DocumentReferenceClient<T>): Promise<DocumentSnapshotClient<T>>;
-export declare function getSnapshotFromServer<T = DocumentData>(doc: DocumentReferenceAdmin<T>): Promise<DocumentSnapshotAdmin<T>>;
-export declare function getSnapshotFromServer<T = DocumentData>(doc: DocumentReference<T>): Promise<DocumentSnapshot<T>>;
+export declare function getSnapshotFromServer<T extends DocumentData = any>(query: QueryClient<T>): Promise<QuerySnapshotClient<T>>;
+export declare function getSnapshotFromServer<T extends DocumentData = any>(query: QueryAdmin<T>): Promise<QuerySnapshotAdmin<T>>;
+export declare function getSnapshotFromServer<T extends DocumentData = any>(query: Query<T>): Promise<QuerySnapshot<T>>;
+export declare function getSnapshotFromServer<T extends DocumentData = any>(doc: DocumentReferenceClient<T>): Promise<DocumentSnapshotClient<T>>;
+export declare function getSnapshotFromServer<T extends DocumentData = any>(doc: DocumentReferenceAdmin<T>): Promise<DocumentSnapshotAdmin<T>>;
+export declare function getSnapshotFromServer<T extends DocumentData = any>(doc: DocumentReference<T>): Promise<DocumentSnapshot<T>>;

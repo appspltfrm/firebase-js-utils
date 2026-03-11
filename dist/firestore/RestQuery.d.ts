@@ -1,7 +1,7 @@
 import { Timestamp } from "@firebase/firestore";
-import { type FirebaseContextClient } from "../FirebaseContext";
-import { DocumentData } from "./DocumentData";
-import { RestQueryConstraint } from "./QueryConstraint";
+import { type FirebaseContextClient } from "../FirebaseContext.js";
+import { DocumentData } from "./DocumentData.js";
+import { RestQueryConstraint } from "./QueryConstraint.js";
 export declare class RestQuery<T extends DocumentData = any> {
     constructor(firebaseContext: FirebaseContextClient, collectionId: string);
     constructor(proto: RestQuery);

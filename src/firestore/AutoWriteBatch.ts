@@ -18,7 +18,7 @@ export abstract class AutoWriteBatch {
     protected constructor(readonly firestore: Firestore) {
     }
 
-    onCommit: (result: CommitResult) => void;
+    onCommit?: (result: CommitResult) => void;
 
     protected operations: [method: "set" | "delete" | "update" | "create", args: any[]][] = [];
 
@@ -66,7 +66,7 @@ export abstract class AutoWriteBatch {
         return this;
     }
 
-    set<T = DocumentData>(documentRef: DocumentReference<T>, data: T, options?: any): this {
+    set<T extends DocumentData = any>(documentRef: DocumentReference<T>, data: T, options?: any): this {
         this.operations.push(["set", Array.prototype.slice.call(arguments)]);
         return this;
     }
@@ -114,7 +114,8 @@ export abstract class AutoWriteBatch {
                 batchCount++;
 
                 const operation = this.operations[i];
-                batch[operation[0]].call(batch, ...operation[1]);
+                // @ts-ignore
+                batch[operation[0] as keyof WriteBatch].call(batch, ...operation[1]);
 
                 if (batchCount === this.limit$) {
                     await commit();
@@ -152,8 +153,8 @@ export abstract class AutoWriteBatch {
 interface AutoWriteBatchClientMethods {
     readonly firestore: FirestoreClient;
     commit(): Promise<CommitResult>;
-    set<T = DocumentData>(documentRef: DocumentReferenceClient<T>, data: T): this;
-    set<T = DocumentData>(documentRef: DocumentReferenceClient<T>, data: T, options: SetOptionsClient): this;
+    set<T extends DocumentData = any>(documentRef: DocumentReferenceClient<T>, data: T): this;
+    set<T extends DocumentData = any>(documentRef: DocumentReferenceClient<T>, data: T, options: SetOptionsClient): this;
     update(documentRef: DocumentReference<any>, data: any): this;
 }
 
@@ -169,9 +170,9 @@ interface AutoWriteBatchAdminMethods {
 
     readonly firestore: FirestoreAdmin;
 
-    set<T = DocumentData>(documentRef: DocumentReferenceAdmin<T>, data: T);
+    set<T extends DocumentData = any>(documentRef: DocumentReferenceAdmin<T>, data: T): this;
 
-    set<T = DocumentData>(documentRef: DocumentReferenceAdmin<T>, data: T, options: SetOptionsAdmin);
+    set<T extends DocumentData = any>(documentRef: DocumentReferenceAdmin<T>, data: T, options: SetOptionsAdmin): this;
 
     create(documentRef: DocumentReferenceAdmin<any>, data: any): this;
 
