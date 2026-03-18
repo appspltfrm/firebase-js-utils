@@ -69,7 +69,7 @@ export class RestQuery {
                     return { fieldFilter: {
                             field: { fieldPath },
                             op: jsOperatorsToRest[opStr],
-                            value: jsValueToRestValue(value),
+                            value: jsValueToRestValue(value)
                         } };
                 }
             }

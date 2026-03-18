@@ -12,6 +12,6 @@ export function snapshotsObservable<T extends DocumentData = any>(query: QueryAd
 export function snapshotsObservable<T extends DocumentData = any>(query: Query<T>, options?: SnapshotListenOptions): Observable<QueryDocumentSnapshot<T>[]>;
 
 export function snapshotsObservable<T extends DocumentData = any>(query: Query<T>, options?: SnapshotListenOptions): Observable<QueryDocumentSnapshot<T>[]> {
-    return snapshotObservable(query, options)
-        .pipe(map(snapshot => snapshot.docs));
+  return snapshotObservable(query, options)
+    .pipe(map(snapshot => snapshot.docs));
 }

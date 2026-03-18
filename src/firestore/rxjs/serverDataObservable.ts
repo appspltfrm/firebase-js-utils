@@ -21,5 +21,5 @@ export function serverDataObservable<T extends DocumentData = any>(doc: Document
 export function serverDataObservable<T extends DocumentData = any>(doc: DocumentReference<T>, options?: Options): Observable<T>;
 
 export function serverDataObservable<T extends DocumentData = any>(docOrQuery: DocumentReference<T> | Query<T>, options?: Options): Observable<T | T[]> {
-    return dataObservable(docOrQuery as any, Object.assign({skipCache: true}, options));
+  return dataObservable(docOrQuery as any, Object.assign({skipCache: true}, options));
 }

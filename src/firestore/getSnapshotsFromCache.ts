@@ -10,5 +10,5 @@ export async function getSnapshotsFromCache<T extends DocumentData = any>(query:
 export async function getSnapshotsFromCache<T extends DocumentData = any>(query: Query<T>): Promise<QueryDocumentSnapshot<T>[]>;
 
 export async function getSnapshotsFromCache<T extends DocumentData = any>(query: Query<T>): Promise<QueryDocumentSnapshot<T>[]> {
-    return (await getSnapshotFromCache(query)).docs;
+  return (await getSnapshotFromCache(query)).docs;
 }

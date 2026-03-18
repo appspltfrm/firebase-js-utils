@@ -19,21 +19,21 @@ export async function getSnapshotFromCache<T extends DocumentData = any>(doc: Do
 
 export async function getSnapshotFromCache<T extends DocumentData = any>(docOrQuery: DocumentReference<T> | Query<T>): Promise<DocumentSnapshot<T> | QuerySnapshot<T>> {
 
-    if (Query.isInstance(docOrQuery)) {
-        if (Query.isClient(docOrQuery)) {
-            return await getDocsFromCache(docOrQuery);
-        } else {
-            return await docOrQuery.get();
-        }
-
-    } else if (DocumentReference.isInstance(docOrQuery)) {
-        if (DocumentReference.isClient(docOrQuery)) {
-            return await getDocFromCache(docOrQuery);
-        } else {
-            return await docOrQuery.get();
-        }
-
+  if (Query.isInstance(docOrQuery)) {
+    if (Query.isClient(docOrQuery)) {
+      return await getDocsFromCache(docOrQuery);
     } else {
-        throw new Error("Invalid DocumentReference or Query object");
+      return await docOrQuery.get();
     }
+
+  } else if (DocumentReference.isInstance(docOrQuery)) {
+    if (DocumentReference.isClient(docOrQuery)) {
+      return await getDocFromCache(docOrQuery);
+    } else {
+      return await docOrQuery.get();
+    }
+
+  } else {
+    throw new Error("Invalid DocumentReference or Query object");
+  }
 }

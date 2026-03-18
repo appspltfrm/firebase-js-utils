@@ -11,10 +11,10 @@ export function updateDocument<T extends DocumentData = any>(doc: DocumentRefere
 
 export function updateDocument<T extends DocumentData = any>(doc: DocumentReference<T>, data: Partial<T>, precondition?: any): Promise<any> {
 
-    if (DocumentReference.isClient(doc)) {
-        return updateDoc(doc, data as any);
-    } else {
-        return doc.update(data as any, precondition);
-    }
+  if (DocumentReference.isClient(doc)) {
+    return updateDoc(doc, data as any);
+  } else {
+    return doc.update(data as any, precondition);
+  }
 
 }

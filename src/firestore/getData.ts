@@ -13,26 +13,26 @@ import {Query} from "./Query.js";
  */
 export async function getData<T extends DocumentData = any>(docOrQuery: DocumentReference<T>): Promise<T>;
 
-export async function getData<T extends DocumentData = any>(docOrQuery: Query<T>): Promise<T[]>
+export async function getData<T extends DocumentData = any>(docOrQuery: Query<T>): Promise<T[]>;
 
 export async function getData<T extends DocumentData = any>(docOrQuery: DocumentReference<T> | Query<T>, options?: any): Promise<T | T[]> {
 
-    if (Query.isInstance(docOrQuery)) {
-        if (Query.isClient(docOrQuery)) {
-            return (await getDocs(docOrQuery)).docs.map(snapshot => snapshot.data(options));
-        } else {
-            return (await docOrQuery.get()).docs.map(snapshot => snapshot.data());
-        }
-
-    } else if (DocumentReference.isInstance(docOrQuery)) {
-
-        if (DocumentReference.isClient(docOrQuery)) {
-            return (await getDoc(docOrQuery)).data(options)!;
-        } else {
-            return (await docOrQuery.get()).data()!;
-        }
-
+  if (Query.isInstance(docOrQuery)) {
+    if (Query.isClient(docOrQuery)) {
+      return (await getDocs(docOrQuery)).docs.map(snapshot => snapshot.data(options));
     } else {
-        throw new Error("Invalid DocumentReference or Query object");
+      return (await docOrQuery.get()).docs.map(snapshot => snapshot.data());
     }
+
+  } else if (DocumentReference.isInstance(docOrQuery)) {
+
+    if (DocumentReference.isClient(docOrQuery)) {
+      return (await getDoc(docOrQuery)).data(options)!;
+    } else {
+      return (await docOrQuery.get()).data()!;
+    }
+
+  } else {
+    throw new Error("Invalid DocumentReference or Query object");
+  }
 }

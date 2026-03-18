@@ -14,37 +14,37 @@ export function getChunkedDataFromServer<T extends DocumentData = any>(query: Re
 export function getChunkedDataFromServer<T extends DocumentData = any>(query: Query<T> | RestQuery<T>, chunkSize: number): AsyncGenerator<T[]>;
 
 export async function* getChunkedDataFromServer<T extends DocumentData = any>(query: Query<T> | RestQuery<T>, chunkSize: number): AsyncGenerator<T[], void, undefined> {
-    let done = false;
+  let done = false;
 
-    if (query instanceof RestQuery) {
-        let offset = 0;
-        while (!done) {
-            const batch = (await new RestQuery(query).apply(["limit", chunkSize], ["offset", offset]).run()).docs.map(d => d.data);
-            if (batch.length === 0) {
-                done = true;
-                break;
-            }
-            yield batch;
-            offset += batch.length;
-            if (batch.length < chunkSize) {
-                done = true;
-            }
-        }
-
-    } else {
-        let lastDocument: DocumentSnapshot | undefined;
-
-        while (!done) {
-            const batch = await getSnapshotsFromServer(buildQuery(query, ["limit", chunkSize], (lastDocument ? ["startAfter", lastDocument] : undefined)));
-            if (batch.length === 0) {
-                done = true;
-                break;
-            }
-            yield batch.map(d => d.data());
-            lastDocument = batch[batch.length - 1];
-            if (batch.length < chunkSize) {
-                done = true;
-            }
-        }
+  if (query instanceof RestQuery) {
+    let offset = 0;
+    while (!done) {
+      const batch = (await new RestQuery(query).apply(["limit", chunkSize], ["offset", offset]).run()).docs.map(d => d.data);
+      if (batch.length === 0) {
+        done = true;
+        break;
+      }
+      yield batch;
+      offset += batch.length;
+      if (batch.length < chunkSize) {
+        done = true;
+      }
     }
+
+  } else {
+    let lastDocument: DocumentSnapshot | undefined;
+
+    while (!done) {
+      const batch = await getSnapshotsFromServer(buildQuery(query, ["limit", chunkSize], (lastDocument ? ["startAfter", lastDocument] : undefined)));
+      if (batch.length === 0) {
+        done = true;
+        break;
+      }
+      yield batch.map(d => d.data());
+      lastDocument = batch[batch.length - 1];
+      if (batch.length < chunkSize) {
+        done = true;
+      }
+    }
+  }
 }

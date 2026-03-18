@@ -10,10 +10,10 @@ export function deleteDocument(doc: DocumentReferenceAdmin, precondition?: Preco
 
 export function deleteDocument(doc: DocumentReference, precondition?: any): Promise<any> {
 
-    if (DocumentReference.isClient(doc)) {
-        return deleteDocClient(doc);
-    } else {
-        return doc.delete(precondition);
-    }
+  if (DocumentReference.isClient(doc)) {
+    return deleteDocClient(doc);
+  } else {
+    return doc.delete(precondition);
+  }
 
 }

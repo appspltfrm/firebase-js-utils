@@ -13,19 +13,19 @@ export type CollectionReference<T extends DocumentData = any> = CollectionRefere
 
 export namespace CollectionReference {
 
-    /**
+  /**
      * Sprawdza, czy referencja pochodzi z Web SDK.
      */
-    export function isClient<T extends DocumentData = any>(ref: CollectionReference<T>): ref is CollectionReferenceClient<T> {
-        return Firestore.isClient(ref.firestore);
-    }
+  export function isClient<T extends DocumentData = any>(ref: CollectionReference<T>): ref is CollectionReferenceClient<T> {
+    return Firestore.isClient(ref.firestore);
+  }
 
-    /**
+  /**
      * Sprawdza, czy referencja pochodzi z Admin SDK.
      */
-    export function isAdmin<T extends DocumentData = any>(ref: CollectionReference<T>): ref is CollectionReferenceAdmin<T> {
-        return !isClient(ref);
-    }
+  export function isAdmin<T extends DocumentData = any>(ref: CollectionReference<T>): ref is CollectionReferenceAdmin<T> {
+    return !isClient(ref);
+  }
 }
 
 /**
@@ -39,10 +39,10 @@ export function collectionReference<T extends DocumentData = any>(firestore: Fir
 
 export function collectionReference<T extends DocumentData = any>(firestore: Firestore, path: string): CollectionReference<T> {
 
-    if (Firestore.isClient(firestore)) {
-        return collection(firestore, path) as CollectionReferenceClient<T>;
-    } else {
-        return firestore.collection(path) as CollectionReferenceAdmin<T>;
-    }
+  if (Firestore.isClient(firestore)) {
+    return collection(firestore, path) as CollectionReferenceClient<T>;
+  } else {
+    return firestore.collection(path) as CollectionReferenceAdmin<T>;
+  }
 
 }

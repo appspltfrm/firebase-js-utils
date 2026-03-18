@@ -10,10 +10,10 @@ export function runTransaction<T>(firestore: Firestore, updateFunction: Transact
 
 export function runTransaction<T>(firestore: Firestore, updateFunction: TransactionFunction<T> | TransactionFunctionClient<T> | TransactionFunctionAdmin<T>): Promise<T> {
 
-    if (Firestore.isClient(firestore)) {
-        return runTransactionClient(firestore, updateFunction as TransactionFunctionClient<T>);
-    } else {
-        return firestore.runTransaction(updateFunction as TransactionFunctionAdmin<T>);
-    }
+  if (Firestore.isClient(firestore)) {
+    return runTransactionClient(firestore, updateFunction as TransactionFunctionClient<T>);
+  } else {
+    return firestore.runTransaction(updateFunction as TransactionFunctionAdmin<T>);
+  }
 
 }

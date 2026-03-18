@@ -15,28 +15,28 @@ export class AuthUser {
     authInitialized = false;
     _user = null;
     /**
-     * Zwraca aktualną instancję użytkownika Firebase.
-     */
+       * Zwraca aktualną instancję użytkownika Firebase.
+       */
     get user() {
         return this._user;
     }
     /**
-     * Zwraca UID aktualnego użytkownika lub null.
-     */
+       * Zwraca UID aktualnego użytkownika lub null.
+       */
     get userId() {
         return this.user ? this.user.uid : undefined;
     }
     /**
-     * Strumień emitujący aktualną instancję użytkownika przy każdej zmianie.
-     */
+       * Strumień emitujący aktualną instancję użytkownika przy każdej zmianie.
+       */
     userObservable = new ReplaySubject(1);
     /**
-     * Strumień emitujący UID użytkownika (lub null) przy każdej zmianie.
-     */
+       * Strumień emitujący UID użytkownika (lub null) przy każdej zmianie.
+       */
     userIdObservable = this.userObservable.pipe(map(user => user?.uid || null));
     /**
-     * Zwraca aktualny token ID użytkownika.
-     */
+       * Zwraca aktualny token ID użytkownika.
+       */
     get userIdToken() {
         return new Promise(async (resolve) => {
             await this.initialized();
@@ -69,8 +69,8 @@ export class AuthUser {
         console.error(error);
     }
     /**
-     * Zwraca Promise, który rozwiązuje się, gdy stan uwierzytelnienia zostanie po raz pierwszy zainicjalizowany.
-     */
+       * Zwraca Promise, który rozwiązuje się, gdy stan uwierzytelnienia zostanie po raz pierwszy zainicjalizowany.
+       */
     initialized() {
         if (this.authInitialized) {
             return Promise.resolve(true);
@@ -83,8 +83,8 @@ export class AuthUser {
         return new Error("User not signed");
     }
     /**
-     * Zwraca strumień użytkownika, opcjonalnie rzucając błąd, jeśli użytkownik nie jest zalogowany.
-     */
+       * Zwraca strumień użytkownika, opcjonalnie rzucając błąd, jeśli użytkownik nie jest zalogowany.
+       */
     observeUser(assertSigned) {
         return this.userObservable.pipe(switchMap(user => user || !assertSigned ? of(user) : throwError(() => this.userNotSignedError())));
     }

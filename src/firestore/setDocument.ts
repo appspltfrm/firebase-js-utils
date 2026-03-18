@@ -13,10 +13,10 @@ export function setDocument<T extends DocumentData = any>(doc: DocumentReference
 
 export function setDocument<T extends DocumentData = any>(doc: DocumentReference<T>, data: Partial<T>, options?: SetOptions): Promise<any> {
 
-    if (DocumentReference.isClient(doc)) {
-        return setDoc(doc, data, options ?? {});
-    } else {
-        return doc.set(data, options ?? {});
-    }
+  if (DocumentReference.isClient(doc)) {
+    return setDoc(doc, data, options ?? {});
+  } else {
+    return doc.set(data, options ?? {});
+  }
 
 }

@@ -17,23 +17,23 @@ export async function getSnapshot<T extends DocumentData = any>(doc: DocumentRef
 
 export async function getSnapshot<T extends DocumentData = any>(doc: DocumentReference<T>): Promise<DocumentSnapshot<T>>;
 
-export async function getSnapshot<T extends DocumentData = any>(docOrQuery: DocumentReference<T> | Query<T>): Promise<DocumentSnapshot<T> | QuerySnapshot<T>>  {
+export async function getSnapshot<T extends DocumentData = any>(docOrQuery: DocumentReference<T> | Query<T>): Promise<DocumentSnapshot<T> | QuerySnapshot<T>> {
 
-    if (Query.isInstance(docOrQuery)) {
-        if (Query.isClient(docOrQuery)) {
-            return await getDocs(docOrQuery);
-        } else {
-            return await docOrQuery.get();
-        }
-
-    } else if (DocumentReference.isInstance(docOrQuery)) {
-        if (DocumentReference.isClient(docOrQuery)) {
-            return await getDoc(docOrQuery);
-        } else {
-            return await docOrQuery.get();
-        }
-
+  if (Query.isInstance(docOrQuery)) {
+    if (Query.isClient(docOrQuery)) {
+      return await getDocs(docOrQuery);
     } else {
-        throw new Error("Invalid DocumentReference or Query object");
+      return await docOrQuery.get();
     }
+
+  } else if (DocumentReference.isInstance(docOrQuery)) {
+    if (DocumentReference.isClient(docOrQuery)) {
+      return await getDoc(docOrQuery);
+    } else {
+      return await docOrQuery.get();
+    }
+
+  } else {
+    throw new Error("Invalid DocumentReference or Query object");
+  }
 }

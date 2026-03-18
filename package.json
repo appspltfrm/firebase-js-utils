@@ -1,11 +1,11 @@
 {
   "name": "@appspltfrm/firebase-js-utils",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "author": "Unipla",
   "type": "module",
   "scripts": {
     "build": "node-utils-file-system-glob-delete \"dist/**/*\" && tsc -p tsconfig.build.json",
-    "release": "../../prepare-release.sh firebase-js-utils"
+    "release": "../../releases/release.mjs firebase-js-utils"
   },
   "dependencies": {
     "@appspltfrm/js-utils": "github:appspltfrm/js-utils",
@@ -30,14 +30,14 @@
   },
   "exports": {
     ".": {
+      "monorepo": "./src/public.ts",
       "types": "./dist/public.d.ts",
-      "default": "./dist/public.js",
-      "development": "./src/public.ts"
+      "default": "./dist/public.js"
     },
     "./*": {
+      "monorepo": "./src/*/public.ts",
       "types": "./dist/*/public.d.ts",
-      "default": "./dist/*/public.js",
-      "development": "./src/*/public.ts"
+      "default": "./dist/*/public.js"
     }
   },
   "sideEffects": false

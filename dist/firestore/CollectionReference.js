@@ -3,15 +3,15 @@ import { Firestore } from "./Firestore.js";
 export var CollectionReference;
 (function (CollectionReference) {
     /**
-     * Sprawdza, czy referencja pochodzi z Web SDK.
-     */
+       * Sprawdza, czy referencja pochodzi z Web SDK.
+       */
     function isClient(ref) {
         return Firestore.isClient(ref.firestore);
     }
     CollectionReference.isClient = isClient;
     /**
-     * Sprawdza, czy referencja pochodzi z Admin SDK.
-     */
+       * Sprawdza, czy referencja pochodzi z Admin SDK.
+       */
     function isAdmin(ref) {
         return !isClient(ref);
     }

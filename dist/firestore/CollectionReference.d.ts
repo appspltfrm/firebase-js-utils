@@ -10,12 +10,12 @@ export type CollectionReferenceAdmin<T extends DocumentData = any> = admin.Colle
 export type CollectionReference<T extends DocumentData = any> = CollectionReferenceAdmin<T> | CollectionReferenceClient<T>;
 export declare namespace CollectionReference {
     /**
-     * Sprawdza, czy referencja pochodzi z Web SDK.
-     */
+       * Sprawdza, czy referencja pochodzi z Web SDK.
+       */
     function isClient<T extends DocumentData = any>(ref: CollectionReference<T>): ref is CollectionReferenceClient<T>;
     /**
-     * Sprawdza, czy referencja pochodzi z Admin SDK.
-     */
+       * Sprawdza, czy referencja pochodzi z Admin SDK.
+       */
     function isAdmin<T extends DocumentData = any>(ref: CollectionReference<T>): ref is CollectionReferenceAdmin<T>;
 }
 /**

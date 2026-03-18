@@ -17,8 +17,8 @@ export class UniversalFirebaseContext {
  */
 export class FirebaseContextClient extends UniversalFirebaseContext {
     /**
-     * Specyficzne dla klienta zapytanie REST (np. dla optymalizacji lub omijania ograniczeń SDK).
-     */
+       * Specyficzne dla klienta zapytanie REST (np. dla optymalizacji lub omijania ograniczeń SDK).
+       */
     firestoreRestQuery(path, ...queryConstraints) {
         return new RestQuery(this, path).apply(...queryConstraints);
     }

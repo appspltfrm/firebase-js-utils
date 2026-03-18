@@ -13,26 +13,26 @@ export type DocumentReference<T extends DocumentData = any> = DocumentReferenceA
 
 export namespace DocumentReference {
 
-    /**
+  /**
      * Sprawdza, czy obiekt jest instancją referencji do dokumentu (klienta lub admina).
      */
-    export function isInstance<T extends DocumentData = any>(obj: any): obj is DocumentReference<T> {
-        return obj instanceof $DocumentReferenceClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().DocumentReference);
-    }
+  export function isInstance<T extends DocumentData = any>(obj: any): obj is DocumentReference<T> {
+    return obj instanceof $DocumentReferenceClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().DocumentReference);
+  }
 
-    /**
+  /**
      * Sprawdza, czy referencja pochodzi z Web SDK.
      */
-    export function isClient<T extends DocumentData = any>(ref: DocumentReference<T>): ref is DocumentReferenceClient<T> {
-        return Firestore.isClient(ref.firestore);
-    }
+  export function isClient<T extends DocumentData = any>(ref: DocumentReference<T>): ref is DocumentReferenceClient<T> {
+    return Firestore.isClient(ref.firestore);
+  }
 
-    /**
+  /**
      * Sprawdza, czy referencja pochodzi z Admin SDK.
      */
-    export function isAdmin<T extends DocumentData = any>(ref: DocumentReference<T>): ref is DocumentReferenceAdmin<T> {
-        return !isClient(ref);
-    }
+  export function isAdmin<T extends DocumentData = any>(ref: DocumentReference<T>): ref is DocumentReferenceAdmin<T> {
+    return !isClient(ref);
+  }
 }
 
 /**
@@ -46,10 +46,10 @@ export function documentReference<T extends DocumentData = any>(firestore: Fires
 
 export function documentReference<T extends DocumentData = any>(firestore: Firestore, path: string): DocumentReference<T> {
 
-    if (Firestore.isClient(firestore)) {
-        return doc(firestore, path) as DocumentReferenceClient<T>;
-    } else {
-        return firestore.doc(path) as DocumentReferenceAdmin<T>;
-    }
+  if (Firestore.isClient(firestore)) {
+    return doc(firestore, path) as DocumentReferenceClient<T>;
+  } else {
+    return firestore.doc(path) as DocumentReferenceAdmin<T>;
+  }
 
 }

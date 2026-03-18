@@ -21,58 +21,58 @@ export function snapshotObservable<T extends DocumentData = any>(doc: DocumentRe
 
 export function snapshotObservable<T extends DocumentData = any>(docOrQuery: DocumentReference<T> | Query<T>, options?: SnapshotListenOptions): Observable<DocumentSnapshot<T> | QuerySnapshot<T>> {
 
-    if (!(Query.isInstance(docOrQuery) || DocumentReference.isInstance(docOrQuery))) {
-        throw new Error("Invalid DocumentReference or Query object");
+  if (!(Query.isInstance(docOrQuery) || DocumentReference.isInstance(docOrQuery))) {
+    throw new Error("Invalid DocumentReference or Query object");
+  }
+
+  return new Observable(subscriber => {
+
+    let hasValue = false;
+
+    const handleNext = (snapshot: QuerySnapshot<T> | DocumentSnapshot<T>) => {
+      if (options?.skipCache && ((snapshot as QuerySnapshotClient | DocumentSnapshotClient).metadata?.fromCache) && (!Query.isInstance(docOrQuery) || !(snapshot as QuerySnapshotClient).docs.find(d => d.metadata.fromCache))) {
+        return;
+      }
+
+      hasValue = true;
+      subscriber.next(snapshot);
+    };
+
+    const handleError = (error: any) => {
+      // console.debug("snapshot error", hasValue ? "skip" : "throw", docOrQuery);
+      if (options?.skipErrors !== false && hasValue) {
+        console.warn(error);
+      } else {
+        subscriber.error(error);
+      }
+    };
+
+    if (Query.isInstance(docOrQuery)) {
+      if (Query.isClient(docOrQuery)) {
+        const unsubscribe = onSnapshot(docOrQuery, extractSnapshotListen(options), handleNext, handleError);
+        return () => unsubscribe();
+      } else {
+        const unsubscribe = docOrQuery.onSnapshot(handleNext, handleError);
+        return () => unsubscribe();
+      }
+
+    } else if (DocumentReference.isInstance(docOrQuery)) {
+      if (DocumentReference.isClient(docOrQuery)) {
+        const unsubscribe = onSnapshot(docOrQuery, extractSnapshotListen(options), handleNext, handleError);
+        return () => unsubscribe();
+      } else if (DocumentReference.isAdmin(docOrQuery)) {
+        const unsubscribe = docOrQuery.onSnapshot(handleNext, handleError);
+        return () => unsubscribe();
+      }
+
     }
-
-    return new Observable(subscriber => {
-
-        let hasValue = false;
-
-        const handleNext = (snapshot: QuerySnapshot<T> | DocumentSnapshot<T>) => {
-            if (options?.skipCache && ((snapshot as QuerySnapshotClient | DocumentSnapshotClient).metadata?.fromCache) && (!Query.isInstance(docOrQuery) || !(snapshot as QuerySnapshotClient).docs.find(d => d.metadata.fromCache))) {
-                return;
-            }
-
-            hasValue = true;
-            subscriber.next(snapshot);
-        }
-
-        const handleError = (error: any) => {
-            // console.debug("snapshot error", hasValue ? "skip" : "throw", docOrQuery);
-            if (options?.skipErrors !== false && hasValue) {
-                console.warn(error);
-            } else {
-                subscriber.error(error);
-            }
-        }
-
-        if (Query.isInstance(docOrQuery)) {
-            if (Query.isClient(docOrQuery)) {
-                const unsubscribe = onSnapshot(docOrQuery, extractSnapshotListen(options), handleNext, handleError)
-                return () => unsubscribe();
-            } else {
-                const unsubscribe = docOrQuery.onSnapshot(handleNext, handleError);
-                return () => unsubscribe();
-            }
-
-        } else if (DocumentReference.isInstance(docOrQuery)) {
-            if (DocumentReference.isClient(docOrQuery)) {
-                const unsubscribe = onSnapshot(docOrQuery, extractSnapshotListen(options), handleNext, handleError);
-                return () => unsubscribe();
-            } else if (DocumentReference.isAdmin(docOrQuery)) {
-                const unsubscribe = docOrQuery.onSnapshot(handleNext, handleError);
-                return () => unsubscribe();
-            }
-
-        }
-    });
+  });
 
 }
 
 function extractSnapshotListen(options?: Partial<SnapshotListenOptions>): FirestoreSnapshotListenOptions {
-    return {
-        includeMetadataChanges: !!options?.includeMetadataChanges || !!options?.skipCache,
-        source: options?.source,
-    } as FirestoreSnapshotListenOptions;
+  return {
+    includeMetadataChanges: !!options?.includeMetadataChanges || !!options?.skipCache,
+    source: options?.source
+  } as FirestoreSnapshotListenOptions;
 }

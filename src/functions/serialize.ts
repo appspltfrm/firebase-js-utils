@@ -13,33 +13,33 @@ const fixedTypeField = `${typeField}@`;
  * @param options Opcje serializacji.
  */
 export function serialize(inputObject: any, options?: SerializationOptions) {
-    const result = serializeImpl(inputObject, options);
+  const result = serializeImpl(inputObject, options);
 
-    const fixType = (obj: any) => {
-        
-        if (!obj) {
-            return obj;
-        }
+  const fixType = (obj: any) => {
 
-        if (Array.isArray(obj)) {
-            for (const value of obj) {
-                if (value && (Array.isArray(value) || typeof value === "object")) {
-                    fixType(value);
-                }
-            }
-        } else if (typeof obj === "object") {
-            for (const [key, value] of Object.entries(obj)) {
-                if (key === typeField) {
-                    obj[fixedTypeField] = value;
-                    delete obj[typeField];
-                } else if (obj && (Array.isArray(value) || typeof value === "object")) {
-                    fixType(value);
-                }
-            }
-        }
-
-        return obj;
+    if (!obj) {
+      return obj;
     }
 
-    return fixType(result);
+    if (Array.isArray(obj)) {
+      for (const value of obj) {
+        if (value && (Array.isArray(value) || typeof value === "object")) {
+          fixType(value);
+        }
+      }
+    } else if (typeof obj === "object") {
+      for (const [key, value] of Object.entries(obj)) {
+        if (key === typeField) {
+          obj[fixedTypeField] = value;
+          delete obj[typeField];
+        } else if (obj && (Array.isArray(value) || typeof value === "object")) {
+          fixType(value);
+        }
+      }
+    }
+
+    return obj;
+  };
+
+  return fixType(result);
 }

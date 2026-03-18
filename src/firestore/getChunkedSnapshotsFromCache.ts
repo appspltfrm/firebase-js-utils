@@ -12,19 +12,19 @@ export function getChunkedSnapshotsFromCache<T extends DocumentData = any>(query
 export function getChunkedSnapshotsFromCache<T extends DocumentData = any>(query: Query<T>, chunkSize: number): AsyncGenerator<QueryDocumentSnapshot<T>[]>;
 
 export async function* getChunkedSnapshotsFromCache<T extends DocumentData = any>(query: Query<T>, chunkSize: number): AsyncGenerator<QueryDocumentSnapshot<T>[], void, undefined> {
-    let done = false;
-    let lastDocument: DocumentSnapshot | undefined;
+  let done = false;
+  let lastDocument: DocumentSnapshot | undefined;
 
-    while (!done) {
-        const batch = await getSnapshotsFromCache(buildQuery(query, ["limit", chunkSize], (lastDocument ? ["startAfter", lastDocument] : undefined)));
-        if (batch.length === 0) {
-            done = true;
-            break;
-        }
-        yield batch;
-        lastDocument = batch[batch.length - 1];
-        if (batch.length < chunkSize) {
-            done = true;
-        }
+  while (!done) {
+    const batch = await getSnapshotsFromCache(buildQuery(query, ["limit", chunkSize], (lastDocument ? ["startAfter", lastDocument] : undefined)));
+    if (batch.length === 0) {
+      done = true;
+      break;
     }
+    yield batch;
+    lastDocument = batch[batch.length - 1];
+    if (batch.length < chunkSize) {
+      done = true;
+    }
+  }
 }

@@ -49,7 +49,7 @@ export function snapshotObservable(docOrQuery, options) {
 function extractSnapshotListen(options) {
     return {
         includeMetadataChanges: !!options?.includeMetadataChanges || !!options?.skipCache,
-        source: options?.source,
+        source: options?.source
     };
 }
 //# sourceMappingURL=snapshotObservable.js.map

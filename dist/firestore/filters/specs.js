@@ -24,7 +24,7 @@ export var FilterFieldType;
     FilterFieldType.operators = {
         [FilterFieldType.text]: [FilterOperator.includeChars, FilterOperator.includeWord, FilterOperator.equals],
         [FilterFieldType.textArray]: [FilterOperator.hasAnyOf, FilterOperator.hasAll, FilterOperator.emptyArray],
-        [FilterFieldType.number]: [FilterOperator.equals, FilterOperator.greater, FilterOperator.greaterOrEqual, FilterOperator.less, FilterOperator.lessOrEqual],
+        [FilterFieldType.number]: [FilterOperator.equals, FilterOperator.greater, FilterOperator.greaterOrEqual, FilterOperator.less, FilterOperator.lessOrEqual]
     };
 })(FilterFieldType || (FilterFieldType = {}));
 export var Filter;

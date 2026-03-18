@@ -1,4 +1,4 @@
-import type {SnapshotOptions} from "firebase/firestore"
+import type {SnapshotOptions} from "firebase/firestore";
 import {getDocFromServer, getDocsFromServer} from "firebase/firestore";
 import {DocumentData} from "./DocumentData.js";
 import {DocumentReference} from "./DocumentReference.js";
@@ -11,24 +11,24 @@ export async function getDataFromServer<T extends DocumentData = any>(query: Que
 
 export async function getDataFromServer<T extends DocumentData = any>(docOrQuery: DocumentReference<T> | Query<T> | RestQuery<T>, options?: any): Promise<T | T[]> {
 
-    if (docOrQuery instanceof RestQuery) {
-        return (await docOrQuery.run()).docs.map(doc => doc.data);
+  if (docOrQuery instanceof RestQuery) {
+    return (await docOrQuery.run()).docs.map(doc => doc.data);
 
-    } else if (Query.isInstance(docOrQuery)) {
-        if (Query.isClient(docOrQuery)) {
-            return (await getDocsFromServer(docOrQuery)).docs.map(snapshot => snapshot.data(options));
-        } else {
-            return (await docOrQuery.get()).docs.map(snapshot => snapshot.data());
-        }
-
-    } else if (DocumentReference.isInstance(docOrQuery)) {
-        if (DocumentReference.isClient(docOrQuery)) {
-            return (await getDocFromServer(docOrQuery)).data(options)!;
-        } else {
-            return (await docOrQuery.get()).data()!;
-        }
-
+  } else if (Query.isInstance(docOrQuery)) {
+    if (Query.isClient(docOrQuery)) {
+      return (await getDocsFromServer(docOrQuery)).docs.map(snapshot => snapshot.data(options));
     } else {
-        throw new Error("Invalid DocumentReference or Query object");
+      return (await docOrQuery.get()).docs.map(snapshot => snapshot.data());
     }
+
+  } else if (DocumentReference.isInstance(docOrQuery)) {
+    if (DocumentReference.isClient(docOrQuery)) {
+      return (await getDocFromServer(docOrQuery)).data(options)!;
+    } else {
+      return (await docOrQuery.get()).data()!;
+    }
+
+  } else {
+    throw new Error("Invalid DocumentReference or Query object");
+  }
 }

@@ -10,16 +10,16 @@ export type DocumentReferenceAdmin<T extends DocumentData = any> = admin.Documen
 export type DocumentReference<T extends DocumentData = any> = DocumentReferenceAdmin<T> | DocumentReferenceClient<T>;
 export declare namespace DocumentReference {
     /**
-     * Sprawdza, czy obiekt jest instancją referencji do dokumentu (klienta lub admina).
-     */
+       * Sprawdza, czy obiekt jest instancją referencji do dokumentu (klienta lub admina).
+       */
     function isInstance<T extends DocumentData = any>(obj: any): obj is DocumentReference<T>;
     /**
-     * Sprawdza, czy referencja pochodzi z Web SDK.
-     */
+       * Sprawdza, czy referencja pochodzi z Web SDK.
+       */
     function isClient<T extends DocumentData = any>(ref: DocumentReference<T>): ref is DocumentReferenceClient<T>;
     /**
-     * Sprawdza, czy referencja pochodzi z Admin SDK.
-     */
+       * Sprawdza, czy referencja pochodzi z Admin SDK.
+       */
     function isAdmin<T extends DocumentData = any>(ref: DocumentReference<T>): ref is DocumentReferenceAdmin<T>;
 }
 /**

@@ -194,7 +194,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                 const resultQueries = [];
                 let count = 0;
                 for (const query of allQueries) {
-                    const c = await getCountFromServer(query);
+                    const c = await getCountFromServer(buildQuery(query, bestQueryCount ? ["limit", bestQueryCount + 1] : undefined));
                     count += c;
                     if (c > 0) {
                         resultQueries.push(query);
@@ -203,7 +203,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                 if (count === 0) {
                     return result;
                 }
-                if (count > 0 && (!bestQueryCount || bestQueryCount > count)) {
+                if (!bestQueryCount || bestQueryCount > count) {
                     bestQueryCount = count;
                     bestQuery = resultQueries;
                 }
@@ -222,7 +222,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                     ].filter((v, i, a) => a.indexOf(v) === i);
                     for (const value of values) {
                         const query = buildQuery(baseQuery, ([FilterOperator.includeChars, FilterOperator.includeWord].includes(filter.operator) && ["where", fieldName, "array-contains", value]) || undefined, (filter.operator === FilterOperator.equals && ["where", fieldName, "==", value]) || undefined, (startAfter?.length && ["startAfter", ...startAfter]) || undefined);
-                        const count = await getCountFromServer(buildQuery(query, hasLimit && ["limit", (bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
+                        const count = await getCountFromServer(buildQuery(query, bestQueryCount ? ["limit", bestQueryCount + 1] : undefined));
                         ZERO: if (count === 0) {
                             if (filter.operator === FilterOperator.includeChars && value.length !== 3) {
                                 break ZERO;
@@ -245,7 +245,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                     if (filter.operator === FilterOperator.hasAll) {
                         for (const value of filter.value) {
                             const query = buildQuery(baseQuery, ["where", fieldName, "array-contains", value], (startAfter?.length && ["startAfter", ...startAfter]) || undefined);
-                            const count = await getCountFromServer(buildQuery(query, hasLimit && ["limit", (bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
+                            const count = await getCountFromServer(buildQuery(query, bestQueryCount ? ["limit", bestQueryCount + 1] : undefined));
                             if (count === 0) {
                                 return result;
                             }
@@ -260,7 +260,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                     }
                     else {
                         const query = buildQuery(baseQuery, (filter.operator === FilterOperator.emptyArray && ["where", fieldName, "==", null]) || undefined, (filter.operator === FilterOperator.hasAnyOf && ["where", fieldName, "array-contains-any", filter.value]) || undefined, (startAfter?.length && ["startAfter", ...startAfter]) || undefined);
-                        const count = await getCountFromServer(buildQuery(query, hasLimit && ["limit", (bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
+                        const count = await getCountFromServer(buildQuery(query, bestQueryCount ? ["limit", bestQueryCount + 1] : undefined));
                         if (count === 0) {
                             return result;
                         }
@@ -283,7 +283,7 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
                         return result;
                     }
                     const query = buildQuery(baseQuery, ["where", fieldName, whereOperator, filter.value instanceof BigNumber ? filter.value.toNumber() : filter.value]);
-                    const count = await getCountFromServer(buildQuery(query, hasLimit && ["limit", (bestQueryCount && bestQueryCount > 0 ? bestQueryCount : limit) + 1]));
+                    const count = await getCountFromServer(buildQuery(query, bestQueryCount ? ["limit", bestQueryCount + 1] : undefined));
                     if (count === 0) {
                         return result;
                     }

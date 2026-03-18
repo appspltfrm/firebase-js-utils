@@ -9,6 +9,6 @@ export async function getSnapshots<T extends DocumentData = any>(query: QueryAdm
 
 export async function getSnapshots<T extends DocumentData = any>(query: Query<T>): Promise<QueryDocumentSnapshot<T>[]>;
 
-export async function getSnapshots<T extends DocumentData = any>(query: Query<T>): Promise<QueryDocumentSnapshot<T>[]>  {
-    return (await getSnapshot(query)).docs;
+export async function getSnapshots<T extends DocumentData = any>(query: Query<T>): Promise<QueryDocumentSnapshot<T>[]> {
+  return (await getSnapshot(query)).docs;
 }

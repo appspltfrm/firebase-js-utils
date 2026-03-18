@@ -1,25 +1,30 @@
 {
-    "compilerOptions": {
-        "strict": true,
-        "allowSyntheticDefaultImports": true,
-        "declaration": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "esModuleInterop": true,
-        "lib": ["DOM", "ESNext"],
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
-        "target": "ESNext",
-        "outDir": "dist",
-        "rootDir": "src",
-        "sourceMap": true,
-        "importHelpers": false,
-        "skipLibCheck": true,
-        "customConditions": ["development"]
-    },
-
-    "exclude": [
-        "dist",
-        "node_modules"
+  "compilerOptions": {
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "lib": [
+      "DOM",
+      "ESNext"
+    ],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": true,
+    "importHelpers": false,
+    "skipLibCheck": true,
+    "customConditions": [
+      "development"
     ]
+  },
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }
