@@ -8,7 +8,7 @@ export { FieldValue } from "./FieldValue.js";
 export { Firestore } from "./Firestore.js";
 export { GeoPoint } from "./GeoPoint.js";
 export { Query } from "./Query.js";
-export { RestQuery } from "./RestQuery.js";
+export { RestQuery, RestDocument } from "./rest.js";
 export { Timestamp } from "./Timestamp.js";
 export { TimestampSerializer } from "./TimestampSerializer.js";
 export { Transaction } from "./Transaction.js";

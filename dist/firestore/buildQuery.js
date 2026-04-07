@@ -1,8 +1,8 @@
 import { query as queryClient } from "@firebase/firestore";
-import { endAt, endBefore, limit, limitToLast, orderBy, startAfter, startAt, where, or, and } from "firebase/firestore";
+import { and, endAt, endBefore, limit, limitToLast, or, orderBy, startAfter, startAt, where } from "firebase/firestore";
 import { Firestore } from "./Firestore.js";
 import { Query } from "./Query.js";
-import { RestQuery } from "./RestQuery.js";
+import { RestQuery } from "./rest.js";
 export function buildQuery(query, ...queryConstraints) {
     if (query instanceof RestQuery) {
         return new RestQuery(query).apply(...queryConstraints);
@@ -15,12 +15,15 @@ export function buildQuery(query, ...queryConstraints) {
                     const type = constraint[0];
                     const args = constraint.slice(1);
                     if (type === "where") {
+                        // @ts-ignore
                         constraints.push(where.call(where, ...args));
                     }
                     else if (type === "and") {
+                        // @ts-ignore
                         constraints.push(and.call(and, ...buildOrAnd(...args)));
                     }
                     else if (type === "or") {
+                        // @ts-ignore
                         constraints.push(or.call(or, ...buildOrAnd(...args)));
                     }
                 }
@@ -78,12 +81,15 @@ export function buildQuery(query, ...queryConstraints) {
                     const type = constraint[0];
                     const args = constraint.slice(1);
                     if (type === "where") {
+                        // @ts-ignore
                         where.push(Filter.where.call(Filter.where, ...args));
                     }
                     else if (type === "and") {
+                        // @ts-ignore
                         where.push(Filter.and.call(Filter.and, ...buildFilterWhere(...args)));
                     }
                     else if (type === "or") {
+                        // @ts-ignore
                         where.push(Filter.or.call(Filter.or, ...buildFilterWhere(...args)));
                     }
                 }

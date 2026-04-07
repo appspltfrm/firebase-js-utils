@@ -1,7 +1,7 @@
 import {getCountFromServer as getCountFromServerClient} from "firebase/firestore";
 import {DocumentData} from "./DocumentData.js";
 import {Query} from "./Query.js";
-import {RestQuery} from "./RestQuery.js";
+import {RestQuery} from "./rest.js";
 
 export async function getCountFromServer<T extends DocumentData = any>(query: Query<T> | RestQuery<T>): Promise<number> {
   if (query instanceof RestQuery) {

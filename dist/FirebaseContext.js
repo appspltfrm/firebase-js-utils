@@ -1,7 +1,7 @@
 import { buildQuery } from "./firestore/buildQuery.js";
 import { collectionReference } from "./firestore/CollectionReference.js";
 import { documentReference } from "./firestore/DocumentReference.js";
-import { RestQuery } from "./firestore/RestQuery.js";
+import { RestQuery } from "./firestore/rest.js";
 /**
  * Abstrakcyjna klasa bazowa dla kontekstu Firebase, ujednolicająca dostęp do Firestore w różnych środowiskach.
  * Pozwala na pisanie kodu uniwersalnego, który może działać zarówno po stronie klienta (Web SDK), jak i serwera (Admin SDK).

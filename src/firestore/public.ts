@@ -13,7 +13,7 @@ export {Query, type QueryAdmin, type QueryClient} from "./Query.js";
 export {type QueryConstraint} from "./QueryConstraint.js";
 export {type QueryDocumentSnapshot, type QueryDocumentSnapshotAdmin, type QueryDocumentSnapshotClient} from "./QueryDocumentSnapshot.js";
 export {type QuerySnapshot, type QuerySnapshotAdmin, type QuerySnapshotClient} from "./QuerySnapshot.js";
-export {RestQuery} from "./RestQuery.js";
+export {RestQuery, RestDocument, type RestDocumentSnapshot, type RestQuerySnapshot} from "./rest.js";
 export {Timestamp, type TimestampAdmin, type TimestampClient} from "./Timestamp.js";
 export {TimestampSerializer} from "./TimestampSerializer.js";
 export {Transaction, type TransactionAdmin, type TransactionClient, type TransactionFunction, type TransactionFunctionAdmin, type TransactionFunctionClient} from "./Transaction.js";

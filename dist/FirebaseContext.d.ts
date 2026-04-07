@@ -1,3 +1,5 @@
+import { FirebaseApp } from "firebase/app";
+import { Auth } from "firebase/auth";
 import { AuthUser } from "./client-auth/AuthUser.js";
 import { CollectionReference, CollectionReferenceAdmin, CollectionReferenceClient } from "./firestore/CollectionReference.js";
 import { DocumentData } from "./firestore/DocumentData.js";
@@ -5,7 +7,7 @@ import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } fr
 import { Firestore, FirestoreAdmin, FirestoreClient } from "./firestore/Firestore.js";
 import { Query, QueryAdmin, QueryClient } from "./firestore/Query.js";
 import { QueryConstraint, RestQueryConstraint } from "./firestore/QueryConstraint.js";
-import { RestQuery } from "./firestore/RestQuery.js";
+import { RestQuery } from "./firestore/rest.js";
 /**
  * Abstrakcyjna klasa bazowa dla kontekstu Firebase, ujednolicająca dostęp do Firestore w różnych środowiskach.
  * Pozwala na pisanie kodu uniwersalnego, który może działać zarówno po stronie klienta (Web SDK), jak i serwera (Admin SDK).
@@ -49,7 +51,9 @@ export declare abstract class UniversalFirebaseContext {
  * @category Context
  */
 export declare abstract class FirebaseContextClient extends UniversalFirebaseContext {
+    abstract get firebase(): FirebaseApp;
     abstract get firestore(): FirestoreClient;
+    abstract get auth(): Auth;
     /**
        * Zwraca aktualnie zalogowanego użytkownika (tylko klient).
        */

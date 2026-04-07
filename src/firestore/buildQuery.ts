@@ -1,15 +1,16 @@
 import {query as queryClient, QueryConstraint as QueryConstraintClient} from "@firebase/firestore";
-import {endAt, endBefore, limit, limitToLast, orderBy, startAfter, startAt, where, or, and} from "firebase/firestore";
-import * as assert from "node:assert";
+import {and, endAt, endBefore, limit, limitToLast, or, orderBy, startAfter, startAt, where} from "firebase/firestore";
 import {DocumentData} from "./DocumentData.js";
 import {Firestore} from "./Firestore.js";
 import {Query, QueryAdmin, QueryClient} from "./Query.js";
 import {
   QueryConstraint,
+  QueryConstraintAndOr,
   QueryConstraintType,
-  QueryConstraintWhere, QueryConstraintAndOr, RestQueryConstraint
+  QueryConstraintWhere,
+  RestQueryConstraint
 } from "./QueryConstraint.js";
-import {RestQuery} from "./RestQuery.js";
+import {RestQuery} from "./rest.js";
 
 export function buildQuery<T extends DocumentData = any>(query: QueryClient<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
 
@@ -36,10 +37,13 @@ export function buildQuery<T extends DocumentData = any>(query: Query<T> | RestQ
           const type = constraint[0] as "where" | "and" | "or";
           const args = constraint.slice(1);
           if (type === "where") {
+            // @ts-ignore
             constraints.push((where as Function).call(where, ...args));
           } else if (type === "and") {
+            // @ts-ignore
             constraints.push(and.call(and, ...buildOrAnd(...args as any)));
           } else if (type === "or") {
+            // @ts-ignore
             constraints.push(or.call(or, ...buildOrAnd(...args as any)));
           }
         }
@@ -93,10 +97,13 @@ export function buildQuery<T extends DocumentData = any>(query: Query<T> | RestQ
           const type = constraint[0] as "where" | "and" | "or";
           const args = constraint.slice(1);
           if (type === "where") {
+            // @ts-ignore
             where.push((Filter.where as Function).call(Filter.where, ...args));
           } else if (type === "and") {
+            // @ts-ignore
             where.push(Filter.and.call(Filter.and, ...buildFilterWhere(...args as any)));
           } else if (type === "or") {
+            // @ts-ignore
             where.push(Filter.or.call(Filter.or, ...buildFilterWhere(...args as any)));
           }
         }

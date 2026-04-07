@@ -3,7 +3,7 @@ import {DocumentData} from "./DocumentData.js";
 import {DocumentSnapshot} from "./DocumentSnapshot.js";
 import {getSnapshotsFromServer} from "./getSnapshotsFromServer.js";
 import {Query, QueryAdmin, QueryClient} from "./Query.js";
-import {RestQuery} from "./RestQuery.js";
+import {RestQuery} from "./rest.js";
 
 export function getChunkedDataFromServer<T extends DocumentData = any>(query: QueryClient<T>, chunkSize: number): AsyncGenerator<T[]>;
 

@@ -3,7 +3,7 @@ import {getDocFromServer, getDocsFromServer} from "firebase/firestore";
 import {DocumentData} from "./DocumentData.js";
 import {DocumentReference} from "./DocumentReference.js";
 import {Query} from "./Query.js";
-import {RestQuery} from "./RestQuery.js";
+import {RestQuery} from "./rest.js";
 
 export async function getDataFromServer<T extends DocumentData = any>(doc: DocumentReference<T>, options?: SnapshotOptions): Promise<T>;
 

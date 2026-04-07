@@ -1,6 +1,6 @@
 import { DocumentData } from "../DocumentData.js";
 import { Query } from "../Query.js";
-import { RestQuery } from "../RestQuery.js";
+import { RestQuery } from "../rest.js";
 import { Filter } from "./specs.js";
 type Args<T extends DocumentData = any> = {
     query: Query<T> | RestQuery<T>;

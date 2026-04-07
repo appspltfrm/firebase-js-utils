@@ -1,6 +1,6 @@
 import { DocumentData } from "../DocumentData.js";
 import { Query } from "../Query.js";
-import { RestQuery } from "../RestQuery.js";
+import { RestQuery } from "../rest.js";
 export interface FilterFieldSpec<T extends DocumentData = any> {
     name: string;
     queryName?: string | ((args: {

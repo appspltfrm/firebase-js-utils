@@ -5,7 +5,7 @@ import {DocumentData} from "../DocumentData.js";
 import {getCountFromServer} from "../getCountFromServer.js";
 import {getDataFromServer} from "../getDataFromServer.js";
 import {Query} from "../Query.js";
-import {RestQuery} from "../RestQuery.js";
+import {RestQuery} from "../rest.js";
 import {generateTextSearchTrigrams} from "./generateTextSearchTrigrams.js";
 import {Filter, FilterFieldType, FilterOperator} from "./specs.js";
 import {splitTextSearchWords} from "./splitTextSearchWords.js";

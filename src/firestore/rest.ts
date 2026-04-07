@@ -10,14 +10,186 @@ import {
   QueryConstraintWhere,
   RestQueryConstraint
 } from "./QueryConstraint.js";
+import {FirebaseApp} from "firebase/app";
+import {Firestore, doc as firestoreDocument, getFirestore} from "firebase/firestore";
+import {Auth, getAuth} from "firebase/auth";
 
-export class RestQuery<T extends DocumentData = any> {
+class RestProcessor<T extends DocumentData = any> {
 
+  constructor(firebaseOrProto: FirebaseApp | FirebaseContextClient | RestProcessor) {
+
+    if (firebaseOrProto instanceof RestProcessor) {
+      this.firebase = firebaseOrProto.firebase;
+      this.auth = firebaseOrProto.auth;
+    } else if ((firebaseOrProto as FirebaseContextClient).firebase) {
+      this.firebase = (firebaseOrProto as FirebaseContextClient).firebase;
+      this.auth = (firebaseOrProto as FirebaseContextClient).auth;
+    } else {
+      this.firebase = firebaseOrProto as FirebaseApp;
+    }
+  }
+
+  protected readonly firebase: FirebaseApp;
+  protected auth!: Auth;
+  private authReady = false;
+  protected firestore!: Firestore;
+
+  protected converter?: {from: (data: DocumentData) => T};
+
+  withConverter(converter: ({from: (data: DocumentData) => T}) | undefined): this {
+    this.converter = converter;
+    return this;
+  }
+
+  protected restValueToJSValue(value: Value): any {
+
+    if ((value as StringValue).stringValue !== undefined) {
+      return (value as StringValue).stringValue;
+
+    } else if ((value as IntegerValue).integerValue !== undefined) {
+      return parseInt((value as IntegerValue).integerValue, 10);
+
+    } else if ((value as DoubleValue).doubleValue !== undefined) {
+      return (value as DoubleValue).doubleValue;
+
+    } if ((value as BooleanValue).booleanValue !== undefined) {
+      return (value as BooleanValue).booleanValue;
+
+    } else if ((value as NullValue).nullValue !== undefined) {
+      return null;
+
+    } if ((value as ArrayValue).arrayValue !== undefined) {
+      return ((value as ArrayValue).arrayValue.values ?? []).map(v => this.restValueToJSValue(v));
+
+    } else if ((value as ObjectValue).mapValue !== undefined) {
+      return Object.entries((value as ObjectValue).mapValue.fields ?? {}).reduce((obj, [key, val]) => {
+        obj[key] = this.restValueToJSValue(val);
+        return obj;
+      }, {} as Record<string, any>);
+
+    } else if ((value as TimestampValue).timestampValue !== undefined) {
+      return Timestamp.fromDate(new Date((value as TimestampValue).timestampValue));
+
+    } if ((value as GeoPointValue).geoPointValue !== undefined) {
+      const {latitude, longitude} = (value as GeoPointValue).geoPointValue;
+      return new GeoPoint(latitude, longitude);
+
+    } else if ((value as BytesValue).bytesValue !== undefined) {
+      return Bytes.fromBase64String((value as BytesValue).bytesValue);
+
+    } else if ((value as ReferenceValue).referenceValue !== undefined) {
+      const fullPath = (value as ReferenceValue).referenceValue;
+      if (!this.firestore) {
+        this.firestore = getFirestore(this.firebase);
+      }
+      return firestoreDocument(this.firestore, fullPath.replace(/^.*\/documents\//, ""));
+    }
+
+    throw new Error(`Unsupported REST value: ${JSON.stringify(value)}`);
+  }
+
+  protected async fetch(body: any, endPointSuffix: string) {
+
+    const endpoint = `https://firestore.googleapis.com/v1/projects/${this.firebase.options.projectId}/databases/(default)/documents${endPointSuffix}`;
+
+    if (!this.auth) {
+      this.auth = getAuth(this.firebase);
+    }
+
+    if (!this.authReady) {
+      await this.auth.authStateReady();
+      this.authReady = true;
+    }
+
+    const headers: any = {"Content-Type": "application/json"};
+    if (this.auth.currentUser) {
+      headers.Authorization = `Bearer ${await this.auth.currentUser!.getIdToken()}`;
+    }
+
+    const response = await fetch(endpoint, {
+      method: body ? "POST" : "GET",
+      headers,
+      body: body ? JSON.stringify(body) : undefined
+    });
+
+    if (!response.ok) {
+
+      try {
+        const result = await response.json();
+        const error = Array.isArray(result) ? result.find(r => r.error)?.error : result.error;
+        if (error) {
+          throw new RestFirestoreError(error.code, error.message, error.status);
+        }
+      } catch (e) {
+        if (e instanceof RestFirestoreError) {
+          throw e;
+        }
+      }
+
+      throw new Error(response.statusText);
+    }
+
+    return await response.json();
+  }
+}
+
+export class RestDocument<T extends DocumentData = any> extends RestProcessor<T> {
+  constructor(firebase: FirebaseApp, documentPath: string);
+  constructor(firebaseContext: FirebaseContextClient, documentPath: string);
+  constructor(proto: RestDocument);
+  constructor(firebaseOrProto: FirebaseApp | FirebaseContextClient | RestDocument, documentPath?: string) {
+    super(firebaseOrProto);
+
+    documentPath = firebaseOrProto instanceof RestDocument ? firebaseOrProto.documentPath : documentPath!;
+    if (documentPath.startsWith("/")) {
+      documentPath = documentPath.substring(1);
+    }
+
+    this.documentPath = documentPath;
+  }
+
+  readonly documentPath: string;
+
+  async get(): Promise<RestDocumentSnapshot<T> | null> {
+
+    const convert = (data: any) => {
+      if (this.converter) {
+        return this.converter.from(data);
+      } else {
+        return data;
+      }
+    };
+
+    try {
+      const result = (await this.fetch(undefined, `/${this.documentPath}`) as ResultDocument["document"]);
+
+      return {
+        name: result.name,
+        data: convert(Object.entries(result.fields).reduce((acc, [key, val]) => {
+          acc[key] = this.restValueToJSValue(val);
+          return acc;
+        }, {} as T)),
+        createTime: Timestamp.fromDate(new Date(result.createTime)),
+        updateTime: Timestamp.fromDate(new Date(result.updateTime))
+      } as RestDocumentSnapshot<T>;
+
+    } catch (error) {
+      if (error instanceof RestFirestoreError && error.code === 404) {
+        return null;
+      } else {
+        throw error;
+      }
+    }
+  }
+}
+
+export class RestQuery<T extends DocumentData = any> extends RestProcessor<T> {
+
+  constructor(firebase: FirebaseApp, collectionId: string);
   constructor(firebaseContext: FirebaseContextClient, collectionId: string);
   constructor(proto: RestQuery);
-  constructor(firebaseOrProto: FirebaseContextClient | RestQuery, collectionId?: string) {
-
-    this.firebase = firebaseOrProto instanceof RestQuery ? firebaseOrProto.firebase : firebaseOrProto;
+  constructor(firebaseOrProto: FirebaseApp | FirebaseContextClient | RestQuery, collectionId?: string) {
+    super(firebaseOrProto);
 
     const proto = firebaseOrProto instanceof RestQuery ? firebaseOrProto : undefined;
 
@@ -77,14 +249,7 @@ export class RestQuery<T extends DocumentData = any> {
     }
   }
 
-  private firebase: FirebaseContextClient;
   private readonly query: StructuredQuery;
-  private converter?: {from: (data: DocumentData) => T};
-
-  withConverter(converter: ({from: (data: DocumentData) => T}) | undefined): this {
-    this.converter = converter;
-    return this;
-  }
 
   apply(...constraints: Array<RestQueryConstraint | undefined | false>): this {
 
@@ -139,41 +304,6 @@ export class RestQuery<T extends DocumentData = any> {
     return this;
   }
 
-  private async fetch(body: any, aggregation = false) {
-
-    const endpoint = `https://firestore.googleapis.com/v1/projects/${this.firebase.projectId}/databases/(default)/documents:${aggregation ? "runAggregationQuery" : "runQuery"}`;
-
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${await this.firebase.authUser.userIdToken}`
-      },
-      body: JSON.stringify(body)
-    });
-
-    if (!response.ok) {
-
-      class FirestoreError extends Error {}
-
-      try {
-        const result = await response.json();
-        const error = Array.isArray(result) && result.find(r => r.error)?.error;
-        if (error) {
-          console.error(result);
-          throw new FirestoreError(error.message);
-        }
-      } catch (e) {
-        if (e instanceof FirestoreError) {
-          throw e;
-        }
-      }
-      throw new Error(response.statusText);
-    }
-
-    return await response.json();
-  }
-
   async runCount(): Promise<number> {
     const alias = "aggregate_0";
     const result = (await this.fetch({
@@ -181,9 +311,9 @@ export class RestQuery<T extends DocumentData = any> {
         aggregations: [{alias, count: {}}],
         structuredQuery: this.query
       }
-    }, true)) as ResultAggregation[];
+    }, ":runAggregationQuery")) as ResultAggregation[];
 
-    return result.length ? restValueToJSValue(result[0].result.aggregateFields[alias], this.firebase) as number : 0;
+    return result.length ? this.restValueToJSValue(result[0].result.aggregateFields[alias]) as number : 0;
   }
 
   async run(): Promise<RestQuerySnapshot<T>> {
@@ -196,13 +326,13 @@ export class RestQuery<T extends DocumentData = any> {
       }
     };
 
-    const result = (await this.fetch({structuredQuery: this.query}) as Array<ResultDocument>);
+    const result = (await this.fetch({structuredQuery: this.query}, ":runQuery") as Array<ResultDocument>);
 
     return {
       docs: result.filter(r => r.document).map(({document}) => ({
         name: document.name,
         data: convert(Object.entries(document.fields).reduce((acc, [key, val]) => {
-          acc[key] = restValueToJSValue(val, this.firebase);
+          acc[key] = this.restValueToJSValue(val);
           return acc;
         }, {} as T)),
         createTime: Timestamp.fromDate(new Date(document.createTime)),
@@ -211,8 +341,14 @@ export class RestQuery<T extends DocumentData = any> {
     } as RestQuerySnapshot<T>;
   }
 
-
 }
+
+class RestFirestoreError extends Error {
+  constructor(public readonly code: number, message: string, public readonly status: string) {
+    super(message);
+  }
+}
+
 
 interface ResultAggregation {
   result: {
@@ -231,11 +367,11 @@ interface ResultDocument {
 }
 
 export interface RestQuerySnapshot<T extends DocumentData = any> {
-  docs: RestQueryDocumentSnapshot<T>[];
+  docs: RestDocumentSnapshot<T>[];
   readTime: Timestamp;
 }
 
-export interface RestQueryDocumentSnapshot<T extends DocumentData> {
+export interface RestDocumentSnapshot<T extends DocumentData> {
   name: string;
   data: T;
   createTime: Timestamp;
@@ -446,48 +582,4 @@ function jsValueToRestValue(value: any): Value {
   }
 
   throw new Error(`Nieobsługiwana wartość JS: ${value}`);
-}
-
-function restValueToJSValue(value: Value, firebase: FirebaseContextClient): any {
-
-  if ((value as StringValue).stringValue !== undefined) {
-    return (value as StringValue).stringValue;
-
-  } else if ((value as IntegerValue).integerValue !== undefined) {
-    return parseInt((value as IntegerValue).integerValue, 10);
-
-  } else if ((value as DoubleValue).doubleValue !== undefined) {
-    return (value as DoubleValue).doubleValue;
-
-  } if ((value as BooleanValue).booleanValue !== undefined) {
-    return (value as BooleanValue).booleanValue;
-
-  } else if ((value as NullValue).nullValue !== undefined) {
-    return null;
-
-  } if ((value as ArrayValue).arrayValue !== undefined) {
-    return ((value as ArrayValue).arrayValue.values ?? []).map(v => restValueToJSValue(v, firebase));
-
-  } else if ((value as ObjectValue).mapValue !== undefined) {
-    return Object.entries((value as ObjectValue).mapValue.fields ?? {}).reduce((obj, [key, val]) => {
-      obj[key] = restValueToJSValue(val, firebase);
-      return obj;
-    }, {} as Record<string, any>);
-
-  } else if ((value as TimestampValue).timestampValue !== undefined) {
-    return Timestamp.fromDate(new Date((value as TimestampValue).timestampValue));
-
-  } if ((value as GeoPointValue).geoPointValue !== undefined) {
-    const {latitude, longitude} = (value as GeoPointValue).geoPointValue;
-    return new GeoPoint(latitude, longitude);
-
-  } else if ((value as BytesValue).bytesValue !== undefined) {
-    return Bytes.fromBase64String((value as BytesValue).bytesValue);
-
-  } else if ((value as ReferenceValue).referenceValue !== undefined) {
-    const fullPath = (value as ReferenceValue).referenceValue;
-    return firebase.firestoreDocument(fullPath.replace(/^.*\/documents\//, ""));
-  }
-
-  throw new Error(`Unsupported REST value: ${JSON.stringify(value)}`);
 }
