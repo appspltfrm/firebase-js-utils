@@ -1,10 +1,10 @@
-import { Timestamp as $TimestampClient } from "firebase/firestore";
+import { Timestamp as TimestampClient } from "firebase/firestore";
 import { Firestore } from "./Firestore.js";
 export var Timestamp;
 (function (Timestamp) {
     Timestamp.jsonTypeName = "firestore/Timestamp";
     function isClient(timestamp) {
-        return timestamp instanceof $TimestampClient;
+        return timestamp instanceof TimestampClient;
     }
     Timestamp.isClient = isClient;
     function isAdmin(timestamp) {
@@ -12,7 +12,7 @@ export var Timestamp;
     }
     Timestamp.isAdmin = isAdmin;
     function isInstance(obj) {
-        return obj instanceof $TimestampClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().Timestamp);
+        return obj instanceof TimestampClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().Timestamp);
     }
     Timestamp.isInstance = isInstance;
     function now() {
@@ -20,7 +20,7 @@ export var Timestamp;
             return Firestore.admin().Timestamp.now();
         }
         else {
-            return $TimestampClient.now();
+            return TimestampClient.now();
         }
     }
     Timestamp.now = now;
@@ -29,7 +29,7 @@ export var Timestamp;
             return Firestore.admin().Timestamp.fromDate(date);
         }
         else {
-            return $TimestampClient.fromDate(date);
+            return TimestampClient.fromDate(date);
         }
     }
     Timestamp.fromDate = fromDate;
@@ -38,7 +38,7 @@ export var Timestamp;
             return Firestore.admin().Timestamp.fromMillis(milliseconds);
         }
         else {
-            return $TimestampClient.fromMillis(milliseconds);
+            return TimestampClient.fromMillis(milliseconds);
         }
     }
     Timestamp.fromMillis = fromMillis;

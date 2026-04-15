@@ -1,4 +1,4 @@
-import type {Precondition, SetOptions as SetOptionsAdmin, WriteResult} from "@google-cloud/firestore";
+import type {Precondition, SetOptions as SetOptionsAdmin, WriteResult} from "firebase-admin/firestore";
 import type {SetOptions as SetOptionsClient} from "firebase/firestore";
 import {writeBatch} from "firebase/firestore";
 import {DocumentData} from "./DocumentData.js";
@@ -18,7 +18,7 @@ export abstract class AutoWriteBatch {
   protected constructor(readonly firestore: Firestore) {
   }
 
-  onCommit?: (result: CommitResult)=> void;
+  onCommit?: (result: CommitResult) => void;
 
   protected operations: [method: "set" | "delete" | "update" | "create", args: any[]][] = [];
 

@@ -1,5 +1,17 @@
-import {query as queryClient, QueryConstraint as QueryConstraintClient} from "@firebase/firestore";
-import {and, endAt, endBefore, limit, limitToLast, or, orderBy, startAfter, startAt, where} from "firebase/firestore";
+import {
+  and,
+  endAt,
+  endBefore,
+  limit,
+  limitToLast,
+  or,
+  orderBy,
+  query as queryClient,
+  QueryConstraint as QueryConstraintClient,
+  startAfter,
+  startAt,
+  where
+} from "firebase/firestore";
 import {DocumentData} from "./DocumentData.js";
 import {Firestore} from "./Firestore.js";
 import {Query, QueryAdmin, QueryClient} from "./Query.js";

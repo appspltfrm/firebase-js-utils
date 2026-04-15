@@ -1,7 +1,7 @@
-import type { firestore as admin } from "firebase-admin";
-import { GeoPoint as $GeoPointClient } from "firebase/firestore";
-export type GeoPointClient = $GeoPointClient;
-export type GeoPointAdmin = admin.GeoPoint;
+import type { GeoPoint as GeoPointAdmin } from "firebase-admin/firestore";
+import { GeoPoint as GeoPointClient } from "firebase/firestore";
+export type { GeoPointClient };
+export type { GeoPointAdmin };
 export type GeoPoint = GeoPointAdmin | GeoPointClient;
 export declare namespace GeoPoint {
     function isClient(gp: GeoPoint): gp is GeoPointClient;

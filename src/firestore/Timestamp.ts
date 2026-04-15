@@ -1,9 +1,9 @@
-import type {firestore as admin} from "firebase-admin";
-import {Timestamp as $TimestampClient} from "firebase/firestore";
+import type {Timestamp as TimestampAdmin} from "firebase-admin/firestore";
+import {Timestamp as TimestampClient} from "firebase/firestore";
 import {Firestore} from "./Firestore.js";
 
-export type TimestampClient = $TimestampClient;
-export type TimestampAdmin = admin.Timestamp;
+export type {TimestampClient};
+export type {TimestampAdmin};
 
 export type Timestamp = TimestampAdmin | TimestampClient;
 
@@ -12,7 +12,7 @@ export namespace Timestamp {
   export const jsonTypeName = "firestore/Timestamp";
 
   export function isClient(timestamp: Timestamp): timestamp is TimestampClient {
-    return timestamp instanceof $TimestampClient;
+    return timestamp instanceof TimestampClient;
   }
 
   export function isAdmin(timestamp: Timestamp): timestamp is TimestampAdmin {
@@ -20,7 +20,7 @@ export namespace Timestamp {
   }
 
   export function isInstance(obj: any): obj is Timestamp {
-    return obj instanceof $TimestampClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().Timestamp);
+    return obj instanceof TimestampClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().Timestamp);
   }
 
 
@@ -28,7 +28,7 @@ export namespace Timestamp {
     if (Firestore.adminInitialized()) {
       return Firestore.admin().Timestamp.now();
     } else {
-      return $TimestampClient.now();
+      return TimestampClient.now();
     }
   }
 
@@ -36,7 +36,7 @@ export namespace Timestamp {
     if (Firestore.adminInitialized()) {
       return Firestore.admin().Timestamp.fromDate(date);
     } else {
-      return $TimestampClient.fromDate(date);
+      return TimestampClient.fromDate(date);
     }
   }
 
@@ -44,7 +44,7 @@ export namespace Timestamp {
     if (Firestore.adminInitialized()) {
       return Firestore.admin().Timestamp.fromMillis(milliseconds);
     } else {
-      return $TimestampClient.fromMillis(milliseconds);
+      return TimestampClient.fromMillis(milliseconds);
     }
   }
 }

@@ -1,4 +1,4 @@
-import type { Precondition, WriteResult } from "@google-cloud/firestore";
+import type { Precondition, WriteResult } from "firebase-admin/firestore";
 import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } from "./DocumentReference.js";
 export declare function deleteDocument(doc: DocumentReference): Promise<any>;
 export declare function deleteDocument(doc: DocumentReferenceClient): Promise<void>;

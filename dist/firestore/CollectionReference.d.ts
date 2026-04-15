@@ -1,9 +1,9 @@
-import type { firestore as admin } from "firebase-admin";
-import { CollectionReference as $CollectionReferenceClient } from "firebase/firestore";
+import type { CollectionReference as CollectionReferenceAdmin } from "firebase-admin/firestore";
+import { CollectionReference as CollectionReferenceClient } from "firebase/firestore";
 import { DocumentData } from "./DocumentData.js";
 import { Firestore, FirestoreAdmin, FirestoreClient } from "./Firestore.js";
-export type CollectionReferenceClient<T extends DocumentData = any> = $CollectionReferenceClient<T>;
-export type CollectionReferenceAdmin<T extends DocumentData = any> = admin.CollectionReference<T>;
+export type { CollectionReferenceClient };
+export type { CollectionReferenceAdmin };
 /**
  * Polimorficzna referencja do kolekcji Firestore.
  */

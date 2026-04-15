@@ -1,4 +1,4 @@
-import type { Precondition, WriteResult } from "@google-cloud/firestore";
+import type { Precondition, WriteResult } from "firebase-admin/firestore";
 import { DocumentData } from "./DocumentData.js";
 import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } from "./DocumentReference.js";
 export declare function updateDocument<T extends DocumentData = any>(doc: DocumentReference<T>, data: Partial<T>): Promise<any>;

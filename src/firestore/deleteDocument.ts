@@ -1,4 +1,4 @@
-import type {Precondition, WriteResult} from "@google-cloud/firestore";
+import type {Precondition, WriteResult} from "firebase-admin/firestore";
 import {deleteDoc as deleteDocClient} from "firebase/firestore";
 import {DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient} from "./DocumentReference.js";
 

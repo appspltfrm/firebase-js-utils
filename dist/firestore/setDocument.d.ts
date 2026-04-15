@@ -1,4 +1,4 @@
-import type { WriteResult, SetOptions as SetOptionsAdmin } from "@google-cloud/firestore";
+import type { WriteResult, SetOptions as SetOptionsAdmin } from "firebase-admin/firestore";
 import { SetOptions as SetOptionsClient } from "firebase/firestore";
 import { DocumentData } from "./DocumentData.js";
 import { DocumentReference, DocumentReferenceAdmin, DocumentReferenceClient } from "./DocumentReference.js";

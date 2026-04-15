@@ -1,13 +1,12 @@
-import type {firestore as admin} from "firebase-admin";
+import type {Transaction as TransactionAdmin} from "firebase-admin/firestore";
 import {Transaction as TransactionClient} from "firebase/firestore";
 
-export type {TransactionClient};
-export type TransactionAdmin = admin.Transaction;
+export type {TransactionClient, TransactionAdmin};
 export type Transaction = TransactionAdmin | TransactionClient;
 
-export type TransactionFunctionClient<T> = (transaction: TransactionClient)=> Promise<T>;
-export type TransactionFunctionAdmin<T> = (transaction: TransactionAdmin)=> Promise<T>;
-export type TransactionFunction<T> = (transaction: Transaction)=> Promise<T>;
+export type TransactionFunctionClient<T> = (transaction: TransactionClient) => Promise<T>;
+export type TransactionFunctionAdmin<T> = (transaction: TransactionAdmin) => Promise<T>;
+export type TransactionFunction<T> = (transaction: Transaction) => Promise<T>;
 
 export namespace Transaction {
 

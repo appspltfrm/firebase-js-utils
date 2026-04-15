@@ -1,5 +1,5 @@
-import type { firestore as admin } from "firebase-admin";
-import type * as client from "firebase/firestore";
-export type DocumentDataClient = client.DocumentData;
-export type DocumentDataAdmin = admin.DocumentData;
+import type { DocumentData as DocumentDataAdmin } from "firebase-admin/firestore";
+import type { DocumentData as DocumentDataClient } from "firebase/firestore";
+export type { DocumentDataClient };
+export type { DocumentDataAdmin };
 export type DocumentData = DocumentDataAdmin | DocumentDataClient;

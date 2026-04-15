@@ -1,5 +1,4 @@
-import { query as queryClient } from "@firebase/firestore";
-import { and, endAt, endBefore, limit, limitToLast, or, orderBy, startAfter, startAt, where } from "firebase/firestore";
+import { and, endAt, endBefore, limit, limitToLast, or, orderBy, query as queryClient, startAfter, startAt, where } from "firebase/firestore";
 import { Firestore } from "./Firestore.js";
 import { Query } from "./Query.js";
 import { RestQuery } from "./rest.js";

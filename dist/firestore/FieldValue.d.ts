@@ -1,7 +1,7 @@
-import type { firestore as admin } from "firebase-admin";
-import { FieldValue as $FieldValueClient } from "firebase/firestore";
-export type FieldValueClient = $FieldValueClient;
-export type FieldValueAdmin = admin.FieldValue;
+import type { FieldValue as FieldValueAdmin } from "firebase-admin/firestore";
+import { FieldValue as FieldValueClient } from "firebase/firestore";
+export type { FieldValueClient };
+export type { FieldValueAdmin };
 export type FieldValue = FieldValueClient | FieldValueAdmin;
 export declare namespace FieldValue {
     function isInstance(obj: any): obj is FieldValue;

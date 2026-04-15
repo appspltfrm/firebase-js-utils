@@ -1,10 +1,10 @@
-import type {firestore as admin} from "firebase-admin";
-import {Query as $QueryClient} from "firebase/firestore";
+import type {Query as QueryAdmin} from "firebase-admin/firestore";
+import {Query as QueryClient} from "firebase/firestore";
 import {DocumentData} from "./DocumentData.js";
 import {Firestore} from "./Firestore.js";
 
-export type QueryClient<T extends DocumentData = any> = $QueryClient<T>;
-export type QueryAdmin<T extends DocumentData = any> = admin.Query<T>;
+export type {QueryClient};
+export type {QueryAdmin};
 
 /**
  * Polimorficzne zapytanie Firestore, ujednolicające Web SDK i Admin SDK.
@@ -17,7 +17,7 @@ export namespace Query {
      * Sprawdza, czy obiekt jest instancją zapytania Firestore (klienta lub admina).
      */
   export function isInstance<T extends DocumentData = any>(obj: any): obj is Query<T> {
-    return obj instanceof $QueryClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().Query);
+    return obj instanceof QueryClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().Query);
   }
 
   /**

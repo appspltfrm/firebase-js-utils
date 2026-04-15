@@ -1,4 +1,4 @@
-import { Query as $QueryClient } from "firebase/firestore";
+import { Query as QueryClient } from "firebase/firestore";
 import { Firestore } from "./Firestore.js";
 export var Query;
 (function (Query) {
@@ -6,7 +6,7 @@ export var Query;
        * Sprawdza, czy obiekt jest instancją zapytania Firestore (klienta lub admina).
        */
     function isInstance(obj) {
-        return obj instanceof $QueryClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().Query);
+        return obj instanceof QueryClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().Query);
     }
     Query.isInstance = isInstance;
     /**

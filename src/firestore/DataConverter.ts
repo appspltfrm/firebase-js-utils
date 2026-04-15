@@ -1,10 +1,10 @@
-import type {firestore as admin} from "firebase-admin";
-import type {FirestoreDataConverter as FirestoreDataConverterClient, SnapshotOptions} from "firebase/firestore";
+import type {FirestoreDataConverter as DataConverterAdmin} from "firebase-admin/firestore";
+import type {FirestoreDataConverter as DataConverterClient, SnapshotOptions} from "firebase/firestore";
 import {DocumentData} from "./DocumentData.js";
 import {QueryDocumentSnapshot, QueryDocumentSnapshotAdmin, QueryDocumentSnapshotClient} from "./QueryDocumentSnapshot.js";
 
-export type DataConverterClient<T = any> = FirestoreDataConverterClient<T>;
-export type DataConverterAdmin<T = any> = admin.FirestoreDataConverter<T>;
+export type {DataConverterClient};
+export type {DataConverterAdmin};
 
 export abstract class DataConverter<T = any> implements DataConverterClient<T>, DataConverterAdmin<T> {
 
