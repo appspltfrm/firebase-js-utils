@@ -19,6 +19,7 @@ export declare abstract class UniversalFirebaseContext {
        * Zwraca instancję Firestore (klienta lub admina).
        */
     abstract get firestore(): Firestore;
+    isFirestoreEmulator(): boolean;
     /**
        * Tworzy zapytanie Firestore na podstawie ścieżki lub istniejącej kolekcji oraz zestawu ograniczeń.
        * Automatycznie ujednolica składnię zapytań dla obu typów SDK.

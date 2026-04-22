@@ -33,6 +33,10 @@ export abstract class UniversalFirebaseContext {
      */
   abstract get firestore(): Firestore;
 
+  isFirestoreEmulator() {
+    return false;
+  }
+
   /**
      * Tworzy zapytanie Firestore na podstawie ścieżki lub istniejącej kolekcji oraz zestawu ograniczeń.
      * Automatycznie ujednolica składnię zapytań dla obu typów SDK.

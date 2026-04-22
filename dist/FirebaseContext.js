@@ -9,6 +9,9 @@ import { RestQuery } from "./firestore/rest.js";
  * @category Context
  */
 export class UniversalFirebaseContext {
+    isFirestoreEmulator() {
+        return false;
+    }
 }
 /**
  * Implementacja kontekstu Firebase przeznaczona dla środowiska klienta (Web SDK).
