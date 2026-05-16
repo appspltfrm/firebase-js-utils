@@ -30,10 +30,10 @@ export class FirebaseContextClient extends UniversalFirebaseContext {
         return buildQuery(collection, ...queryConstraints);
     }
     firestoreCollection(path) {
-        return collectionReference(this.firestore, path);
+        return collectionReference(this.firestore(), path);
     }
     firestoreDocument(path) {
-        return documentReference(this.firestore, path);
+        return documentReference(this.firestore(), path);
     }
 }
 /**
@@ -47,10 +47,10 @@ export class FirebaseContextAdmin extends UniversalFirebaseContext {
         return buildQuery(collection, ...queryConstraints);
     }
     firestoreCollection(path) {
-        return collectionReference(this.firestore, path);
+        return collectionReference(this.firestore(), path);
     }
     firestoreDocument(path) {
-        return documentReference(this.firestore, path);
+        return documentReference(this.firestore(), path);
     }
 }
 //# sourceMappingURL=FirebaseContext.js.map

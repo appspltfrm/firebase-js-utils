@@ -15,10 +15,15 @@ interface CommitResult<SuccessResult = any> {
 
 export abstract class AutoWriteBatch {
 
-  protected constructor(readonly firestore: Firestore) {
+  protected constructor(readonly firestore: Firestore, options?: AutoWriteBatchOptions) {
+    if (options) {
+      this.dryRun = !!options?.dryRun;
+    }
   }
 
   onCommit?: (result: CommitResult) => void;
+
+  protected dryRun = false;
 
   protected operations: [method: "set" | "delete" | "update" | "create", args: any[]][] = [];
 
@@ -93,9 +98,11 @@ export abstract class AutoWriteBatch {
         if (batchCount > 0) {
           try {
 
-            const r = await batch.commit();
-            if (Array.isArray(r)) {
-              successResults.push(...r);
+            if (!this.dryRun) {
+              const r = await batch.commit();
+              if (Array.isArray(r)) {
+                successResults.push(...r);
+              }
             }
 
             successCount += batchCount;
@@ -160,8 +167,8 @@ interface AutoWriteBatchClientMethods {
 
 export class AutoWriteBatchClient extends AutoWriteBatch implements AutoWriteBatchClientMethods {
 
-  constructor(readonly firestore: FirestoreClient) {
-    super(firestore);
+  constructor(readonly firestore: FirestoreClient, options?: AutoWriteBatchOptions) {
+    super(firestore, options);
   }
 
 }
@@ -188,8 +195,8 @@ interface AutoWriteBatchAdminMethods {
 
 export class AutoWriteBatchAdmin extends AutoWriteBatch implements AutoWriteBatchAdminMethods {
 
-  constructor(readonly firestore: FirestoreAdmin) {
-    super(firestore);
+  constructor(readonly firestore: FirestoreAdmin, options?: AutoWriteBatchOptions) {
+    super(firestore, options);
   }
 
   create(documentRef: DocumentReferenceAdmin<any>, data: any) {
@@ -211,14 +218,21 @@ export namespace AutoWriteBatch {
 
 }
 
-export function autoWriteBatch(firestore: FirestoreAdmin): AutoWriteBatchAdmin;
+export type AutoWriteBatchOptions = {
+  /**
+   * When true, commit clears the queue, but do not commit data to the database.
+   */
+  dryRun?: boolean;
+}
 
-export function autoWriteBatch(firestore: FirestoreClient): AutoWriteBatchClient;
+export function autoWriteBatch(firestore: FirestoreAdmin, options?: AutoWriteBatchOptions): AutoWriteBatchAdmin;
 
-export function autoWriteBatch(firestore: Firestore): AutoWriteBatch {
+export function autoWriteBatch(firestore: FirestoreClient, options?: AutoWriteBatchOptions): AutoWriteBatchClient;
+
+export function autoWriteBatch(firestore: Firestore, options?: AutoWriteBatchOptions): AutoWriteBatch {
   if (Firestore.isClient(firestore)) {
-    return new AutoWriteBatchClient(firestore);
+    return new AutoWriteBatchClient(firestore, options);
   } else {
-    return new AutoWriteBatchAdmin(firestore);
+    return new AutoWriteBatchAdmin(firestore, options);
   }
 }

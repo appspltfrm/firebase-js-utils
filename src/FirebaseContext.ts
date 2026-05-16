@@ -29,9 +29,9 @@ import {RestQuery} from "./firestore/rest.js";
 export abstract class UniversalFirebaseContext {
 
   /**
-     * Zwraca instancję Firestore (klienta lub admina).
+     * Zwraca domyślną instancję Firestore (klienta lub admina).
      */
-  abstract get firestore(): Firestore;
+  abstract firestore(): Firestore;
 
   isFirestoreEmulator() {
     return false;
@@ -78,7 +78,7 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
 
   abstract get firebase(): FirebaseApp;
 
-  abstract get firestore(): FirestoreClient;
+  abstract firestore(): FirestoreClient;
 
   abstract get auth(): Auth;
 
@@ -109,11 +109,11 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
   }
 
   firestoreCollection<T extends DocumentData = any>(path: string): CollectionReferenceClient<T> {
-    return collectionReference(this.firestore, path);
+    return collectionReference(this.firestore(), path);
   }
 
   firestoreDocument<T extends DocumentData = any>(path: string): DocumentReferenceClient<T> {
-    return documentReference(this.firestore, path);
+    return documentReference(this.firestore(), path);
   }
 }
 
@@ -123,7 +123,7 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
  * @category Context
  */
 export abstract class FirebaseContextAdmin extends UniversalFirebaseContext {
-  abstract get firestore(): FirestoreAdmin;
+  abstract firestore(): FirestoreAdmin;
 
   firestoreQuery<T extends DocumentData = any>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryAdmin<T>;
 
@@ -135,11 +135,11 @@ export abstract class FirebaseContextAdmin extends UniversalFirebaseContext {
   }
 
   firestoreCollection<T extends DocumentData = any>(path: string): CollectionReferenceAdmin<T> {
-    return collectionReference(this.firestore, path);
+    return collectionReference(this.firestore(), path);
   }
 
   firestoreDocument<T extends DocumentData = any>(path: string): DocumentReferenceAdmin<T> {
-    return documentReference(this.firestore, path);
+    return documentReference(this.firestore(), path);
   }
 }
 

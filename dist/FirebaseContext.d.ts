@@ -16,9 +16,9 @@ import { RestQuery } from "./firestore/rest.js";
  */
 export declare abstract class UniversalFirebaseContext {
     /**
-       * Zwraca instancję Firestore (klienta lub admina).
+       * Zwraca domyślną instancję Firestore (klienta lub admina).
        */
-    abstract get firestore(): Firestore;
+    abstract firestore(): Firestore;
     isFirestoreEmulator(): boolean;
     /**
        * Tworzy zapytanie Firestore na podstawie ścieżki lub istniejącej kolekcji oraz zestawu ograniczeń.
@@ -53,7 +53,7 @@ export declare abstract class UniversalFirebaseContext {
  */
 export declare abstract class FirebaseContextClient extends UniversalFirebaseContext {
     abstract get firebase(): FirebaseApp;
-    abstract get firestore(): FirestoreClient;
+    abstract firestore(): FirestoreClient;
     abstract get auth(): Auth;
     /**
        * Zwraca aktualnie zalogowanego użytkownika (tylko klient).
@@ -78,7 +78,7 @@ export declare abstract class FirebaseContextClient extends UniversalFirebaseCon
  * @category Context
  */
 export declare abstract class FirebaseContextAdmin extends UniversalFirebaseContext {
-    abstract get firestore(): FirestoreAdmin;
+    abstract firestore(): FirestoreAdmin;
     firestoreQuery<T extends DocumentData = any>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryAdmin<T>;
     firestoreQuery<T extends DocumentData = any>(collection: CollectionReferenceAdmin<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryAdmin<T>;
     firestoreCollection<T extends DocumentData = any>(path: string): CollectionReferenceAdmin<T>;

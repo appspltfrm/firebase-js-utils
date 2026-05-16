@@ -2,10 +2,14 @@ import { writeBatch } from "firebase/firestore";
 import { Firestore } from "./Firestore.js";
 export class AutoWriteBatch {
     firestore;
-    constructor(firestore) {
+    constructor(firestore, options) {
         this.firestore = firestore;
+        if (options) {
+            this.dryRun = !!options?.dryRun;
+        }
     }
     onCommit;
+    dryRun = false;
     operations = [];
     limit$ = 249;
     successCount$ = 0;
@@ -57,9 +61,11 @@ export class AutoWriteBatch {
             const commit = async () => {
                 if (batchCount > 0) {
                     try {
-                        const r = await batch.commit();
-                        if (Array.isArray(r)) {
-                            successResults.push(...r);
+                        if (!this.dryRun) {
+                            const r = await batch.commit();
+                            if (Array.isArray(r)) {
+                                successResults.push(...r);
+                            }
                         }
                         successCount += batchCount;
                     }
@@ -106,15 +112,15 @@ export class AutoWriteBatch {
 }
 export class AutoWriteBatchClient extends AutoWriteBatch {
     firestore;
-    constructor(firestore) {
-        super(firestore);
+    constructor(firestore, options) {
+        super(firestore, options);
         this.firestore = firestore;
     }
 }
 export class AutoWriteBatchAdmin extends AutoWriteBatch {
     firestore;
-    constructor(firestore) {
-        super(firestore);
+    constructor(firestore, options) {
+        super(firestore, options);
         this.firestore = firestore;
     }
     create(documentRef, data) {
@@ -132,12 +138,12 @@ export class AutoWriteBatchAdmin extends AutoWriteBatch {
     }
     AutoWriteBatch.isAdmin = isAdmin;
 })(AutoWriteBatch || (AutoWriteBatch = {}));
-export function autoWriteBatch(firestore) {
+export function autoWriteBatch(firestore, options) {
     if (Firestore.isClient(firestore)) {
-        return new AutoWriteBatchClient(firestore);
+        return new AutoWriteBatchClient(firestore, options);
     }
     else {
-        return new AutoWriteBatchAdmin(firestore);
+        return new AutoWriteBatchAdmin(firestore, options);
     }
 }
 //# sourceMappingURL=AutoWriteBatch.js.map

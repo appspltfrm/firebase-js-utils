@@ -11,8 +11,9 @@ interface CommitResult<SuccessResult = any> {
 }
 export declare abstract class AutoWriteBatch {
     readonly firestore: Firestore;
-    protected constructor(firestore: Firestore);
+    protected constructor(firestore: Firestore, options?: AutoWriteBatchOptions);
     onCommit?: (result: CommitResult) => void;
+    protected dryRun: boolean;
     protected operations: [method: "set" | "delete" | "update" | "create", args: any[]][];
     protected limit$: number;
     protected successCount$: number;
@@ -39,7 +40,7 @@ interface AutoWriteBatchClientMethods {
 }
 export declare class AutoWriteBatchClient extends AutoWriteBatch implements AutoWriteBatchClientMethods {
     readonly firestore: FirestoreClient;
-    constructor(firestore: FirestoreClient);
+    constructor(firestore: FirestoreClient, options?: AutoWriteBatchOptions);
 }
 interface AutoWriteBatchAdminMethods {
     readonly firestore: FirestoreAdmin;
@@ -53,13 +54,19 @@ interface AutoWriteBatchAdminMethods {
 }
 export declare class AutoWriteBatchAdmin extends AutoWriteBatch implements AutoWriteBatchAdminMethods {
     readonly firestore: FirestoreAdmin;
-    constructor(firestore: FirestoreAdmin);
+    constructor(firestore: FirestoreAdmin, options?: AutoWriteBatchOptions);
     create(documentRef: DocumentReferenceAdmin<any>, data: any): this;
 }
 export declare namespace AutoWriteBatch {
     function isClient(batch: AutoWriteBatch): batch is AutoWriteBatchClient;
     function isAdmin(batch: AutoWriteBatch): batch is AutoWriteBatchAdmin;
 }
-export declare function autoWriteBatch(firestore: FirestoreAdmin): AutoWriteBatchAdmin;
-export declare function autoWriteBatch(firestore: FirestoreClient): AutoWriteBatchClient;
+export type AutoWriteBatchOptions = {
+    /**
+     * When true, commit clears the queue, but do not commit data to the database.
+     */
+    dryRun?: boolean;
+};
+export declare function autoWriteBatch(firestore: FirestoreAdmin, options?: AutoWriteBatchOptions): AutoWriteBatchAdmin;
+export declare function autoWriteBatch(firestore: FirestoreClient, options?: AutoWriteBatchOptions): AutoWriteBatchClient;
 export {};
