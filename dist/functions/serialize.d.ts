@@ -1,4 +1,4 @@
-import { SerializationOptions } from "@appspltfrm/js-utils/json";
+import { SerializationOptions } from "@appspltfrm/js-utils/json/SerializationOptions.js";
 /**
  * Serializuje obiekt do formatu JSON, obsługując typy specyficzne dla Firebase (np. Timestamp).
  * Rozszerza standardową serializację z `@appspltfrm/js-utils/json`, dodając obsługę ucieczki pola `@type`.

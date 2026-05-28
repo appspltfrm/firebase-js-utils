@@ -1,4 +1,5 @@
-import {SerializationOptions, serialize as serializeImpl} from "@appspltfrm/js-utils/json";
+import {SerializationOptions} from "@appspltfrm/js-utils/json/SerializationOptions.js";
+import {serialize as serializeImpl} from "@appspltfrm/js-utils/json/serialize.js";
 
 const typeField = "@type";
 const fixedTypeField = `${typeField}@`;

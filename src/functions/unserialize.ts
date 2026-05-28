@@ -1,5 +1,6 @@
-import {Type} from "@appspltfrm/js-utils/core";
-import {SerializationOptions, unserialize as unserializeImpl} from "@appspltfrm/js-utils/json";
+import {Type} from "@appspltfrm/js-utils/core/Type.js";
+import type {SerializationOptions} from "@appspltfrm/js-utils/json/SerializationOptions.js";
+import {unserialize as unserializeImpl} from "@appspltfrm/js-utils/json/unserialize.js";
 
 const typeField = "@type";
 const fixedTypeField = `${typeField}@`;

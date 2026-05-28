@@ -1,4 +1,4 @@
-import { unserialize as unserializeImpl } from "@appspltfrm/js-utils/json";
+import { unserialize as unserializeImpl } from "@appspltfrm/js-utils/json/unserialize.js";
 const typeField = "@type";
 const fixedTypeField = `${typeField}@`;
 /**

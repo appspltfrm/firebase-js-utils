@@ -18,7 +18,7 @@ export declare abstract class UniversalFirebaseContext {
     /**
        * Zwraca domyślną instancję Firestore (klienta lub admina).
        */
-    abstract firestore(): Firestore;
+    abstract firestore(dbName?: string): Firestore;
     isFirestoreEmulator(): boolean;
     /**
        * Tworzy zapytanie Firestore na podstawie ścieżki lub istniejącej kolekcji oraz zestawu ograniczeń.
@@ -78,7 +78,7 @@ export declare abstract class FirebaseContextClient extends UniversalFirebaseCon
  * @category Context
  */
 export declare abstract class FirebaseContextAdmin extends UniversalFirebaseContext {
-    abstract firestore(): FirestoreAdmin;
+    abstract firestore(dbName?: string): FirestoreAdmin;
     firestoreQuery<T extends DocumentData = any>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryAdmin<T>;
     firestoreQuery<T extends DocumentData = any>(collection: CollectionReferenceAdmin<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryAdmin<T>;
     firestoreCollection<T extends DocumentData = any>(path: string): CollectionReferenceAdmin<T>;

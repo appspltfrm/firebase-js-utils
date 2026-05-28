@@ -1,4 +1,4 @@
-import { Serializer } from "@appspltfrm/js-utils/json";
+import { Serializer } from "@appspltfrm/js-utils/json/Serializer.js";
 import { Timestamp } from "./Timestamp.js";
 export class TimestampSerializer extends Serializer {
     timestampClass;

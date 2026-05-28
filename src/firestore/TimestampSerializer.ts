@@ -1,5 +1,6 @@
-import {AssignableType} from "@appspltfrm/js-utils/core";
-import {SerializationOptions, Serializer} from "@appspltfrm/js-utils/json";
+import {AssignableType} from "@appspltfrm/js-utils/core/Type.js";
+import type {SerializationOptions} from "@appspltfrm/js-utils/json/SerializationOptions.js";
+import {Serializer} from "@appspltfrm/js-utils/json/Serializer.js";
 import {Timestamp} from "./Timestamp.js";
 
 export class TimestampSerializer extends Serializer {

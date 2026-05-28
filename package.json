@@ -1,6 +1,6 @@
 {
   "name": "@appspltfrm/firebase-js-utils",
-  "version": "4.0.7",
+  "version": "4.0.8",
   "author": "Unipla",
   "type": "module",
   "scripts": {
@@ -29,15 +29,10 @@
     "typescript": "^5.9.3"
   },
   "exports": {
-    ".": {
-      "monorepo": "./src/public.ts",
-      "types": "./dist/public.d.ts",
-      "default": "./dist/public.js"
-    },
     "./*": {
-      "monorepo": "./src/*/public.ts",
-      "types": "./dist/*/public.d.ts",
-      "default": "./dist/*/public.js"
+      "monorepo": "./src/*",
+      "types": "./dist/*",
+      "default": "./dist/*"
     }
   },
   "sideEffects": false

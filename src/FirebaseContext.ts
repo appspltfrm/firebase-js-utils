@@ -31,7 +31,7 @@ export abstract class UniversalFirebaseContext {
   /**
      * Zwraca domyślną instancję Firestore (klienta lub admina).
      */
-  abstract firestore(): Firestore;
+  abstract firestore(dbName?: string): Firestore;
 
   isFirestoreEmulator() {
     return false;
@@ -123,7 +123,7 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
  * @category Context
  */
 export abstract class FirebaseContextAdmin extends UniversalFirebaseContext {
-  abstract firestore(): FirestoreAdmin;
+  abstract firestore(dbName?: string): FirestoreAdmin;
 
   firestoreQuery<T extends DocumentData = any>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryAdmin<T>;
 

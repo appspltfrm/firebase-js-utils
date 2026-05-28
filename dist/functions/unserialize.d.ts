@@ -1,5 +1,5 @@
-import { Type } from "@appspltfrm/js-utils/core";
-import { SerializationOptions } from "@appspltfrm/js-utils/json";
+import { Type } from "@appspltfrm/js-utils/core/Type.js";
+import type { SerializationOptions } from "@appspltfrm/js-utils/json/SerializationOptions.js";
 /**
  * Deserializuje obiekt JSON z powrotem do typów JS/Firebase.
  * Odwraca operację `serialize`, przywracając pole `@type` z `fixedTypeField`.

@@ -1,4 +1,4 @@
-import { sleep } from "@appspltfrm/js-utils/core";
+import { sleep } from "@appspltfrm/js-utils/core/sleep.js";
 import { buildQuery } from "./buildQuery.js";
 import { deleteDocument } from "./deleteDocument.js";
 import { DocumentReference } from "./DocumentReference.js";
