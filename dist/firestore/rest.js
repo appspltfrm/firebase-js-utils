@@ -1,21 +1,26 @@
 import { Bytes, DocumentReference, GeoPoint, Timestamp } from "@firebase/firestore";
 import { doc as firestoreDocument, getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+const defaultDatabaseId = "(default)";
 class RestProcessor {
-    constructor(firebaseOrProto) {
+    constructor(firebaseOrProto, databaseId) {
         if (firebaseOrProto instanceof RestProcessor) {
             this.firebase = firebaseOrProto.firebase;
             this.auth = firebaseOrProto.auth;
+            this.databaseId = firebaseOrProto.databaseId;
         }
         else if (firebaseOrProto.firebase) {
             this.firebase = firebaseOrProto.firebase;
             this.auth = firebaseOrProto.auth;
+            this.databaseId = databaseId || defaultDatabaseId;
         }
         else {
             this.firebase = firebaseOrProto;
+            this.databaseId = databaseId || defaultDatabaseId;
         }
     }
     firebase;
+    databaseId;
     auth;
     authReady = false;
     firestore;
@@ -69,7 +74,7 @@ class RestProcessor {
         throw new Error(`Unsupported REST value: ${JSON.stringify(value)}`);
     }
     async fetch(body, endPointSuffix) {
-        const endpoint = `https://firestore.googleapis.com/v1/projects/${this.firebase.options.projectId}/databases/(default)/documents${endPointSuffix}`;
+        const endpoint = `https://firestore.googleapis.com/v1/projects/${this.firebase.options.projectId}/databases/${this.databaseId}/documents${endPointSuffix}`;
         if (!this.auth) {
             this.auth = getAuth(this.firebase);
         }
@@ -105,8 +110,8 @@ class RestProcessor {
     }
 }
 export class RestDocument extends RestProcessor {
-    constructor(firebaseOrProto, documentPath) {
-        super(firebaseOrProto);
+    constructor(firebaseOrProto, documentPath, databaseId) {
+        super(firebaseOrProto, databaseId);
         documentPath = firebaseOrProto instanceof RestDocument ? firebaseOrProto.documentPath : documentPath;
         if (documentPath.startsWith("/")) {
             documentPath = documentPath.substring(1);
@@ -146,8 +151,8 @@ export class RestDocument extends RestProcessor {
     }
 }
 export class RestQuery extends RestProcessor {
-    constructor(firebaseOrProto, collectionId) {
-        super(firebaseOrProto);
+    constructor(firebaseOrProto, collectionId, databaseId) {
+        super(firebaseOrProto, databaseId);
         const proto = firebaseOrProto instanceof RestQuery ? firebaseOrProto : undefined;
         this.query = {
             from: typeof collectionId === "string" ? [{ collectionId: collectionId }] : proto.query.from.map(({ collectionId }) => ({ collectionId }))
@@ -281,6 +286,9 @@ export class RestQuery extends RestProcessor {
             }))
         };
     }
+}
+export function restCollectionQuery(firestore, collectionName, ...constraints) {
+    return new RestQuery(firestore.app, collectionName, firestore._databaseId?.database).apply(...constraints);
 }
 class RestFirestoreError extends Error {
     code;

@@ -1,8 +1,8 @@
-import type { firestore as $admin } from "firebase-admin";
-import type { Firestore as FirestoreAdmin } from "firebase-admin/firestore";
+import type { Firestore as FirestoreAdmin } from "@google-cloud/firestore";
 import type { Firestore as FirestoreClient } from "firebase/firestore";
-export type { FirestoreClient };
-export type { FirestoreAdmin };
+import type * as $admin from "@google-cloud/firestore";
+export type { Firestore as FirestoreClient } from "firebase/firestore";
+export type { Firestore as FirestoreAdmin } from "@google-cloud/firestore";
 /**
  * Polimorficzny typ Firestore, reprezentujący albo Web SDK, albo Admin SDK.
  */

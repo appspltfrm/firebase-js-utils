@@ -14,22 +14,28 @@ import {FirebaseApp} from "firebase/app";
 import {Firestore, doc as firestoreDocument, getFirestore} from "firebase/firestore";
 import {Auth, getAuth} from "firebase/auth";
 
+const defaultDatabaseId = "(default)";
+
 class RestProcessor<T extends DocumentData = any> {
 
-  constructor(firebaseOrProto: FirebaseApp | FirebaseContextClient | RestProcessor) {
+  constructor(firebaseOrProto: FirebaseApp | FirebaseContextClient | RestProcessor, databaseId?: string) {
 
     if (firebaseOrProto instanceof RestProcessor) {
       this.firebase = firebaseOrProto.firebase;
       this.auth = firebaseOrProto.auth;
+      this.databaseId = firebaseOrProto.databaseId;
     } else if ((firebaseOrProto as FirebaseContextClient).firebase) {
       this.firebase = (firebaseOrProto as FirebaseContextClient).firebase;
       this.auth = (firebaseOrProto as FirebaseContextClient).auth;
+      this.databaseId = databaseId || defaultDatabaseId;
     } else {
       this.firebase = firebaseOrProto as FirebaseApp;
+      this.databaseId = databaseId || defaultDatabaseId;
     }
   }
 
   protected readonly firebase: FirebaseApp;
+  protected readonly databaseId: string;
   protected auth!: Auth;
   private authReady = false;
   protected firestore!: Firestore;
@@ -90,7 +96,7 @@ class RestProcessor<T extends DocumentData = any> {
 
   protected async fetch(body: any, endPointSuffix: string) {
 
-    const endpoint = `https://firestore.googleapis.com/v1/projects/${this.firebase.options.projectId}/databases/(default)/documents${endPointSuffix}`;
+    const endpoint = `https://firestore.googleapis.com/v1/projects/${this.firebase.options.projectId}/databases/${this.databaseId}/documents${endPointSuffix}`;
 
     if (!this.auth) {
       this.auth = getAuth(this.firebase);
@@ -134,11 +140,11 @@ class RestProcessor<T extends DocumentData = any> {
 }
 
 export class RestDocument<T extends DocumentData = any> extends RestProcessor<T> {
-  constructor(firebase: FirebaseApp, documentPath: string);
-  constructor(firebaseContext: FirebaseContextClient, documentPath: string);
+  constructor(firebase: FirebaseApp, documentPath: string, databaseId?: string);
+  constructor(firebaseContext: FirebaseContextClient, documentPath: string, databaseId?: string);
   constructor(proto: RestDocument);
-  constructor(firebaseOrProto: FirebaseApp | FirebaseContextClient | RestDocument, documentPath?: string) {
-    super(firebaseOrProto);
+  constructor(firebaseOrProto: FirebaseApp | FirebaseContextClient | RestDocument, documentPath?: string, databaseId?: string) {
+    super(firebaseOrProto, databaseId);
 
     documentPath = firebaseOrProto instanceof RestDocument ? firebaseOrProto.documentPath : documentPath!;
     if (documentPath.startsWith("/")) {
@@ -185,11 +191,11 @@ export class RestDocument<T extends DocumentData = any> extends RestProcessor<T>
 
 export class RestQuery<T extends DocumentData = any> extends RestProcessor<T> {
 
-  constructor(firebase: FirebaseApp, collectionId: string);
-  constructor(firebaseContext: FirebaseContextClient, collectionId: string);
+  constructor(firebase: FirebaseApp, collectionId: string, databaseId?: string);
+  constructor(firebaseContext: FirebaseContextClient, collectionId: string, databaseId?: string);
   constructor(proto: RestQuery);
-  constructor(firebaseOrProto: FirebaseApp | FirebaseContextClient | RestQuery, collectionId?: string) {
-    super(firebaseOrProto);
+  constructor(firebaseOrProto: FirebaseApp | FirebaseContextClient | RestQuery, collectionId?: string, databaseId?: string) {
+    super(firebaseOrProto, databaseId);
 
     const proto = firebaseOrProto instanceof RestQuery ? firebaseOrProto : undefined;
 
@@ -341,6 +347,10 @@ export class RestQuery<T extends DocumentData = any> extends RestProcessor<T> {
     } as RestQuerySnapshot<T>;
   }
 
+}
+
+export function restCollectionQuery(firestore: Firestore, collectionName: string, ...constraints: Array<RestQueryConstraint | undefined | false>) {
+  return new RestQuery(firestore.app, collectionName, (firestore as any)._databaseId?.database).apply(...constraints);
 }
 
 class RestFirestoreError extends Error {

@@ -1,0 +1,1 @@
+{"version":3,"file":"collectionQuery.js","sourceRoot":"","sources":["../../src/firestore/collectionQuery.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,UAAU,EAAC,MAAM,iBAAiB,CAAC;AAC3C,OAAO,EAAC,mBAAmB,EAAC,MAAM,0BAA0B,CAAC;AAiB7D,MAAM,UAAU,eAAe,CAA+B,SAAoB,EAAE,cAAsB,EAAE,GAAG,gBAA4D;IACzK,OAAO,UAAU,CAAC,mBAAmB,CAAI,SAAS,EAAE,cAAc,CAAC,EAAE,GAAG,gBAAgB,CAAC,CAAC;AAC5F,CAAC"}

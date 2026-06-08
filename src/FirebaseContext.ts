@@ -1,5 +1,6 @@
 import {FirebaseApp} from "firebase/app";
 import {Auth} from "firebase/auth";
+import {getFunctions, httpsCallableFromURL} from "firebase/functions";
 import {AuthUser} from "./client-auth/AuthUser.js";
 import {buildQuery} from "./firestore/buildQuery.js";
 import {
@@ -16,9 +17,12 @@ import {
   DocumentReferenceClient
 } from "./firestore/DocumentReference.js";
 import {Firestore, FirestoreAdmin, FirestoreClient} from "./firestore/Firestore.js";
+import {Pipeline, PipelineAdmin, PipelineClient} from "./firestore/Pipeline.js";
 import {Query, QueryAdmin, QueryClient} from "./firestore/Query.js";
 import {QueryConstraint, RestQueryConstraint} from "./firestore/QueryConstraint.js";
-import {RestQuery} from "./firestore/rest.js";
+import {restCollectionQuery, RestQuery} from "./firestore/rest.js";
+import {serialize} from "./functions/serialize.js";
+import {unserialize} from "./functions/unserialize.js";
 
 /**
  * Abstrakcyjna klasa bazowa dla kontekstu Firebase, ujednolicająca dostęp do Firestore w różnych środowiskach.
@@ -31,19 +35,12 @@ export abstract class UniversalFirebaseContext {
   /**
      * Zwraca domyślną instancję Firestore (klienta lub admina).
      */
-  abstract firestore(dbName?: string): Firestore;
+  abstract firestore(databaseId?: string): Firestore;
 
   isFirestoreEmulator() {
     return false;
   }
 
-  /**
-     * Tworzy zapytanie Firestore na podstawie ścieżki lub istniejącej kolekcji oraz zestawu ograniczeń.
-     * Automatycznie ujednolica składnię zapytań dla obu typów SDK.
-     *
-     * @param path Or collection reference.
-     * @param queryConstraints Constraints to apply (where, orderBy, limit, etc.).
-     */
   abstract firestoreQuery<T extends DocumentData = any>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;
 
   abstract firestoreQuery<T extends DocumentData = any>(collection: CollectionReference<T>, ...queryConstraints: Array<QueryConstraint | undefined | false>): Query<T>;
@@ -57,6 +54,8 @@ export abstract class UniversalFirebaseContext {
      * Zwraca referencję do dokumentu o podanej ścieżce.
      */
   abstract firestoreDocument<T extends DocumentData = any>(path: string): DocumentReference<T>;
+
+  abstract firestorePipeline(collectionOrQuery: string | CollectionReference | Query): Pipeline;
 
   /**
      * (Opcjonalnie) Zwraca URL do funkcji Cloud Function o podanej nazwie.
@@ -78,7 +77,7 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
 
   abstract get firebase(): FirebaseApp;
 
-  abstract firestore(): FirestoreClient;
+  abstract firestore(databaseId?: string): FirestoreClient;
 
   abstract get auth(): Auth;
 
@@ -92,11 +91,23 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
      */
   abstract functionUrl(name: string): string;
 
+  async functionCall<RequestData = unknown, ResponseData = unknown>(name: string, data?: RequestData): Promise<ResponseData> {
+    const func = httpsCallableFromURL<RequestData, ResponseData>(getFunctions(this.firebase), this.functionUrl(name));
+    if (typeof data === "object") {
+      data = serialize(data);
+    }
+    const resp = await func(data);
+    if (typeof resp.data === "object") {
+      return unserialize(resp.data);
+    }
+    return resp.data;
+  }
+
   /**
      * Specyficzne dla klienta zapytanie REST (np. dla optymalizacji lub omijania ograniczeń SDK).
      */
   firestoreRestQuery<T extends DocumentData = any>(path: string, ...queryConstraints: Array<RestQueryConstraint | undefined | false>): RestQuery<T> {
-    return new RestQuery(this, path).apply(...queryConstraints);
+    return restCollectionQuery(this.firestore(), path).apply(...queryConstraints);
   }
 
   firestoreQuery<T extends DocumentData = any>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;
@@ -115,6 +126,10 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
   firestoreDocument<T extends DocumentData = any>(path: string): DocumentReferenceClient<T> {
     return documentReference(this.firestore(), path);
   }
+
+  firestorePipeline(collectionOrQuery: string | CollectionReferenceClient | QueryClient): PipelineClient {
+    return this.firestore().pipeline().collection(typeof collectionOrQuery === "string" ? collectionReference(this.firestore(), collectionOrQuery) : collectionOrQuery);
+  }
 }
 
 /**
@@ -123,7 +138,7 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
  * @category Context
  */
 export abstract class FirebaseContextAdmin extends UniversalFirebaseContext {
-  abstract firestore(dbName?: string): FirestoreAdmin;
+  abstract firestore(databaseId?: string): FirestoreAdmin;
 
   firestoreQuery<T extends DocumentData = any>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryAdmin<T>;
 
@@ -140,6 +155,19 @@ export abstract class FirebaseContextAdmin extends UniversalFirebaseContext {
 
   firestoreDocument<T extends DocumentData = any>(path: string): DocumentReferenceAdmin<T> {
     return documentReference(this.firestore(), path);
+  }
+
+  firestorePipeline(collectionOrQuery: string | CollectionReferenceAdmin | QueryAdmin): PipelineAdmin {
+
+    const pipeline = this.firestore("enterprise").pipeline();
+
+    if (typeof collectionOrQuery === "string") {
+      return pipeline.collection(this.firestoreCollection(collectionOrQuery));
+    } else if ((collectionOrQuery as CollectionReferenceAdmin).path) {
+      return pipeline.collection(collectionOrQuery as CollectionReferenceAdmin);
+    } else {
+      return pipeline.createFrom(collectionOrQuery);
+    }
   }
 }
 

@@ -1,4 +1,5 @@
 import {DocumentData} from "../DocumentData.js";
+import {Pipeline} from "../Pipeline.js";
 import {Query} from "../Query.js";
 import {RestQuery} from "../rest.js";
 
@@ -14,7 +15,7 @@ export interface FilterFieldSpec<T extends DocumentData = any> {
   type: FilterFieldType;
   operators: FilterOperator[];
   operatorLabel?: (args: {operator: FilterOperator}) => string;
-  join?: {query: Query<T> | RestQuery<T>, dataField: string, whereField?: string, resultField: string, type: "in"};
+  join?: {query: Query<T> | RestQuery<T> | Pipeline, dataField: string, whereField?: string, resultField: string, type: "in"};
 }
 
 export enum FilterOperator {

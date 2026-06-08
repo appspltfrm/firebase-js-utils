@@ -4,27 +4,47 @@ import {buildQuery} from "../buildQuery.js";
 import {DocumentData} from "../DocumentData.js";
 import {getCountFromServer} from "../getCountFromServer.js";
 import {getDataFromServer} from "../getDataFromServer.js";
+import {Pipeline} from "../Pipeline.js";
 import {Query} from "../Query.js";
 import {RestQuery} from "../rest.js";
+import {getFilteredDataFromPipeline, PipelineQuerySort} from "./_getFilteredDataFromPipeline.js";
 import {generateTextSearchTrigrams} from "./generateTextSearchTrigrams.js";
 import {Filter, FilterFieldType, FilterOperator} from "./specs.js";
 import {splitTextSearchWords} from "./splitTextSearchWords.js";
 
-type Args<T extends DocumentData = any> = {
-  query: Query<T> | RestQuery<T>,
-  startAfter?: any[],
-  getStartAfter: (data: T)=> any[],
+type BasicArgs<T extends DocumentData = any> = {
   allData?: T[],
   limit: number,
   filters: Filter.SpecRequired[],
-  transliterate?: (input: string)=> string
+  transliterate?: (input: string) => string,
 };
 
-export async function getFilteredData<T extends DocumentData = any>({filters, query: baseQuery, transliterate, limit, startAfter, getStartAfter, allData}: Args<T>) {
+type StandardArgs<T extends DocumentData = any> = BasicArgs<T> & {
+  query: Query<T> | RestQuery<T>,
+  startAfter?: any[],
+  getStartAfter: (data: T) => any[],
+};
 
-  const hasLimit = limit > 0;
+type PipelineArgs<T extends DocumentData = any> = BasicArgs<T> & {
+  query: Pipeline,
+  /** Sort for the pipeline path (when `query` is a {@link Pipeline}): drives the `sort` stage and ordering for `queryOffset`. */
+  querySort?: PipelineQuerySort,
+  /** Offset (rows to skip) for the pipeline path. The Pipeline API has no value cursor, so pagination uses the native `offset` stage instead of `startAfter`. */
+  queryOffset?: number
+};
+
+export async function getFilteredData<T extends DocumentData = any>(props: StandardArgs<T>): Promise<{next: boolean, records: T[]}>;
+
+export async function getFilteredData<T extends DocumentData = any>(props: PipelineArgs<T>): Promise<{next: boolean, records: T[]}>;
+
+export async function getFilteredData<T extends DocumentData = any>(props: StandardArgs<T> | PipelineArgs<T>): Promise<{next: boolean, records: T[]}> {
+
+  const hasLimit = props.limit > 0;
   const result: {next: boolean, records: T[]} = {next: false, records: []};
 
+  const {filters, limit, allData} = props;
+
+  let transliterate = props.transliterate;
   if (!transliterate) {
     transliterate = (await import("transliteration")).transliterate;
   }
@@ -54,30 +74,33 @@ export async function getFilteredData<T extends DocumentData = any>({filters, qu
     if (!joinResults[filter.spec.name]) {
       const join = filter.spec.join!;
 
-      let query = join.query;
-      if (query instanceof RestQuery || Query.isAdmin(query)) {
-        query = buildQuery(query, ["select", join.dataField, join.resultField]);
+      const joinFilters: Filter.SpecRequired[] = [{
+        operator: filter.operator,
+        value: filter.value,
+        field: join.whereField || join.dataField,
+        spec: {
+          name: join.whereField || join.dataField,
+          dataName: join.dataField,
+          queryName: join.whereField,
+          type: filter.spec.type,
+          filterValue: filter.spec.filterValue,
+          operators: filter.spec.operators
+        }
+      }];
+
+      let records: T[];
+
+      if (Pipeline.isInstance(join.query)) {
+        records = (await getFilteredData({limit: -1, query: join.query, transliterate, filters: joinFilters})).records;
+      } else {
+        let query = join.query;
+        if (query instanceof RestQuery || Query.isAdmin(query)) {
+          query = buildQuery(query, ["select", join.dataField, join.resultField]);
+        }
+        records = (await getFilteredData({limit: -1, query, getStartAfter: (data) => data[join.whereField!], transliterate, filters: joinFilters})).records;
       }
 
-      joinResults[filter.spec.name] = (await getFilteredData({
-        limit: -1,
-        query,
-        getStartAfter: (data) => data[join.whereField!],
-        transliterate,
-        filters: [{
-          operator: filter.operator,
-          value: filter.value,
-          field: join.whereField || join.dataField,
-          spec: {
-            name: join.whereField || join.dataField,
-            dataName: join.dataField,
-            queryName: join.whereField,
-            type: filter.spec.type,
-            filterValue: filter.spec.filterValue,
-            operators: filter.spec.operators
-          }
-        }]
-      })).records.map(r => r[join.resultField]);
+      joinResults[filter.spec.name] = records.map(r => r[join.resultField]);
     }
 
     return joinResults[filter.spec.name];
@@ -199,26 +222,88 @@ export async function getFilteredData<T extends DocumentData = any>({filters, qu
     return true;
   };
 
+  // Pipeline server path: push every filter into a single server-side `where` stage and execute once,
+  // skipping the per-filter count probing and in-memory post-filtering of the classic query path.
+  // When `allData` is provided we fall through to the in-memory path below (filtering is query-agnostic).
+  if (Pipeline.isInstance(props.query) && !allData) {
+
+    const pipelineQuery = props.query;
+    const joinValues = new Map<string, any[]>();
+
+    // The client SDK cannot do native joins: resolve each join "alongside" (like the standard path) and pass
+    // the resulting `resultField` values to the helper as an `in`. The admin path uses a native subquery, so it
+    // needs no pre-resolution here.
+    if (Pipeline.isClient(pipelineQuery)) {
+      for (const filter of filtersNormalized) {
+        if (filter.spec.join) {
+          const values = await fetchJoin(filter);
+          if (values.length === 0) {
+            return result;
+          }
+          joinValues.set(filter.spec.name, values);
+        }
+      }
+    }
+
+    return getFilteredDataFromPipeline<T>({
+      pipeline: pipelineQuery,
+      filters: props.filters,
+      querySort: (props as PipelineArgs).querySort,
+      limit,
+      queryOffset: (props as PipelineArgs).queryOffset,
+      joinValues,
+      transliterate
+    });
+  }
+
   if (allData) {
 
     const records: T[] = [];
-    let startAfterFound = false;
 
-    for (const data of allData) {
-      if (await testFilters(data)) {
+    if (Pipeline.isInstance(props.query)) {
 
-        if (startAfter && !startAfterFound) {
-          const d = getStartAfter(data);
-          if (deepEqual(startAfter, d)) {
-            startAfterFound = true;
+      // Pipeline in-memory pagination: skip the first `queryOffset` matching rows (no value cursor).
+      const offset = (props as PipelineArgs).queryOffset ?? 0;
+      let skipped = 0;
+
+      for (const data of allData) {
+        if (await testFilters(data)) {
+
+          if (skipped < offset) {
+            skipped++;
+            continue;
           }
-          continue;
+
+          records.push(data);
+
+          if (hasLimit && records.length === limit + 1) {
+            break;
+          }
         }
+      }
 
-        records.push(data);
+    } else {
 
-        if (hasLimit && records.length === limit + 1) {
-          break;
+      // Standard in-memory pagination: skip until the `startAfter` cursor is found.
+      const {getStartAfter} = props as StandardArgs;
+      const startAfter = (props as StandardArgs).startAfter;
+      let startAfterFound = false;
+
+      for (const data of allData) {
+        if (await testFilters(data)) {
+
+          if (startAfter && !startAfterFound) {
+            if (deepEqual(startAfter, getStartAfter(data))) {
+              startAfterFound = true;
+            }
+            continue;
+          }
+
+          records.push(data);
+
+          if (hasLimit && records.length === limit + 1) {
+            break;
+          }
         }
       }
     }
@@ -227,6 +312,10 @@ export async function getFilteredData<T extends DocumentData = any>({filters, qu
     result.next = hasLimit && records.length > limit;
 
   } else {
+
+    const {query, getStartAfter} = props as StandardArgs;
+    let startAfter = (props as StandardArgs).startAfter;
+    const baseQuery: Query<T> | RestQuery<T> = query;
 
     let bestQueryCount: number | undefined;
     let bestQuery: Query<T> | RestQuery<T> | Array<Query<T> | RestQuery<T>> | undefined;

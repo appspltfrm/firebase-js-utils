@@ -3,14 +3,18 @@ import { deepEqual } from "fast-equals";
 import { buildQuery } from "../buildQuery.js";
 import { getCountFromServer } from "../getCountFromServer.js";
 import { getDataFromServer } from "../getDataFromServer.js";
+import { Pipeline } from "../Pipeline.js";
 import { Query } from "../Query.js";
 import { RestQuery } from "../rest.js";
+import { getFilteredDataFromPipeline } from "./_getFilteredDataFromPipeline.js";
 import { generateTextSearchTrigrams } from "./generateTextSearchTrigrams.js";
 import { FilterFieldType, FilterOperator } from "./specs.js";
 import { splitTextSearchWords } from "./splitTextSearchWords.js";
-export async function getFilteredData({ filters, query: baseQuery, transliterate, limit, startAfter, getStartAfter, allData }) {
-    const hasLimit = limit > 0;
+export async function getFilteredData(props) {
+    const hasLimit = props.limit > 0;
     const result = { next: false, records: [] };
+    const { filters, limit, allData } = props;
+    let transliterate = props.transliterate;
     if (!transliterate) {
         transliterate = (await import("transliteration")).transliterate;
     }
@@ -32,29 +36,31 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
     const fetchJoin = async (filter) => {
         if (!joinResults[filter.spec.name]) {
             const join = filter.spec.join;
-            let query = join.query;
-            if (query instanceof RestQuery || Query.isAdmin(query)) {
-                query = buildQuery(query, ["select", join.dataField, join.resultField]);
+            const joinFilters = [{
+                    operator: filter.operator,
+                    value: filter.value,
+                    field: join.whereField || join.dataField,
+                    spec: {
+                        name: join.whereField || join.dataField,
+                        dataName: join.dataField,
+                        queryName: join.whereField,
+                        type: filter.spec.type,
+                        filterValue: filter.spec.filterValue,
+                        operators: filter.spec.operators
+                    }
+                }];
+            let records;
+            if (Pipeline.isInstance(join.query)) {
+                records = (await getFilteredData({ limit: -1, query: join.query, transliterate, filters: joinFilters })).records;
             }
-            joinResults[filter.spec.name] = (await getFilteredData({
-                limit: -1,
-                query,
-                getStartAfter: (data) => data[join.whereField],
-                transliterate,
-                filters: [{
-                        operator: filter.operator,
-                        value: filter.value,
-                        field: join.whereField || join.dataField,
-                        spec: {
-                            name: join.whereField || join.dataField,
-                            dataName: join.dataField,
-                            queryName: join.whereField,
-                            type: filter.spec.type,
-                            filterValue: filter.spec.filterValue,
-                            operators: filter.spec.operators
-                        }
-                    }]
-            })).records.map(r => r[join.resultField]);
+            else {
+                let query = join.query;
+                if (query instanceof RestQuery || Query.isAdmin(query)) {
+                    query = buildQuery(query, ["select", join.dataField, join.resultField]);
+                }
+                records = (await getFilteredData({ limit: -1, query, getStartAfter: (data) => data[join.whereField], transliterate, filters: joinFilters })).records;
+            }
+            joinResults[filter.spec.name] = records.map(r => r[join.resultField]);
         }
         return joinResults[filter.spec.name];
     };
@@ -163,21 +169,72 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
         }
         return true;
     };
+    // Pipeline server path: push every filter into a single server-side `where` stage and execute once,
+    // skipping the per-filter count probing and in-memory post-filtering of the classic query path.
+    // When `allData` is provided we fall through to the in-memory path below (filtering is query-agnostic).
+    if (Pipeline.isInstance(props.query) && !allData) {
+        const pipelineQuery = props.query;
+        const joinValues = new Map();
+        // The client SDK cannot do native joins: resolve each join "alongside" (like the standard path) and pass
+        // the resulting `resultField` values to the helper as an `in`. The admin path uses a native subquery, so it
+        // needs no pre-resolution here.
+        if (Pipeline.isClient(pipelineQuery)) {
+            for (const filter of filtersNormalized) {
+                if (filter.spec.join) {
+                    const values = await fetchJoin(filter);
+                    if (values.length === 0) {
+                        return result;
+                    }
+                    joinValues.set(filter.spec.name, values);
+                }
+            }
+        }
+        return getFilteredDataFromPipeline({
+            pipeline: pipelineQuery,
+            filters: props.filters,
+            querySort: props.querySort,
+            limit,
+            queryOffset: props.queryOffset,
+            joinValues,
+            transliterate
+        });
+    }
     if (allData) {
         const records = [];
-        let startAfterFound = false;
-        for (const data of allData) {
-            if (await testFilters(data)) {
-                if (startAfter && !startAfterFound) {
-                    const d = getStartAfter(data);
-                    if (deepEqual(startAfter, d)) {
-                        startAfterFound = true;
+        if (Pipeline.isInstance(props.query)) {
+            // Pipeline in-memory pagination: skip the first `queryOffset` matching rows (no value cursor).
+            const offset = props.queryOffset ?? 0;
+            let skipped = 0;
+            for (const data of allData) {
+                if (await testFilters(data)) {
+                    if (skipped < offset) {
+                        skipped++;
+                        continue;
                     }
-                    continue;
+                    records.push(data);
+                    if (hasLimit && records.length === limit + 1) {
+                        break;
+                    }
                 }
-                records.push(data);
-                if (hasLimit && records.length === limit + 1) {
-                    break;
+            }
+        }
+        else {
+            // Standard in-memory pagination: skip until the `startAfter` cursor is found.
+            const { getStartAfter } = props;
+            const startAfter = props.startAfter;
+            let startAfterFound = false;
+            for (const data of allData) {
+                if (await testFilters(data)) {
+                    if (startAfter && !startAfterFound) {
+                        if (deepEqual(startAfter, getStartAfter(data))) {
+                            startAfterFound = true;
+                        }
+                        continue;
+                    }
+                    records.push(data);
+                    if (hasLimit && records.length === limit + 1) {
+                        break;
+                    }
                 }
             }
         }
@@ -185,6 +242,9 @@ export async function getFilteredData({ filters, query: baseQuery, transliterate
         result.next = hasLimit && records.length > limit;
     }
     else {
+        const { query, getStartAfter } = props;
+        let startAfter = props.startAfter;
+        const baseQuery = query;
         let bestQueryCount;
         let bestQuery;
         for (const filter of filtersNormalized) {

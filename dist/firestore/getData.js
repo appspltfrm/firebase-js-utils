@@ -1,22 +1,27 @@
 import { getDoc, getDocs } from "firebase/firestore";
 import { DocumentReference } from "./DocumentReference.js";
+import { executePipeline } from "./executePipeline.js";
+import { Pipeline } from "./Pipeline.js";
 import { Query } from "./Query.js";
-export async function getData(docOrQuery, options) {
-    if (Query.isInstance(docOrQuery)) {
-        if (Query.isClient(docOrQuery)) {
-            return (await getDocs(docOrQuery)).docs.map(snapshot => snapshot.data(options));
+export async function getData(input, options) {
+    if (Query.isInstance(input)) {
+        if (Query.isClient(input)) {
+            return (await getDocs(input)).docs.map(snapshot => snapshot.data(options));
         }
         else {
-            return (await docOrQuery.get()).docs.map(snapshot => snapshot.data());
+            return (await input.get()).docs.map(snapshot => snapshot.data());
         }
     }
-    else if (DocumentReference.isInstance(docOrQuery)) {
-        if (DocumentReference.isClient(docOrQuery)) {
-            return (await getDoc(docOrQuery)).data(options);
+    else if (DocumentReference.isInstance(input)) {
+        if (DocumentReference.isClient(input)) {
+            return (await getDoc(input)).data(options);
         }
         else {
-            return (await docOrQuery.get()).data();
+            return (await input.get()).data();
         }
+    }
+    else if (Pipeline.isInstance(input)) {
+        return (await executePipeline(input)).results.map(r => r.data());
     }
     else {
         throw new Error("Invalid DocumentReference or Query object");
