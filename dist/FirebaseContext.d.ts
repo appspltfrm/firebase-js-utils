@@ -58,7 +58,7 @@ export declare abstract class FirebaseContextClient extends UniversalFirebaseCon
        * Wymagana implementacja generowania URL dla Cloud Functions na kliencie.
        */
     abstract functionUrl(name: string): string;
-    functionCall<RequestData = unknown, ResponseData = unknown>(name: string, data?: RequestData): Promise<ResponseData>;
+    functionCall<ResponseData = unknown, RequestData = unknown>(name: string, data?: RequestData): Promise<ResponseData>;
     /**
        * Specyficzne dla klienta zapytanie REST (np. dla optymalizacji lub omijania ograniczeń SDK).
        */

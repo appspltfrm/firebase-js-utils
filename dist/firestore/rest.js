@@ -119,6 +119,9 @@ export class RestDocument extends RestProcessor {
         this.documentPath = documentPath;
     }
     documentPath;
+    withConverter(converter) {
+        return super.withConverter(converter);
+    }
     async get() {
         const convert = (data) => {
             if (this.converter) {
@@ -199,6 +202,9 @@ export class RestQuery extends RestProcessor {
         }
     }
     query;
+    withConverter(converter) {
+        return super.withConverter(converter);
+    }
     apply(...constraints) {
         const buildWhereOrAnd = (constraint) => {
             const type = constraint[0];

@@ -91,7 +91,7 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
      */
   abstract functionUrl(name: string): string;
 
-  async functionCall<RequestData = unknown, ResponseData = unknown>(name: string, data?: RequestData): Promise<ResponseData> {
+  async functionCall<ResponseData = unknown, RequestData = unknown>(name: string, data?: RequestData): Promise<ResponseData> {
     const func = httpsCallableFromURL<RequestData, ResponseData>(getFunctions(this.firebase), this.functionUrl(name));
     if (typeof data === "object") {
       data = serialize(data);
@@ -107,7 +107,7 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
      * Specyficzne dla klienta zapytanie REST (np. dla optymalizacji lub omijania ograniczeń SDK).
      */
   firestoreRestQuery<T extends DocumentData = any>(path: string, ...queryConstraints: Array<RestQueryConstraint | undefined | false>): RestQuery<T> {
-    return restCollectionQuery(this.firestore(), path).apply(...queryConstraints);
+    return restCollectionQuery<T>(this.firestore(), path).apply(...queryConstraints);
   }
 
   firestoreQuery<T extends DocumentData = any>(path: string, ...queryConstraints: Array<QueryConstraint | undefined | false>): QueryClient<T>;

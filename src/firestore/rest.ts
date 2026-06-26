@@ -40,9 +40,9 @@ class RestProcessor<T extends DocumentData = any> {
   private authReady = false;
   protected firestore!: Firestore;
 
-  protected converter?: {from: (data: DocumentData) => T};
+  protected converter?: {from: (data: any) => any};
 
-  withConverter(converter: ({from: (data: DocumentData) => T}) | undefined): this {
+  withConverter<T extends DocumentData = any>(converter: ({from: (data: T) => T}) | undefined): RestProcessor<T> {
     this.converter = converter;
     return this;
   }
@@ -156,6 +156,10 @@ export class RestDocument<T extends DocumentData = any> extends RestProcessor<T>
 
   readonly documentPath: string;
 
+  withConverter<T extends DocumentData = any>(converter: {from: (data: T) => T}): RestDocument<T> {
+    return super.withConverter(converter) as RestDocument<T>;
+  }
+
   async get(): Promise<RestDocumentSnapshot<T> | null> {
 
     const convert = (data: any) => {
@@ -257,6 +261,10 @@ export class RestQuery<T extends DocumentData = any> extends RestProcessor<T> {
 
   private readonly query: StructuredQuery;
 
+  withConverter<T extends DocumentData = any>(converter: {from: (data: T) => T}): RestQuery<T> {
+    return super.withConverter(converter) as RestQuery<T>;
+  }
+
   apply(...constraints: Array<RestQueryConstraint | undefined | false>): this {
 
     const buildWhereOrAnd = (constraint: QueryConstraintWhere | QueryConstraintAndOr): Filter | undefined => {
@@ -349,8 +357,8 @@ export class RestQuery<T extends DocumentData = any> extends RestProcessor<T> {
 
 }
 
-export function restCollectionQuery(firestore: Firestore, collectionName: string, ...constraints: Array<RestQueryConstraint | undefined | false>) {
-  return new RestQuery(firestore.app, collectionName, (firestore as any)._databaseId?.database).apply(...constraints);
+export function restCollectionQuery<T extends DocumentData = any>(firestore: Firestore, collectionName: string, ...constraints: Array<RestQueryConstraint | undefined | false>) {
+  return new RestQuery<T>(firestore.app, collectionName, (firestore as any)._databaseId?.database).apply(...constraints);
 }
 
 class RestFirestoreError extends Error {

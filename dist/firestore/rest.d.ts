@@ -13,11 +13,11 @@ declare class RestProcessor<T extends DocumentData = any> {
     private authReady;
     protected firestore: Firestore;
     protected converter?: {
-        from: (data: DocumentData) => T;
+        from: (data: any) => any;
     };
-    withConverter(converter: ({
-        from: (data: DocumentData) => T;
-    }) | undefined): this;
+    withConverter<T extends DocumentData = any>(converter: ({
+        from: (data: T) => T;
+    }) | undefined): RestProcessor<T>;
     protected restValueToJSValue(value: Value): any;
     protected fetch(body: any, endPointSuffix: string): Promise<any>;
 }
@@ -26,6 +26,9 @@ export declare class RestDocument<T extends DocumentData = any> extends RestProc
     constructor(firebaseContext: FirebaseContextClient, documentPath: string, databaseId?: string);
     constructor(proto: RestDocument);
     readonly documentPath: string;
+    withConverter<T extends DocumentData = any>(converter: {
+        from: (data: T) => T;
+    }): RestDocument<T>;
     get(): Promise<RestDocumentSnapshot<T> | null>;
 }
 export declare class RestQuery<T extends DocumentData = any> extends RestProcessor<T> {
@@ -33,11 +36,14 @@ export declare class RestQuery<T extends DocumentData = any> extends RestProcess
     constructor(firebaseContext: FirebaseContextClient, collectionId: string, databaseId?: string);
     constructor(proto: RestQuery);
     private readonly query;
+    withConverter<T extends DocumentData = any>(converter: {
+        from: (data: T) => T;
+    }): RestQuery<T>;
     apply(...constraints: Array<RestQueryConstraint | undefined | false>): this;
     runCount(): Promise<number>;
     run(): Promise<RestQuerySnapshot<T>>;
 }
-export declare function restCollectionQuery(firestore: Firestore, collectionName: string, ...constraints: Array<RestQueryConstraint | undefined | false>): RestQuery<any>;
+export declare function restCollectionQuery<T extends DocumentData = any>(firestore: Firestore, collectionName: string, ...constraints: Array<RestQueryConstraint | undefined | false>): RestQuery<T>;
 export interface RestQuerySnapshot<T extends DocumentData = any> {
     docs: RestDocumentSnapshot<T>[];
     readTime: Timestamp;
