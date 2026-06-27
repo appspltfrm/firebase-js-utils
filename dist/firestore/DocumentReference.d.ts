@@ -1,9 +1,9 @@
 import type { DocumentReference as DocumentReferenceAdmin } from "firebase-admin/firestore";
-import { DocumentReference as $DocumentReferenceClient } from "firebase/firestore";
+import { DocumentReference as DocumentReferenceClient } from "firebase/firestore";
 import { DocumentData } from "./DocumentData.js";
 import { Firestore, FirestoreAdmin, FirestoreClient } from "./Firestore.js";
-export type DocumentReferenceClient<T extends DocumentData = any> = $DocumentReferenceClient<T>;
-export type { DocumentReferenceAdmin };
+export type { DocumentReference as DocumentReferenceClient } from "firebase/firestore";
+export type { DocumentReference as DocumentReferenceAdmin } from "firebase-admin/firestore";
 /**
  * Polimorficzna referencja do dokumentu Firestore.
  */

@@ -1,4 +1,4 @@
-import { doc, DocumentReference as $DocumentReferenceClient } from "firebase/firestore";
+import { doc, DocumentReference as DocumentReferenceClient } from "firebase/firestore";
 import { Firestore } from "./Firestore.js";
 export var DocumentReference;
 (function (DocumentReference) {
@@ -6,7 +6,7 @@ export var DocumentReference;
        * Sprawdza, czy obiekt jest instancją referencji do dokumentu (klienta lub admina).
        */
     function isInstance(obj) {
-        return obj instanceof $DocumentReferenceClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().DocumentReference);
+        return obj instanceof DocumentReferenceClient || (Firestore.adminInitialized() && obj instanceof Firestore.admin().DocumentReference);
     }
     DocumentReference.isInstance = isInstance;
     /**

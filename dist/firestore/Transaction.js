@@ -1,4 +1,5 @@
 import { Transaction as TransactionClient } from "firebase/firestore";
+export { Transaction as TransactionClient } from "firebase/firestore";
 export var Transaction;
 (function (Transaction) {
     function isClient(transaction) {
