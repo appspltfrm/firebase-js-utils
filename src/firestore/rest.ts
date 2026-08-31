@@ -78,7 +78,11 @@ class RestProcessor<T extends DocumentData = any> {
 
     } if ((value as GeoPointValue).geoPointValue !== undefined) {
       const {latitude, longitude} = (value as GeoPointValue).geoPointValue;
-      return new GeoPoint(latitude, longitude);
+      if (latitude && longitude) {
+        return new GeoPoint(latitude, longitude);
+      } else {
+        return undefined;
+      }
 
     } else if ((value as BytesValue).bytesValue !== undefined) {
       return Bytes.fromBase64String((value as BytesValue).bytesValue);

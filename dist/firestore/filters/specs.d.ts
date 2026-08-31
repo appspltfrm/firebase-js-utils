@@ -25,6 +25,10 @@ export interface FilterFieldSpec<T extends DocumentData = any> {
     operatorLabel?: (args: {
         operator: FilterOperator;
     }) => string;
+    /**
+     * Resolves the filter value against another collection first: records of `query` matching the filter on
+     * `dataField` are fetched and their `resultField` values (arrays are flattened) are used as an `in` filter.
+     */
     join?: {
         query: Query<T> | RestQuery<T> | Pipeline;
         dataField: string;

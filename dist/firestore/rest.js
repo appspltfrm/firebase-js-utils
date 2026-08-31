@@ -59,7 +59,12 @@ class RestProcessor {
         }
         if (value.geoPointValue !== undefined) {
             const { latitude, longitude } = value.geoPointValue;
-            return new GeoPoint(latitude, longitude);
+            if (latitude && longitude) {
+                return new GeoPoint(latitude, longitude);
+            }
+            else {
+                return undefined;
+            }
         }
         else if (value.bytesValue !== undefined) {
             return Bytes.fromBase64String(value.bytesValue);

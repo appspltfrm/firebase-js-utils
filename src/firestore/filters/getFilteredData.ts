@@ -100,7 +100,12 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
         records = (await getFilteredData({limit: -1, query, getStartAfter: (data) => data[join.whereField!], transliterate, filters: joinFilters})).records;
       }
 
-      joinResults[filter.spec.name] = records.map(r => r[join.resultField]);
+      // `resultField` may hold an array (e.g. a person's roles) — flatten it so the
+      // values can be used directly in an `in` query and in the in-memory test
+      joinResults[filter.spec.name] = [...new Set(records.flatMap(r => {
+        const value = r[join.resultField];
+        return Array.isArray(value) ? value : [value];
+      }))];
     }
 
     return joinResults[filter.spec.name];

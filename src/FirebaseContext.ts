@@ -1,3 +1,5 @@
+import {Type} from "@appspltfrm/js-utils/core/Type.js";
+import {SerializationOptions} from "@appspltfrm/js-utils/json/SerializationOptions.js";
 import {FirebaseApp} from "firebase/app";
 import {Auth} from "firebase/auth";
 import {getFunctions, httpsCallableFromURL} from "firebase/functions";
