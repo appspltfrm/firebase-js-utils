@@ -22,14 +22,14 @@ export class UniversalFirebaseContext {
  * @category Context
  */
 export class FirebaseContextClient extends UniversalFirebaseContext {
-    async functionCall(name, data) {
+    async functionCall(name, data, responseType) {
         const func = httpsCallableFromURL(getFunctions(this.firebase), this.functionUrl(name));
         if (typeof data === "object") {
             data = serialize(data);
         }
         const resp = await func(data);
         if (typeof resp.data === "object") {
-            return unserialize(resp.data);
+            return unserialize(resp.data, responseType);
         }
         return resp.data;
     }

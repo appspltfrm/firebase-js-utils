@@ -3,6 +3,7 @@ import { Firestore } from "../Firestore.js";
 import { Pipeline } from "../Pipeline.js";
 import { buildFieldCondition, buildPipelineWhere, resolveFieldName, resolveValue } from "./_buildPipelineWhere.js";
 import { combineAnd, combineOr, getPipelineExpr } from "./_pipelineExpr.js";
+import { FilterFieldSpec } from "./specs.js";
 /** Max values per `in`/`equalAny` clause, mirroring the standard query path's chunking. */
 const IN_CHUNK_SIZE = 30;
 /**
@@ -89,7 +90,9 @@ export function buildAdminJoinCondition(filter, expr, transliterate) {
     const varName = `__join_${filter.spec.name}`.replace(/[^A-Za-z0-9_]/g, "_");
     // The join source may already be a pipeline; otherwise build one from the (admin) query.
     let subPipe = Pipeline.isInstance(join.query) ? join.query : join.query.firestore.pipeline().createFrom(join.query);
-    const subFilter = buildFieldCondition(filter.operator, filter.spec.type, P.field(join.whereField || join.dataField), resolveValue(filter), expr, transliterate);
+    const joinField = FilterFieldSpec.resolveFieldName(join.whereField, filter.operator)
+        || FilterFieldSpec.resolveFieldName(join.dataField, filter.operator);
+    const subFilter = buildFieldCondition(filter.operator, filter.spec.type, P.field(joinField), resolveValue(filter), expr, transliterate);
     if (subFilter !== undefined) {
         subPipe = subPipe.where(subFilter);
     }

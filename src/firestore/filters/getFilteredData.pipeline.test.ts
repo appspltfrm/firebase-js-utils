@@ -327,6 +327,28 @@ test("admin join: pipeline join.query is used directly (not createFrom)", async 
   });
 });
 
+test("admin join: dataField may depend on the operator", async () => {
+  await withFakeAdmin(async () => {
+    // A collection that keeps both the raw value and its search index: an exact match reads one field,
+    // a partial-text match the other.
+    const join = {
+      query: fakeJoinQuery as any,
+      dataField: ({operator}: {operator: FilterOperator}) => operator === FilterOperator.equals ? "value" : "valueSearchable",
+      resultField: "personId",
+      type: "in" as const
+    };
+
+    const exact = buildAdminJoinCondition(
+      filter(FilterFieldType.text, FilterOperator.equals, "Warszawa", {name: "attr", queryName: "id", join}), fakeExpr, transliterate);
+    assert.deepEqual(exact.condition.ast[1][1][0], ["where", ["equal", ["field", "value"], "Warszawa"]]);
+
+    const partial = buildAdminJoinCondition(
+      filter(FilterFieldType.text, FilterOperator.includeWord, "Warszawa", {name: "attr", queryName: "id", join}), fakeExpr, transliterate);
+    const words = splitTextSearchWords("Warszawa", transliterate);
+    assert.deepEqual(partial.condition.ast[1][1][0], ["where", ["arrayContainsAll", ["field", "valueSearchable"], words]]);
+  });
+});
+
 test("admin join via helper: define stage prepended before where", async () => {
   await withFakeAdmin(async () => {
     const pipeline = new FakePipeline([]);

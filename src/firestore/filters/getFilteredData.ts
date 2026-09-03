@@ -9,7 +9,7 @@ import {Query} from "../Query.js";
 import {RestQuery} from "../rest.js";
 import {getFilteredDataFromPipeline, PipelineQuerySort} from "./_getFilteredDataFromPipeline.js";
 import {generateTextSearchTrigrams} from "./generateTextSearchTrigrams.js";
-import {Filter, FilterFieldType, FilterOperator} from "./specs.js";
+import {Filter, FilterFieldSpec, FilterFieldType, FilterOperator} from "./specs.js";
 import {splitTextSearchWords} from "./splitTextSearchWords.js";
 
 type BasicArgs<T extends DocumentData = any> = {
@@ -64,7 +64,10 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
     return {...filter, value};
   });
 
-  const textFilterWords: [filter: Filter, string[]][] = filtersNormalized.filter(f => f.spec.type === FilterFieldType.text)
+  // Only word-based operators consume this, and a text field may still carry a non-text value
+  // (a yes/no attribute compared with `equals`), which the word splitter cannot take.
+  const textFilterWords: [filter: Filter, string[]][] = filtersNormalized
+    .filter(f => f.spec.type === FilterFieldType.text && typeof f.value === "string")
     .map(filter => [filter, splitTextSearchWords(filter.value as string, transliterate)]);
 
   const joinResults: {[joinName: string]: any[]} = {};
@@ -74,14 +77,19 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
     if (!joinResults[filter.spec.name]) {
       const join = filter.spec.join!;
 
+      // Both may depend on the operator — e.g. an exact match reads the raw value while a partial-text
+      // match reads the search index of the same record.
+      const dataField = FilterFieldSpec.resolveFieldName(join.dataField, filter.operator);
+      const whereField = FilterFieldSpec.resolveFieldName(join.whereField, filter.operator);
+
       const joinFilters: Filter.SpecRequired[] = [{
         operator: filter.operator,
         value: filter.value,
-        field: join.whereField || join.dataField,
+        field: whereField || dataField,
         spec: {
-          name: join.whereField || join.dataField,
-          dataName: join.dataField,
-          queryName: join.whereField,
+          name: whereField || dataField,
+          dataName: dataField,
+          queryName: whereField,
           type: filter.spec.type,
           filterValue: filter.spec.filterValue,
           operators: filter.spec.operators
@@ -95,9 +103,9 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
       } else {
         let query = join.query;
         if (query instanceof RestQuery || Query.isAdmin(query)) {
-          query = buildQuery(query, ["select", join.dataField, join.resultField]);
+          query = buildQuery(query, ["select", dataField, join.resultField]);
         }
-        records = (await getFilteredData({limit: -1, query, getStartAfter: (data) => data[join.whereField!], transliterate, filters: joinFilters})).records;
+        records = (await getFilteredData({limit: -1, query, getStartAfter: (data) => data[whereField!], transliterate, filters: joinFilters})).records;
       }
 
       // `resultField` may hold an array (e.g. a person's roles) — flatten it so the
@@ -132,7 +140,9 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
 
         if (filter.spec.type === FilterFieldType.text) {
 
-          if (!filter.value) {
+          // `false` and `0` are filter values in their own right (a yes/no attribute filtered to "no"),
+          // so only a genuinely missing value disqualifies the filter — same rule as the pipeline path.
+          if (filter.value === undefined || filter.value === null || filter.value === "") {
             return false;
           }
 
@@ -167,6 +177,10 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
 
           if (filter.operator === FilterOperator.emptyArray) {
             return !dataValue || (dataValue as string[]).length === 0;
+          }
+
+          if (!Array.isArray(filter.value) || filter.value.length === 0) {
+            return false;
           }
 
           if (!dataValue || !Array.isArray(dataValue)) {
@@ -363,7 +377,7 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
 
         if (filter.spec.type === FilterFieldType.text) {
 
-          if (!filter.value) {
+          if (filter.value === undefined || filter.value === null || filter.value === "") {
             return result;
           }
 
@@ -402,7 +416,8 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
 
         } else if (filter.spec.type === FilterFieldType.textArray) {
 
-          if (filter.operator !== FilterOperator.emptyArray && (!filter.value || !Array.isArray(filter.value))) {
+          // An empty selection matches nothing; `array-contains-any []` is rejected by Firestore.
+          if (filter.operator !== FilterOperator.emptyArray && (!Array.isArray(filter.value) || filter.value.length === 0)) {
             return result;
           }
 
@@ -454,6 +469,11 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
 
         } else if (filter.spec.type === FilterFieldType.number) {
 
+          const numberValue = filter.value instanceof BigNumber ? filter.value.toNumber() : filter.value;
+          if (typeof numberValue !== "number" || Number.isNaN(numberValue)) {
+            return result;
+          }
+
           const whereOperator = (filter.operator === FilterOperator.equals && "==") ||
                         (filter.operator === FilterOperator.greater && ">") ||
                         (filter.operator === FilterOperator.greaterOrEqual && ">=") ||
@@ -464,7 +484,7 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
             return result;
           }
 
-          const query = buildQuery(baseQuery, ["where", fieldName, whereOperator, filter.value instanceof BigNumber ? filter.value.toNumber() : filter.value]);
+          const query = buildQuery(baseQuery, ["where", fieldName, whereOperator, numberValue]);
 
           const count = await getCountFromServer(buildQuery(query, bestQueryCount ? ["limit", bestQueryCount + 1] : undefined));
           if (count === 0) {

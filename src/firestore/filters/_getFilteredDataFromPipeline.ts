@@ -4,7 +4,7 @@ import {Firestore} from "../Firestore.js";
 import {Pipeline} from "../Pipeline.js";
 import {buildFieldCondition, buildPipelineWhere, resolveFieldName, resolveValue, Transliterate} from "./_buildPipelineWhere.js";
 import {combineAnd, combineOr, getPipelineExpr, PipelineExpr} from "./_pipelineExpr.js";
-import {Filter} from "./specs.js";
+import {Filter, FilterFieldSpec} from "./specs.js";
 
 /**
  * Sort applied by the pipeline path. Named after the pipeline `sort` stage (the classic query builder uses
@@ -133,7 +133,10 @@ export function buildAdminJoinCondition(filter: Filter.SpecRequired, expr: Pipel
   // The join source may already be a pipeline; otherwise build one from the (admin) query.
   let subPipe = Pipeline.isInstance(join.query) ? (join.query as any) : (join.query as any).firestore.pipeline().createFrom(join.query);
 
-  const subFilter = buildFieldCondition(filter.operator, filter.spec.type, P.field(join.whereField || join.dataField), resolveValue(filter), expr, transliterate);
+  const joinField = FilterFieldSpec.resolveFieldName(join.whereField, filter.operator)
+    || FilterFieldSpec.resolveFieldName(join.dataField, filter.operator);
+
+  const subFilter = buildFieldCondition(filter.operator, filter.spec.type, P.field(joinField), resolveValue(filter), expr, transliterate);
   if (subFilter !== undefined) {
     subPipe = subPipe.where(subFilter);
   }

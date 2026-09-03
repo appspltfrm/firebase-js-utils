@@ -1,5 +1,4 @@
 import {Type} from "@appspltfrm/js-utils/core/Type.js";
-import {SerializationOptions} from "@appspltfrm/js-utils/json/SerializationOptions.js";
 import {FirebaseApp} from "firebase/app";
 import {Auth} from "firebase/auth";
 import {getFunctions, httpsCallableFromURL} from "firebase/functions";
@@ -93,14 +92,14 @@ export abstract class FirebaseContextClient extends UniversalFirebaseContext {
      */
   abstract functionUrl(name: string): string;
 
-  async functionCall<ResponseData = unknown, RequestData = unknown>(name: string, data?: RequestData): Promise<ResponseData> {
+  async functionCall<ResponseData = unknown, RequestData = unknown>(name: string, data?: RequestData, responseType?: Type<ResponseData>): Promise<ResponseData> {
     const func = httpsCallableFromURL<RequestData, ResponseData>(getFunctions(this.firebase), this.functionUrl(name));
     if (typeof data === "object") {
       data = serialize(data);
     }
     const resp = await func(data);
     if (typeof resp.data === "object") {
-      return unserialize(resp.data);
+      return unserialize(resp.data, responseType);
     }
     return resp.data;
   }

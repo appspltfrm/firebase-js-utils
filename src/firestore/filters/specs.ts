@@ -18,8 +18,30 @@ export interface FilterFieldSpec<T extends DocumentData = any> {
   /**
    * Resolves the filter value against another collection first: records of `query` matching the filter on
    * `dataField` are fetched and their `resultField` values (arrays are flattened) are used as an `in` filter.
+   *
+   * `dataField` and `whereField` may depend on the operator, for a collection that keeps both the raw value
+   * and its search index — exact matching goes to one field, partial-text matching to the other.
    */
-  join?: {query: Query<T> | RestQuery<T> | Pipeline, dataField: string, whereField?: string, resultField: string, type: "in"};
+  join?: {
+    query: Query<T> | RestQuery<T> | Pipeline,
+    dataField: FilterFieldName,
+    whereField?: FilterFieldName,
+    resultField: string,
+    type: "in"
+  };
+}
+
+export type FilterFieldName = string | ((args: {operator: FilterOperator}) => string);
+
+export namespace FilterFieldSpec {
+
+  export function resolveFieldName(name: FilterFieldName, operator: FilterOperator): string;
+
+  export function resolveFieldName(name: FilterFieldName | undefined, operator: FilterOperator): string | undefined;
+
+  export function resolveFieldName(name: FilterFieldName | undefined, operator: FilterOperator) {
+    return typeof name === "function" ? name({operator}) : name;
+  }
 }
 
 export enum FilterOperator {

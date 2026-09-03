@@ -1,3 +1,10 @@
+export var FilterFieldSpec;
+(function (FilterFieldSpec) {
+    function resolveFieldName(name, operator) {
+        return typeof name === "function" ? name({ operator }) : name;
+    }
+    FilterFieldSpec.resolveFieldName = resolveFieldName;
+})(FilterFieldSpec || (FilterFieldSpec = {}));
 export var FilterOperator;
 (function (FilterOperator) {
     FilterOperator[FilterOperator["includeChars"] = 1] = "includeChars";

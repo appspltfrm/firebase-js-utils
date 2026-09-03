@@ -1,3 +1,4 @@
+import { Type } from "@appspltfrm/js-utils/core/Type.js";
 import { FirebaseApp } from "firebase/app";
 import { Auth } from "firebase/auth";
 import { AuthUser } from "./client-auth/AuthUser.js";
@@ -58,7 +59,7 @@ export declare abstract class FirebaseContextClient extends UniversalFirebaseCon
        * Wymagana implementacja generowania URL dla Cloud Functions na kliencie.
        */
     abstract functionUrl(name: string): string;
-    functionCall<ResponseData = unknown, RequestData = unknown>(name: string, data?: RequestData): Promise<ResponseData>;
+    functionCall<ResponseData = unknown, RequestData = unknown>(name: string, data?: RequestData, responseType?: Type<ResponseData>): Promise<ResponseData>;
     /**
        * Specyficzne dla klienta zapytanie REST (np. dla optymalizacji lub omijania ograniczeń SDK).
        */

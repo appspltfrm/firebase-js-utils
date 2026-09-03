@@ -1,45 +1,43 @@
-import { splitTextSearchWords } from "./splitTextSearchWords.js";
+import { loadTransliterate } from "./_loadTransliterate.js";
+import { splitTextSearchTokens, splitTextSearchWords } from "./splitTextSearchWords.js";
+const TRIGRAM = 3;
 export function generateTextSearchTrigrams(input, mode, transliterate) {
     if (transliterate) {
         return generate(input, transliterate, mode);
     }
-    else {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const { transliterate } = await import("transliteration");
-                resolve(generate(input, transliterate, mode));
-            }
-            catch (e) {
-                reject(e);
-            }
-        });
-    }
+    return loadTransliterate().then(fn => generate(input, fn, mode));
 }
 function generate(input, transliterate, mode) {
-    const three = 3;
-    const words = splitTextSearchWords(input, transliterate);
-    const result = [];
-    for (const word of words) {
-        if (mode === "query") {
-            const length = word.length;
-            if (length <= three) {
-                result.push(word);
-            }
-            let i = 0;
-            while (i + three <= word.length) {
-                result.push(word.substr(i, three));
-                i += three;
-            }
-            if (i < word.length) {
-                result.push(word.substr(-three, three));
-            }
-        }
-        else {
-            for (let i = 0; i <= word.length - three; i++) {
-                result.push(word.slice(i, i + three));
-            }
+    const result = new Set();
+    if (mode === "index") {
+        for (const token of splitTextSearchTokens(input, transliterate)) {
+            addIndexTrigrams(token, result);
         }
     }
-    return result.filter((v, i, a) => a.indexOf(v) === i).sort();
+    else {
+        for (const word of splitTextSearchWords(input, transliterate)) {
+            addQueryTrigrams(word, result);
+        }
+    }
+    return [...result].sort();
+}
+function addIndexTrigrams(token, result) {
+    for (let i = 0; i + TRIGRAM <= token.length; i++) {
+        result.add(token.slice(i, i + TRIGRAM));
+    }
+}
+function addQueryTrigrams(word, result) {
+    const length = word.length;
+    if (length <= TRIGRAM) {
+        result.add(word);
+        return;
+    }
+    let i = 0;
+    for (; i + TRIGRAM <= length; i += TRIGRAM) {
+        result.add(word.slice(i, i + TRIGRAM));
+    }
+    if (i < length) {
+        result.add(word.slice(-TRIGRAM));
+    }
 }
 //# sourceMappingURL=generateTextSearchTrigrams.js.map
