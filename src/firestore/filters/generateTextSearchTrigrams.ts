@@ -10,7 +10,8 @@ const TRIGRAM = 3;
  *
  * - `index` mode (document write): every sliding 3-character window of every token from
  *   {@link splitTextSearchTokens}. Sub-words are substrings of their token, so their windows are already covered
- *   and are not generated again.
+ *   and are not generated again. Tokens have their edge punctuation stripped upstream, so no trigram starts or
+ *   ends on a quote, bracket or comma.
  * - `query` mode (filter build): the minimal cover of each word from {@link splitTextSearchWords} — chunks at
  *   offsets 0, 3, 6, … plus the trailing window when the length is not a multiple of 3. Words of 3 characters or
  *   fewer are emitted as-is (they match a stored word, not a trigram). Every emitted value is guaranteed to be in

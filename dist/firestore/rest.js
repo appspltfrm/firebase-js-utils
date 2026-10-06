@@ -7,6 +7,7 @@ class RestProcessor {
         if (firebaseOrProto instanceof RestProcessor) {
             this.firebase = firebaseOrProto.firebase;
             this.auth = firebaseOrProto.auth;
+            this.authToken = firebaseOrProto.authToken;
             this.databaseId = firebaseOrProto.databaseId;
         }
         else if (firebaseOrProto.firebase) {
@@ -23,8 +24,16 @@ class RestProcessor {
     databaseId;
     auth;
     authReady = false;
+    authToken;
     firestore;
     converter;
+    /**
+     * Authenticates the requests with an explicitly supplied token instead of the app's `Auth`.
+     */
+    withAuthToken(provider) {
+        this.authToken = provider;
+        return this;
+    }
     withConverter(converter) {
         this.converter = converter;
         return this;
@@ -80,16 +89,24 @@ class RestProcessor {
     }
     async fetch(body, endPointSuffix) {
         const endpoint = `https://firestore.googleapis.com/v1/projects/${this.firebase.options.projectId}/databases/${this.databaseId}/documents${endPointSuffix}`;
-        if (!this.auth) {
-            this.auth = getAuth(this.firebase);
-        }
-        if (!this.authReady) {
-            await this.auth.authStateReady();
-            this.authReady = true;
-        }
         const headers = { "Content-Type": "application/json" };
-        if (this.auth.currentUser) {
-            headers.Authorization = `Bearer ${await this.auth.currentUser.getIdToken()}`;
+        if (this.authToken) {
+            const token = await this.authToken();
+            if (token) {
+                headers.Authorization = `Bearer ${token}`;
+            }
+        }
+        else {
+            if (!this.auth) {
+                this.auth = getAuth(this.firebase);
+            }
+            if (!this.authReady) {
+                await this.auth.authStateReady();
+                this.authReady = true;
+            }
+            if (this.auth.currentUser) {
+                headers.Authorization = `Bearer ${await this.auth.currentUser.getIdToken()}`;
+            }
         }
         const response = await fetch(endpoint, {
             method: body ? "POST" : "GET",
@@ -207,6 +224,10 @@ export class RestQuery extends RestProcessor {
         }
     }
     query;
+    /** The `orderBy` clauses of this query, in the order they apply. */
+    get orderBy() {
+        return (this.query.orderBy ?? []).map(order => ({ field: order.field.fieldPath, direction: order.direction }));
+    }
     withConverter(converter) {
         return super.withConverter(converter);
     }
@@ -253,7 +274,7 @@ export class RestQuery extends RestProcessor {
                 query.endAt = { values: constraint.slice(1).map(v => jsValueToRestValue(v)), before: type === "endBefore" };
             }
             else if (type === "startAfter" || type === "startAt") {
-                query.endAt = { values: constraint.slice(1).map(v => jsValueToRestValue(v)), before: type === "startAt" };
+                query.startAt = { values: constraint.slice(1).map(v => jsValueToRestValue(v)), before: type === "startAt" };
             }
             else if (type === "orderBy") {
                 query.orderBy ??= [];

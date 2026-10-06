@@ -16,6 +16,13 @@ import {Auth, getAuth} from "firebase/auth";
 
 const defaultDatabaseId = "(default)";
 
+/**
+ * Supplies the bearer token for the REST calls in place of the app's `Auth` — for contexts where no
+ * signed-in `Auth` instance is available (e.g. a worker that received the token from the main thread).
+ * Returning `undefined` sends the request unauthenticated.
+ */
+export type RestAuthTokenProvider = () => Promise<string | undefined> | string | undefined;
+
 class RestProcessor<T extends DocumentData = any> {
 
   constructor(firebaseOrProto: FirebaseApp | FirebaseContextClient | RestProcessor, databaseId?: string) {
@@ -23,6 +30,7 @@ class RestProcessor<T extends DocumentData = any> {
     if (firebaseOrProto instanceof RestProcessor) {
       this.firebase = firebaseOrProto.firebase;
       this.auth = firebaseOrProto.auth;
+      this.authToken = firebaseOrProto.authToken;
       this.databaseId = firebaseOrProto.databaseId;
     } else if ((firebaseOrProto as FirebaseContextClient).firebase) {
       this.firebase = (firebaseOrProto as FirebaseContextClient).firebase;
@@ -38,9 +46,18 @@ class RestProcessor<T extends DocumentData = any> {
   protected readonly databaseId: string;
   protected auth!: Auth;
   private authReady = false;
+  protected authToken?: RestAuthTokenProvider;
   protected firestore!: Firestore;
 
   protected converter?: {from: (data: any) => any};
+
+  /**
+   * Authenticates the requests with an explicitly supplied token instead of the app's `Auth`.
+   */
+  withAuthToken(provider: RestAuthTokenProvider | undefined): this {
+    this.authToken = provider;
+    return this;
+  }
 
   withConverter<T extends DocumentData = any>(converter: ({from: (data: T) => T}) | undefined): RestProcessor<T> {
     this.converter = converter;
@@ -102,18 +119,28 @@ class RestProcessor<T extends DocumentData = any> {
 
     const endpoint = `https://firestore.googleapis.com/v1/projects/${this.firebase.options.projectId}/databases/${this.databaseId}/documents${endPointSuffix}`;
 
-    if (!this.auth) {
-      this.auth = getAuth(this.firebase);
-    }
-
-    if (!this.authReady) {
-      await this.auth.authStateReady();
-      this.authReady = true;
-    }
-
     const headers: any = {"Content-Type": "application/json"};
-    if (this.auth.currentUser) {
-      headers.Authorization = `Bearer ${await this.auth.currentUser!.getIdToken()}`;
+
+    if (this.authToken) {
+      const token = await this.authToken();
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+    } else {
+
+      if (!this.auth) {
+        this.auth = getAuth(this.firebase);
+      }
+
+      if (!this.authReady) {
+        await this.auth.authStateReady();
+        this.authReady = true;
+      }
+
+      if (this.auth.currentUser) {
+        headers.Authorization = `Bearer ${await this.auth.currentUser!.getIdToken()}`;
+      }
     }
 
     const response = await fetch(endpoint, {
@@ -265,6 +292,11 @@ export class RestQuery<T extends DocumentData = any> extends RestProcessor<T> {
 
   private readonly query: StructuredQuery;
 
+  /** The `orderBy` clauses of this query, in the order they apply. */
+  get orderBy(): ReadonlyArray<{field: string, direction: OrderDirection}> {
+    return (this.query.orderBy ?? []).map(order => ({field: order.field.fieldPath, direction: order.direction}));
+  }
+
   withConverter<T extends DocumentData = any>(converter: {from: (data: T) => T}): RestQuery<T> {
     return super.withConverter(converter) as RestQuery<T>;
   }
@@ -310,7 +342,7 @@ export class RestQuery<T extends DocumentData = any> extends RestProcessor<T> {
       } else if (type === "endBefore" || type === "endAt") {
         query.endAt = {values: constraint.slice(1).map(v => jsValueToRestValue(v)), before: type === "endBefore"} as Cursor;
       } else if (type === "startAfter" || type === "startAt") {
-        query.endAt = {values: constraint.slice(1).map(v => jsValueToRestValue(v)), before: type === "startAt"} as Cursor;
+        query.startAt = {values: constraint.slice(1).map(v => jsValueToRestValue(v)), before: type === "startAt"} as Cursor;
       } else if (type === "orderBy") {
         query.orderBy ??= [];
         query.orderBy.push({field: {fieldPath: (constraint as QueryConstraintOrderBy)[1]}, direction: ((constraint as QueryConstraintOrderBy)[2] ? jsOrderDirectionToRest[(constraint as QueryConstraintOrderBy)[2]!.toUpperCase() as "ASC" | "DESC"] : "ASCENDING") as OrderDirection});

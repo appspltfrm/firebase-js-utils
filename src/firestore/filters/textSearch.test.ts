@@ -6,7 +6,9 @@ import {splitTextSearchTokens, splitTextSearchWords} from "./splitTextSearchWord
 /**
  * Equivalence test for the text search helpers against the previous (regex + O(n²) dedupe) implementation,
  * kept below as the reference. Guards the on-disk contract of the `*Searchable` fields: the `index` output must
- * be identical, the `query` output must be identical except for the documented `_` difference.
+ * be identical, the `query` output must be identical except for the documented `_` difference. Inputs with
+ * punctuation at token edges (quotes, commas, trailing dots) differ by design — see the "edge punctuation"
+ * tests, which prove the new query values are still covered by documents indexed with the legacy output.
  *
  * Run with: npx tsx src/firestore/filters/textSearch.test.ts
  */
@@ -71,10 +73,8 @@ const corpus = [
   "Łódź",
   "Gdańsk Zażółć gęślą jaźń",
   "ToRoN",
-  "ul. Świętokrzyska 12/4, 00-001 Warszawa",
   "a.b c.d e-f",
   "jan.kowalski@example.com",
-  "+48 601 234 567",
   "  leading and trailing  ",
   "tab\tseparated\nlines",
   "ąę ĄĘ ćń",
@@ -94,7 +94,36 @@ const underscoreCorpus = [
   "ab_cd",
   "jan_kowalski",
   "x_ab",
-  "__init__ value_1"
+  "value_1"
+];
+
+/** Inputs with punctuation at token edges: tokens are trimmed, so the output differs from legacy by design. */
+const edgePunctuationCorpus = [
+  "ul. Świętokrzyska 12/4, 00-001 Warszawa",
+  "+48 601 234 567",
+  "KBS \"KAPITAŁ-BEZPIECZEŃSTWO-SERWIS\" SPÓŁKA Z O.O. - BIURO GDAŃSK",
+  "„Kapitał” “x” (a) [b] Kowalski, ul. +48 #tag @handle",
+  "Sp. z o.o.",
+  "a.b.c.",
+  "((12)) ..ab.. -cd-",
+  "__init__"
+];
+
+/** Queries a user may type or paste for the texts above, with and without the punctuation. */
+const edgePunctuationNeedles = [
+  "\"KAPITAŁ\"",
+  "„Kapitał”",
+  "KAPITAŁ",
+  "Kowalski,",
+  "Kowalski",
+  "o.o.",
+  "o.o",
+  "kapital-bezpieczenstwo-serwis",
+  "\"KAPITAŁ-BEZPIECZEŃSTWO-SERWIS\"",
+  "12/4,",
+  "+48",
+  "a.b.c",
+  "(12)"
 ];
 
 //#endregion
@@ -109,6 +138,19 @@ function test(name: string, fn: () => void | Promise<void>) {
 function isSubset(subset: string[], superset: string[]) {
   const set = new Set(superset);
   return subset.every(v => set.has(v));
+}
+
+/** What a document written with the given implementation stores in its `*Searchable` array. */
+function indexOf(haystack: string, impl: "legacy" | "current"): Set<string> {
+  return impl === "legacy"
+    ? new Set([...legacySplit(haystack, transliterate), ...legacyGenerate(haystack, transliterate, "index")])
+    : new Set([...splitTextSearchWords(haystack, transliterate), ...generateTextSearchTrigrams(haystack, "index", transliterate)]);
+}
+
+/** Whether `needle` occurs in `haystack` after normalization, ignoring punctuation at the needle's edges. */
+function contains(haystack: string, needle: string): boolean {
+  const normalizedNeedle = transliterate(needle).toLowerCase().replace(/^[^a-z0-9]+|[^a-z0-9]+$/g, "");
+  return normalizedNeedle.length > 0 && transliterate(haystack).toLowerCase().includes(normalizedNeedle);
 }
 
 function measure(fn: () => unknown, runs: number): number {
@@ -141,13 +183,13 @@ test("query trigrams: identical to legacy on the corpus", () => {
   }
 });
 
-test("tokens: whitespace-delimited with >= 2 alphanumerics, punctuation kept", () => {
-  assert.deepEqual(splitTextSearchTokens("Kowalski-Nowak a ul. 12 -", transliterate), ["12", "kowalski-nowak", "ul."]);
+test("tokens: whitespace-delimited with >= 2 alphanumerics, inner punctuation kept, edges trimmed", () => {
+  assert.deepEqual(splitTextSearchTokens("Kowalski-Nowak a ul. 12 -", transliterate), ["12", "kowalski-nowak", "ul"]);
   assert.deepEqual(splitTextSearchTokens("", transliterate), []);
 });
 
 test("index trigrams from tokens only equal trigrams from all words (sub-words are substrings)", () => {
-  for (const input of [...corpus, ...underscoreCorpus]) {
+  for (const input of [...corpus, ...underscoreCorpus, ...edgePunctuationCorpus]) {
     const fromTokens = generateTextSearchTrigrams(input, "index", transliterate);
     const fromWords = new Set<string>();
     for (const word of splitTextSearchWords(input, transliterate)) {
@@ -182,6 +224,63 @@ test("query cover: every query trigram of a needle is in the index set of any te
       }
     }
   }
+});
+
+test("edge punctuation: tokens are trimmed, no stored value starts or ends on punctuation", () => {
+  const kbs = edgePunctuationCorpus[2];
+  assert.deepEqual(splitTextSearchTokens(kbs, transliterate), ["biuro", "gdansk", "kapital-bezpieczenstwo-serwis", "kbs", "o.o", "spolka"]);
+  assert.deepEqual(splitTextSearchTokens("„Kapitał” “x” (a) [b] Kowalski, ul. +48 #tag @handle", transliterate),
+    ["48", "handle", "kapital", "kowalski", "tag", "ul"]);
+  assert.deepEqual(splitTextSearchTokens("((12)) ..ab.. -cd-", transliterate), ["12", "ab", "cd"]);
+  assert.deepEqual(splitTextSearchTokens("__init__", transliterate), ["init"]);
+  // Inner punctuation still produces trigrams such as "-00" or "o.o"; only characters that appear at token edges
+  // in this corpus must never reach the index.
+  for (const input of edgePunctuationCorpus) {
+    for (const value of indexOf(input, "current")) {
+      assert.doesNotMatch(value, /["(),[\]+#@]/, `${JSON.stringify(input)}: ${JSON.stringify(value)}`);
+    }
+  }
+});
+
+test("edge punctuation: punctuated queries match the current index", () => {
+  for (const haystack of edgePunctuationCorpus) {
+    const index = indexOf(haystack, "current");
+    for (const needle of edgePunctuationNeedles) {
+      if (!contains(haystack, needle)) {
+        continue;
+      }
+      for (const value of generateTextSearchTrigrams(needle, "query", transliterate)) {
+        assert.ok(index.has(value), `${JSON.stringify(needle)} in ${JSON.stringify(haystack)}: missing ${value}`);
+      }
+    }
+  }
+});
+
+test("edge punctuation: query values are covered by the legacy index (no reindex needed)", () => {
+  // Trimming only removes token edges, so every query chunk is a substring of the legacy token and therefore
+  // one of its legacy trigrams; 2-char query words are alphanumeric and therefore legacy sub-words.
+  for (const haystack of edgePunctuationCorpus) {
+    const index = indexOf(haystack, "legacy");
+    for (const needle of edgePunctuationNeedles) {
+      if (!contains(haystack, needle)) {
+        continue;
+      }
+      for (const value of generateTextSearchTrigrams(needle, "query", transliterate)) {
+        assert.ok(index.has(value), `${JSON.stringify(needle)} in ${JSON.stringify(haystack)}: legacy index misses ${value}`);
+      }
+    }
+  }
+});
+
+test("edge punctuation: known limit — an includeWord query for a punctuated token needs a rewritten document", () => {
+  // Legacy documents store `"kapital-bezpieczenstwo-serwis"` (with quotes); the trimmed word is neither a stored
+  // word nor a trigram there. It never matched without the quotes either, so this is not a regression.
+  const legacy = indexOf(edgePunctuationCorpus[2], "legacy");
+  const current = indexOf(edgePunctuationCorpus[2], "current");
+  const words = splitTextSearchWords("\"KAPITAŁ-BEZPIECZEŃSTWO-SERWIS\"", transliterate);
+  assert.deepEqual(words, ["bezpieczenstwo", "kapital", "kapital-bezpieczenstwo-serwis", "serwis"]);
+  assert.ok(!legacy.has("kapital-bezpieczenstwo-serwis"));
+  assert.ok(isSubset(words, [...current]));
 });
 
 test("known limit (unchanged): a query sub-word of <= 2 chars is emitted whole and needs a stored word to match", () => {

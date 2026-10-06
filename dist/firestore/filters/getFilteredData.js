@@ -6,7 +6,10 @@ import { getDataFromServer } from "../getDataFromServer.js";
 import { Pipeline } from "../Pipeline.js";
 import { Query } from "../Query.js";
 import { RestQuery } from "../rest.js";
+import { compareCursorValues } from "./_compareCursorValues.js";
 import { getFilteredDataFromPipeline } from "./_getFilteredDataFromPipeline.js";
+import { mergeChunkedQueries } from "./_mergeChunkedQueries.js";
+import { queryOrderDirections } from "./_queryOrderDirections.js";
 import { generateTextSearchTrigrams } from "./generateTextSearchTrigrams.js";
 import { FilterFieldSpec, FilterFieldType, FilterOperator } from "./specs.js";
 import { splitTextSearchWords } from "./splitTextSearchWords.js";
@@ -32,9 +35,10 @@ export async function getFilteredData(props) {
     });
     // Only word-based operators consume this, and a text field may still carry a non-text value
     // (a yes/no attribute compared with `equals`), which the word splitter cannot take.
-    const textFilterWords = filtersNormalized
+    // Keyed by the normalized filter object — `test` and the query path both iterate `filtersNormalized`.
+    const textFilterWords = new Map(filtersNormalized
         .filter(f => f.spec.type === FilterFieldType.text && typeof f.value === "string")
-        .map(filter => [filter, splitTextSearchWords(filter.value, transliterate)]);
+        .map(filter => [filter, splitTextSearchWords(filter.value, transliterate)]));
     const joinResults = {};
     const fetchJoin = async (filter) => {
         if (!joinResults[filter.spec.name]) {
@@ -112,18 +116,19 @@ export async function getFilteredData(props) {
                             return false;
                         }
                     }
+                    // Every query word must be present (AND), like `arrayContainsAll` on the pipeline path and the
+                    // per-word `array-contains` probes on the query path. An array value is a `*Searchable` index and
+                    // is matched by element. A raw string is matched by whole words (`splitTextSearchWords`), not by
+                    // substring — and without the index trigrams, so a word of up to 3 characters that the server
+                    // matches through a trigram ("ski" in "kowalski") does not match a raw string here.
                     if (filter.operator === FilterOperator.includeWord) {
-                        for (const [, words] of textFilterWords.filter(([f]) => f === filter)) {
-                            for (const word of words) {
-                                if (typeof dataValue === "string") {
-                                    return dataValue.includes(word);
-                                }
-                                else if (Array.isArray(dataValue)) {
-                                    return dataValue.includes(word);
-                                }
-                            }
+                        const words = textFilterWords.get(filter);
+                        if (!words?.length) {
+                            return false;
                         }
-                        return false;
+                        const dataWords = typeof dataValue === "string" ? new Set(splitTextSearchWords(dataValue, transliterate))
+                            : Array.isArray(dataValue) ? new Set(dataValue) : undefined;
+                        return !!dataWords && words.every(word => dataWords.has(word));
                     }
                 }
                 else if (filter.spec.type === FilterFieldType.textArray) {
@@ -260,7 +265,7 @@ export async function getFilteredData(props) {
     }
     else {
         const { query, getStartAfter } = props;
-        let startAfter = props.startAfter;
+        const startAfter = props.startAfter;
         const baseQuery = query;
         let bestQueryCount;
         let bestQuery;
@@ -294,7 +299,7 @@ export async function getFilteredData(props) {
                         return result;
                     }
                     const values = filter.operator === FilterOperator.equals ? [filter.value] : [
-                        ...textFilterWords.filter(([f]) => f === filter).map(([, words]) => words).flat(),
+                        ...textFilterWords.get(filter) ?? [],
                         ...((filter.operator === FilterOperator.includeChars && generateTextSearchTrigrams(filter.value, "query", transliterate)) || [])
                     ].filter((v, i, a) => a.indexOf(v) === i);
                     for (const value of values) {
@@ -380,37 +385,22 @@ export async function getFilteredData(props) {
             }
         }
         if (bestQuery) {
-            RECORDS: while (!hasLimit || result.records.length < limit + 1) {
-                let bestData;
-                for (const query of Array.isArray(bestQuery) ? bestQuery : [bestQuery]) {
-                    const queryData = await getDataFromServer(buildQuery(query, (startAfter?.length && ["startAfter", ...startAfter]) || undefined, hasLimit && ["limit", limit + 1]));
-                    if (!bestData) {
-                        bestData = queryData;
-                    }
-                    else {
-                        bestData.push(...queryData);
-                    }
-                    for (const data of queryData) {
-                        if (await testFilters(data)) {
-                            result.records.push(data);
-                            if (hasLimit && result.records.length > limit) {
-                                break RECORDS;
-                            }
-                        }
-                    }
-                    if (hasLimit && queryData.length <= limit) {
-                        break;
-                    }
-                }
-                if (!hasLimit || !bestData || bestData.length <= limit) {
-                    break;
-                }
-                startAfter = getStartAfter(bestData[bestData.length - 1]);
-            }
-            if (hasLimit && result.records.length > limit) {
-                result.next = true;
-                result.records.splice(limit);
-            }
+            // A join with more than 30 matches spans several `in` chunk queries, each a disjoint slice of the same
+            // ordered result; merge them by cursor so the page holds the globally first records.
+            const queries = Array.isArray(bestQuery) ? bestQuery : [bestQuery];
+            const querySort = props.querySort;
+            const directions = querySort ? querySort.map(([, direction]) => direction ?? "asc") : queryOrderDirections(baseQuery);
+            const merged = await mergeChunkedQueries({
+                chunks: queries.length,
+                fetch: (chunk, cursor, fetchLimit) => getDataFromServer(buildQuery(queries[chunk], (cursor?.length && ["startAfter", ...cursor]) || undefined, fetchLimit > 0 && ["limit", fetchLimit])),
+                getStartAfter,
+                compare: (a, b) => compareCursorValues(a, b, directions),
+                test: testFilters,
+                startAfter,
+                limit
+            });
+            result.records = merged.records;
+            result.next = merged.next;
         }
     }
     return result;

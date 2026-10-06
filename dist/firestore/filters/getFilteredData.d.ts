@@ -14,6 +14,12 @@ type StandardArgs<T extends DocumentData = any> = BasicArgs<T> & {
     query: Query<T> | RestQuery<T>;
     startAfter?: any[];
     getStartAfter: (data: T) => any[];
+    /**
+     * Sort of `query`, positional like the values of {@link getStartAfter}; only the directions are used. It
+     * orders the merge of the chunk queries a join with more than 30 matches produces. When omitted the
+     * directions are read from the query itself where the SDK exposes them, else every field counts as `asc`.
+     */
+    querySort?: PipelineQuerySort;
 };
 type PipelineArgs<T extends DocumentData = any> = BasicArgs<T> & {
     query: Pipeline;

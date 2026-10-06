@@ -5,16 +5,27 @@ import { RestQueryConstraint } from "./QueryConstraint.js";
 import { FirebaseApp } from "firebase/app";
 import { Firestore } from "firebase/firestore";
 import { Auth } from "firebase/auth";
+/**
+ * Supplies the bearer token for the REST calls in place of the app's `Auth` — for contexts where no
+ * signed-in `Auth` instance is available (e.g. a worker that received the token from the main thread).
+ * Returning `undefined` sends the request unauthenticated.
+ */
+export type RestAuthTokenProvider = () => Promise<string | undefined> | string | undefined;
 declare class RestProcessor<T extends DocumentData = any> {
     constructor(firebaseOrProto: FirebaseApp | FirebaseContextClient | RestProcessor, databaseId?: string);
     protected readonly firebase: FirebaseApp;
     protected readonly databaseId: string;
     protected auth: Auth;
     private authReady;
+    protected authToken?: RestAuthTokenProvider;
     protected firestore: Firestore;
     protected converter?: {
         from: (data: any) => any;
     };
+    /**
+     * Authenticates the requests with an explicitly supplied token instead of the app's `Auth`.
+     */
+    withAuthToken(provider: RestAuthTokenProvider | undefined): this;
     withConverter<T extends DocumentData = any>(converter: ({
         from: (data: T) => T;
     }) | undefined): RestProcessor<T>;
@@ -36,6 +47,11 @@ export declare class RestQuery<T extends DocumentData = any> extends RestProcess
     constructor(firebaseContext: FirebaseContextClient, collectionId: string, databaseId?: string);
     constructor(proto: RestQuery);
     private readonly query;
+    /** The `orderBy` clauses of this query, in the order they apply. */
+    get orderBy(): ReadonlyArray<{
+        field: string;
+        direction: OrderDirection;
+    }>;
     withConverter<T extends DocumentData = any>(converter: {
         from: (data: T) => T;
     }): RestQuery<T>;
@@ -54,6 +70,7 @@ export interface RestDocumentSnapshot<T extends DocumentData> {
     createTime: Timestamp;
     updateTime: Timestamp;
 }
+type OrderDirection = "ASCENDING" | "DESCENDING";
 type Value = NullValue | BooleanValue | IntegerValue | DoubleValue | TimestampValue | StringValue | BytesValue | ReferenceValue | GeoPointValue | ArrayValue | ObjectValue;
 interface NullValue {
     nullValue: "NULL_VALUE";

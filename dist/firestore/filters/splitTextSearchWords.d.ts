@@ -2,10 +2,12 @@ import { Transliterate } from "./_loadTransliterate.js";
 /**
  * Splits text into whitespace-delimited tokens after transliteration (diacritics removed) and lowercasing.
  * A token is kept only when it carries at least two alphanumeric characters (`a-z0-9`), so single letters and
- * pure punctuation are dropped. Tokens keep their inner punctuation ("kowalski-nowak", "ul.", "a.b") — trigrams
- * built from them cover substrings that span separators.
+ * pure punctuation are dropped. Leading and trailing non-alphanumerics are stripped (`"kapital-x"` ->
+ * "kapital-x", "ul." -> "ul", "+48" -> "48", "kowalski," -> "kowalski"), so a query typed or pasted with quotes
+ * or a trailing comma still matches. Inner punctuation is kept ("kowalski-nowak", "o.o", "12/4") — trigrams
+ * built from it cover substrings that span separators.
  *
- * Result is deduplicated and sorted. Tokenization is a plain whitespace split with a character counter (no
+ * Result is deduplicated and sorted. Tokenization is a plain whitespace split with a single character scan (no
  * backtracking regex), so it stays linear on long inputs such as data-sheet cells.
  */
 export declare function splitTextSearchTokens(input: string, transliterate: Transliterate): string[];

@@ -7,7 +7,10 @@ import {getDataFromServer} from "../getDataFromServer.js";
 import {Pipeline} from "../Pipeline.js";
 import {Query} from "../Query.js";
 import {RestQuery} from "../rest.js";
+import {compareCursorValues} from "./_compareCursorValues.js";
 import {getFilteredDataFromPipeline, PipelineQuerySort} from "./_getFilteredDataFromPipeline.js";
+import {mergeChunkedQueries} from "./_mergeChunkedQueries.js";
+import {queryOrderDirections} from "./_queryOrderDirections.js";
 import {generateTextSearchTrigrams} from "./generateTextSearchTrigrams.js";
 import {Filter, FilterFieldSpec, FilterFieldType, FilterOperator} from "./specs.js";
 import {splitTextSearchWords} from "./splitTextSearchWords.js";
@@ -23,6 +26,12 @@ type StandardArgs<T extends DocumentData = any> = BasicArgs<T> & {
   query: Query<T> | RestQuery<T>,
   startAfter?: any[],
   getStartAfter: (data: T) => any[],
+  /**
+   * Sort of `query`, positional like the values of {@link getStartAfter}; only the directions are used. It
+   * orders the merge of the chunk queries a join with more than 30 matches produces. When omitted the
+   * directions are read from the query itself where the SDK exposes them, else every field counts as `asc`.
+   */
+  querySort?: PipelineQuerySort
 };
 
 type PipelineArgs<T extends DocumentData = any> = BasicArgs<T> & {
@@ -66,9 +75,10 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
 
   // Only word-based operators consume this, and a text field may still carry a non-text value
   // (a yes/no attribute compared with `equals`), which the word splitter cannot take.
-  const textFilterWords: [filter: Filter, string[]][] = filtersNormalized
+  // Keyed by the normalized filter object — `test` and the query path both iterate `filtersNormalized`.
+  const textFilterWords = new Map<Filter, string[]>(filtersNormalized
     .filter(f => f.spec.type === FilterFieldType.text && typeof f.value === "string")
-    .map(filter => [filter, splitTextSearchWords(filter.value as string, transliterate)]);
+    .map(filter => [filter, splitTextSearchWords(filter.value as string, transliterate)]));
 
   const joinResults: {[joinName: string]: any[]} = {};
 
@@ -160,17 +170,21 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
             }
           }
 
+          // Every query word must be present (AND), like `arrayContainsAll` on the pipeline path and the
+          // per-word `array-contains` probes on the query path. An array value is a `*Searchable` index and
+          // is matched by element. A raw string is matched by whole words (`splitTextSearchWords`), not by
+          // substring — and without the index trigrams, so a word of up to 3 characters that the server
+          // matches through a trigram ("ski" in "kowalski") does not match a raw string here.
           if (filter.operator === FilterOperator.includeWord) {
-            for (const [, words] of textFilterWords.filter(([f]) => f === filter)) {
-              for (const word of words) {
-                if (typeof dataValue === "string") {
-                  return dataValue.includes(word);
-                } else if (Array.isArray(dataValue)) {
-                  return dataValue.includes(word);
-                }
-              }
+            const words = textFilterWords.get(filter);
+            if (!words?.length) {
+              return false;
             }
-            return false;
+
+            const dataWords = typeof dataValue === "string" ? new Set(splitTextSearchWords(dataValue, transliterate))
+              : Array.isArray(dataValue) ? new Set(dataValue) : undefined;
+
+            return !!dataWords && words.every(word => dataWords.has(word));
           }
 
         } else if (filter.spec.type === FilterFieldType.textArray) {
@@ -333,7 +347,7 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
   } else {
 
     const {query, getStartAfter} = props as StandardArgs;
-    let startAfter = (props as StandardArgs).startAfter;
+    const startAfter = (props as StandardArgs).startAfter;
     const baseQuery: Query<T> | RestQuery<T> = query;
 
     let bestQueryCount: number | undefined;
@@ -382,7 +396,7 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
           }
 
           const values = filter.operator === FilterOperator.equals ? [filter.value] : [
-            ...textFilterWords.filter(([f]) => f === filter).map(([, words]) => words).flat(),
+            ...textFilterWords.get(filter) ?? [],
             ...((filter.operator === FilterOperator.includeChars && generateTextSearchTrigrams(filter.value as string, "query", transliterate)) || [])
           ].filter((v, i, a) => a.indexOf(v) === i);
 
@@ -505,49 +519,27 @@ export async function getFilteredData<T extends DocumentData = any>(props: Stand
 
     if (bestQuery) {
 
-      RECORDS: while (!hasLimit || result.records.length < limit + 1) {
+      // A join with more than 30 matches spans several `in` chunk queries, each a disjoint slice of the same
+      // ordered result; merge them by cursor so the page holds the globally first records.
+      const queries = Array.isArray(bestQuery) ? bestQuery : [bestQuery];
+      const querySort = (props as StandardArgs).querySort;
+      const directions = querySort ? querySort.map(([, direction]) => direction ?? "asc") : queryOrderDirections(baseQuery);
 
-        let bestData: any[] | undefined;
+      const merged = await mergeChunkedQueries<T>({
+        chunks: queries.length,
+        fetch: (chunk, cursor, fetchLimit) => getDataFromServer<T>(buildQuery(queries[chunk],
+          (cursor?.length && ["startAfter", ...cursor]) || undefined,
+          fetchLimit > 0 && ["limit", fetchLimit]
+        )),
+        getStartAfter,
+        compare: (a, b) => compareCursorValues(a, b, directions),
+        test: testFilters,
+        startAfter,
+        limit
+      });
 
-        for (const query of Array.isArray(bestQuery) ? bestQuery : [bestQuery]) {
-
-          const queryData = await getDataFromServer<any>(buildQuery(query,
-            (startAfter?.length && ["startAfter", ...startAfter]) || undefined,
-            hasLimit && ["limit", limit + 1]
-          ));
-
-          if (!bestData) {
-            bestData = queryData;
-          } else {
-            bestData.push(...queryData);
-          }
-
-          for (const data of queryData) {
-            if (await testFilters(data)) {
-              result.records.push(data);
-
-              if (hasLimit && result.records.length > limit) {
-                break RECORDS;
-              }
-            }
-          }
-
-          if (hasLimit && queryData.length <= limit) {
-            break;
-          }
-        }
-
-        if (!hasLimit || !bestData || bestData.length <= limit) {
-          break;
-        }
-
-        startAfter = getStartAfter(bestData[bestData.length - 1]);
-      }
-
-      if (hasLimit && result.records.length > limit) {
-        result.next = true;
-        result.records.splice(limit);
-      }
+      result.records = merged.records;
+      result.next = merged.next;
     }
   }
 

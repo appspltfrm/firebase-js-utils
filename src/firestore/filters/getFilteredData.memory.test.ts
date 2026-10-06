@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import {transliterate} from "transliteration";
+import {generateTextSearchTrigrams} from "./generateTextSearchTrigrams.js";
 import {getFilteredData} from "./getFilteredData.js";
 import {Filter, FilterFieldSpec, FilterFieldType, FilterOperator} from "./specs.js";
+import {splitTextSearchWords} from "./splitTextSearchWords.js";
 
 /**
  * Isolated unit test for the in-memory branch of the classic (non-pipeline) filtering path — the one the
@@ -78,6 +80,15 @@ const list: FilterFieldSpec = {
 
 //#endregion
 
+/** The `*Searchable` array a document write stores for `text`. */
+function index(text: string) {
+  return [...splitTextSearchWords(text, transliterate), ...generateTextSearchTrigrams(text, "index", transliterate)];
+}
+
+async function ids(data: any[], filters: Filter.SpecRequired[]) {
+  return (await run(data, filters)).map(r => r.personId);
+}
+
 test("text equals matches a false value", async () => {
   const data = [{personId: "a", value: true}, {personId: "b", value: false}];
   assert.deepEqual((await run(data, [filter(yesNo, FilterOperator.equals, "false")])).map(r => r.personId), ["b"]);
@@ -102,6 +113,57 @@ test("text includeChars still matches a substring", async () => {
   const data = [{personId: "a", value: ["war", "ars", "rsz"]}, {personId: "b", value: ["kra", "rak"]}];
   assert.deepEqual((await run(data, [filter(text, FilterOperator.includeChars, "war")])).map(r => r.personId), ["a"]);
 });
+
+//#region includeWord
+
+test("text includeWord on an index requires every word", async () => {
+  const data = [
+    {personId: "both", value: index("Jan Kowalski Nowak")},
+    {personId: "first", value: index("Jan Kowalski")},
+    {personId: "second", value: index("Anna Nowak")}
+  ];
+  assert.deepEqual(await ids(data, [filter(text, FilterOperator.includeWord, "kowalski nowak")]), ["both"]);
+  assert.deepEqual(await ids(data, [filter(text, FilterOperator.includeWord, "Nowak Kowalski")]), ["both"]);
+  assert.deepEqual(await ids(data, [filter(text, FilterOperator.includeWord, "nowak")]), ["both", "second"]);
+});
+
+test("text includeWord on an index ignores diacritics", async () => {
+  const data = [{personId: "a", value: index("Łódź")}, {personId: "b", value: index("Lodz")}, {personId: "c", value: index("Kraków")}];
+  assert.deepEqual(await ids(data, [filter(text, FilterOperator.includeWord, "lodz")]), ["a", "b"]);
+  assert.deepEqual(await ids(data, [filter(text, FilterOperator.includeWord, "Łódź")]), ["a", "b"]);
+});
+
+test("text includeWord on a raw string matches whole words", async () => {
+  const data = [
+    {personId: "a", value: "Jan Kowalskiego"},
+    {personId: "b", value: "Jan Kowalski"},
+    {personId: "c", value: "Anna Kowalska-Nowak"}
+  ];
+  assert.deepEqual(await ids(data, [filter(text, FilterOperator.includeWord, "kowalski")]), ["b"]);
+  assert.deepEqual(await ids(data, [filter(text, FilterOperator.includeWord, "ski")]), []);
+  assert.deepEqual(await ids(data, [filter(text, FilterOperator.includeWord, "nowak")]), ["c"]);
+  assert.deepEqual(await ids(data, [filter(text, FilterOperator.includeWord, "anna nowak")]), ["c"]);
+  assert.deepEqual(await ids(data, [filter(text, FilterOperator.includeWord, "jan nowak")]), []);
+});
+
+test("text includeWord without a usable word matches nothing", async () => {
+  const data = [{personId: "a", value: index("a b c")}, {personId: "b", value: "a b c"}];
+  assert.deepEqual(await run(data, [filter(text, FilterOperator.includeWord, "a")]), []);
+});
+
+test("text includeWord on an index agrees with arrayContainsAll", async () => {
+  const corpus = ["Jan Kowalski", "Anna Kowalska-Nowak", "Piotr Nowak", "Łukasz Wiśniewski", "Kowalski Jan Nowak", "ul. Długa 12/4"];
+  const queries = ["kowalski", "nowak kowalski", "kowalska-nowak", "jan", "wisniewski lukasz", "dluga 12", "12/4", "ski", "nowak piotr anna"];
+  const data = corpus.map(personId => ({personId, value: index(personId)}));
+
+  for (const query of queries) {
+    const words = splitTextSearchWords(query, transliterate);
+    const expected = data.filter(r => words.every(word => r.value.includes(word))).map(r => r.personId);
+    assert.deepEqual(await ids(data, [filter(text, FilterOperator.includeWord, query)]), expected, query);
+  }
+});
+
+//#endregion
 
 test("number equals matches, non-numeric matches nothing", async () => {
   const data = [{personId: "a", value: 3}, {personId: "b", value: 7}];
