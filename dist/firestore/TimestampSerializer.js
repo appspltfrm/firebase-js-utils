@@ -16,6 +16,9 @@ export class TimestampSerializer extends Serializer {
         else if (typeof json === "object" && typeof json["seconds"] === "number" && typeof json["nanoseconds"] === "number") {
             return new this.timestampClass(json["seconds"], json["nanoseconds"]);
         }
+        else if (typeof json === "object" && typeof json["_seconds"] === "number" && typeof json["_nanoseconds"] === "number") {
+            return new this.timestampClass(json["_seconds"], json["_nanoseconds"]);
+        }
         else {
             throw new Error(`Cannot unserialize "${JSON.stringify(json)}" to Firestore Timestamp`);
         }
